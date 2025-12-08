@@ -1,10 +1,14 @@
 /**
  * Authentication API Services for NEXO v2.0
+ * 
+ * IMPORTANT: The backend uses OAuth2PasswordRequestForm for login,
+ * which requires form-urlencoded data with 'username' field (not 'email').
+ * 
  * @module lib/api/auth
  */
 
-import { post, get } from './client';
-import {
+import { apiClient } from './client';
+import type {
   LoginRequest,
   LoginResponse,
   RegisterRequest,
@@ -12,95 +16,150 @@ import {
   User,
 } from '@/types/auth';
 
+// ============================================
+// Backend Response Types (internal use)
+// ============================================
+
+/** Token response from backend (login/register) */
+interface BackendTokenResponse {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+}
+
+/** User response from backend /auth/me */
+interface BackendUserResponse {
+  id: string;
+  email: string;
+  name: string | null;
+  plan: string;
+  language: string;
+  age_verified: boolean;
+  trial_ends_at: string | null;
+  messages_remaining: number;
+  profile_data: Record<string, unknown>;
+  preferences: Record<string, unknown>;
+}
+
+// ============================================
+// Transform Functions
+// ============================================
+
+/**
+ * Transform backend user response to frontend User type
+ */
+function transformUser(backendUser: BackendUserResponse): User {
+  return {
+    id: backendUser.id,
+    email: backendUser.email,
+    display_name: backendUser.name,
+    plan: backendUser.plan as User['plan'],
+    age_verified: backendUser.age_verified,
+    preferred_language: (backendUser.language || 'es') as User['preferred_language'],
+    created_at: new Date().toISOString(), // Backend doesn't return this
+    trial_ends_at: backendUser.trial_ends_at,
+  };
+}
+
+// ============================================
+// API Functions
+// ============================================
+
 /**
  * Authenticate a user with email and password
  * 
- * @param credentials - User login credentials (email and password)
- * @returns Promise resolving to LoginResponse containing access token and user data
- * @throws {Error} When authentication fails or server returns an error
+ * NOTE: Backend uses OAuth2PasswordRequestForm which requires:
+ * - Content-Type: application/x-www-form-urlencoded
+ * - Field name: 'username' (not 'email')
  * 
- * @example
- * ```typescript
- * const response = await login({
- *   email: 'user@example.com',
- *   password: 'securePassword123'
- * });
- * console.log(response.access_token, response.user);
- * ```
+ * After successful login, we fetch user data from /auth/me
  */
-export const login = async (
-  credentials: LoginRequest
-): Promise<LoginResponse> => {
-  return await post<LoginResponse>('/auth/login', credentials);
+export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
+  // Create form data for OAuth2PasswordRequestForm
+  const formData = new URLSearchParams();
+  formData.append('username', credentials.email); // Backend expects 'username'
+  formData.append('password', credentials.password);
+
+  // Send login request with form-urlencoded content type
+  const tokenResponse = await apiClient.post<BackendTokenResponse>(
+    '/auth/login',
+    formData,
+    {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }
+  );
+
+  // Store token temporarily to fetch user data
+  const accessToken = tokenResponse.data.access_token;
+
+  // Fetch user data using the new token
+  const userResponse = await apiClient.get<BackendUserResponse>('/auth/me', {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  // Return combined response matching frontend expectations
+  return {
+    access_token: accessToken,
+    token_type: tokenResponse.data.token_type,
+    user: transformUser(userResponse.data),
+  };
 };
 
 /**
  * Register a new user account
  * 
- * @param data - User registration data including email, password, and optional fields
- * @returns Promise resolving to RegisterResponse with created user and success message
- * @throws {Error} When registration fails (e.g., email already exists)
- * 
- * @example
- * ```typescript
- * const response = await register({
- *   email: 'newuser@example.com',
- *   password: 'securePassword123',
- *   display_name: 'John Doe',
- *   preferred_language: 'es'
- * });
- * console.log(response.message, response.user);
- * ```
+ * After successful registration, we fetch user data from /auth/me
  */
-export const register = async (
-  data: RegisterRequest
-): Promise<RegisterResponse> => {
-  return await post<RegisterResponse>('/auth/register', data);
+export const register = async (data: RegisterRequest): Promise<RegisterResponse> => {
+  // Map frontend fields to backend fields
+  const backendData = {
+    email: data.email,
+    password: data.password,
+    name: data.display_name || null,
+    language: data.preferred_language || 'es',
+  };
+
+  // Send registration request
+  const tokenResponse = await apiClient.post<BackendTokenResponse>(
+    '/auth/register',
+    backendData
+  );
+
+  // Store token temporarily to fetch user data
+  const accessToken = tokenResponse.data.access_token;
+
+  // Fetch user data using the new token
+  const userResponse = await apiClient.get<BackendUserResponse>('/auth/me', {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  // Return combined response matching frontend expectations
+  return {
+    user: transformUser(userResponse.data),
+    message: 'Registration successful',
+  };
 };
 
 /**
  * Get the currently authenticated user's profile
- * 
- * Requires a valid JWT token in localStorage.
- * The token is automatically included by the API client interceptor.
- * 
- * @returns Promise resolving to the authenticated User object
- * @throws {Error} When user is not authenticated or token is invalid (401)
- * 
- * @example
- * ```typescript
- * try {
- *   const user = await getCurrentUser();
- *   console.log(user.email, user.plan);
- * } catch (error) {
- *   // User is not authenticated or token expired
- *   console.error('Not authenticated');
- * }
- * ```
  */
 export const getCurrentUser = async (): Promise<User> => {
-  return await get<User>('/auth/me');
+  const response = await apiClient.get<BackendUserResponse>('/auth/me');
+  return transformUser(response.data);
 };
 
 /**
  * Log out the current user
- * 
- * Optionally sends a logout request to the server to invalidate the token.
- * This is primarily a client-side operation that clears local storage.
- * The actual cleanup is handled by the auth store.
- * 
- * @returns Promise that resolves when logout is complete
- * 
- * @example
- * ```typescript
- * await logout();
- * // User is now logged out, token cleared from localStorage
- * ```
  */
 export const logout = async (): Promise<void> => {
   try {
-    // Optional: Send logout request to server to invalidate token
-    await post<void>('/auth/logout');
+    await apiClient.post('/auth/logout');
   } catch (error) {
     // Logout can fail silently - client-side cleanup is more important
     console.warn('Server logout failed, continuing with client-side cleanup', error);
@@ -110,24 +169,42 @@ export const logout = async (): Promise<void> => {
 /**
  * Refresh the current access token
  * 
- * Uses the existing token to obtain a new one, extending the user's session.
- * The client should store the new token and use it for subsequent requests.
- * 
- * @returns Promise resolving to an object containing the new access_token
- * @throws {Error} When token refresh fails (e.g., refresh token expired)
- * 
- * @example
- * ```typescript
- * try {
- *   const { access_token } = await refreshToken();
- *   localStorage.setItem('nexo_token', access_token);
- * } catch (error) {
- *   // Refresh failed, user needs to log in again
- *   console.error('Session expired');
- * }
- * ```
+ * NOTE: Backend expects { refresh_token: "..." } in the body
  */
-export const refreshToken = async (): Promise<{ access_token: string }> => {
-  return await post<{ access_token: string }>('/auth/refresh');
+export const refreshToken = async (currentRefreshToken: string): Promise<{
+  access_token: string;
+  refresh_token: string;
+}> => {
+  const response = await apiClient.post<BackendTokenResponse>('/auth/refresh', {
+    refresh_token: currentRefreshToken,
+  });
+
+  return {
+    access_token: response.data.access_token,
+    refresh_token: response.data.refresh_token,
+  };
 };
 
+/**
+ * Request password reset email
+ */
+export const forgotPassword = async (email: string): Promise<{ message: string }> => {
+  const response = await apiClient.post<{ message: string }>('/auth/forgot-password', null, {
+    params: { email },
+  });
+  return response.data;
+};
+
+/**
+ * Reset password with token
+ */
+export const resetPassword = async (
+  token: string,
+  newPassword: string
+): Promise<{ message: string }> => {
+  const response = await apiClient.post<{ message: string }>('/auth/reset-password', {
+    token,
+    new_password: newPassword,
+  });
+  return response.data;
+};

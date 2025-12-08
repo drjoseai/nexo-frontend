@@ -12,6 +12,32 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type { AuthStore, LoginRequest, RegisterRequest } from '@/types/auth';
 import * as authApi from '@/lib/api/auth';
 
+// ============================================
+// Cookie helpers for middleware compatibility
+// ============================================
+
+const COOKIE_NAME = 'nexo_access_token';
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+
+/**
+ * Set authentication cookie
+ * Required for Next.js middleware to verify auth state
+ */
+function setAuthCookie(token: string): void {
+  if (typeof window === 'undefined') return;
+  
+  document.cookie = `${COOKIE_NAME}=${token}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax; Secure`;
+}
+
+/**
+ * Remove authentication cookie
+ */
+function removeAuthCookie(): void {
+  if (typeof window === 'undefined') return;
+  
+  document.cookie = `${COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax; Secure`;
+}
+
 /**
  * Initial authentication state
  */
@@ -68,6 +94,9 @@ export const useAuthStore = create<AuthStore>()(
             localStorage.setItem('nexo_token', response.access_token);
             localStorage.setItem('nexo_user', JSON.stringify(response.user));
           }
+
+          // Store token in cookie for middleware access
+          setAuthCookie(response.access_token);
 
           // Update store state
           set({
@@ -149,6 +178,9 @@ export const useAuthStore = create<AuthStore>()(
           console.warn('Logout API call failed:', error);
         });
 
+        // Remove auth cookie
+        removeAuthCookie();
+
         // Clear localStorage
         if (typeof window !== 'undefined') {
           localStorage.removeItem('nexo_token');
@@ -183,6 +215,9 @@ export const useAuthStore = create<AuthStore>()(
             set(initialState);
             return;
           }
+
+          // Ensure cookie is set (in case it was cleared but localStorage wasn't)
+          setAuthCookie(token);
 
           // Set loading state
           set({ isLoading: true, error: null });

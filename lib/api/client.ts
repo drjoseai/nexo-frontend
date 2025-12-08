@@ -15,7 +15,7 @@ const isBrowser = typeof window !== 'undefined';
  */
 const getBaseURL = (): string => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-  return `${apiUrl}/api/v1`;
+  return apiUrl;
 };
 
 /**
