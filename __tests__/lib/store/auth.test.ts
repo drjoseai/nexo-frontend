@@ -1,0 +1,387 @@
+// __tests__/lib/store/auth.test.ts
+// Tests unitarios para el Auth Store de NEXO v2.0
+// Verifica: login, logout, register, loadUser, error handling
+
+import { renderHook, act, waitFor } from '@testing-library/react';
+import { useAuthStore } from '@/lib/store/auth';
+
+// ============================================
+// MOCK: API de autenticación
+// ============================================
+
+jest.mock('@/lib/api/auth', () => ({
+  login: jest.fn(),
+  register: jest.fn(),
+  logout: jest.fn(),
+  getCurrentUser: jest.fn(),
+}));
+
+import * as authApi from '@/lib/api/auth';
+
+// ============================================
+// TEST DATA
+// ============================================
+
+const mockUser = {
+  id: 'user-123',
+  email: 'test@nexo.com',
+  display_name: 'Usuario Test',
+  plan: 'free' as const,
+  age_verified: false,
+  preferred_language: 'es' as const,
+  created_at: '2024-01-01T00:00:00Z',
+  trial_ends_at: null,
+};
+
+const mockLoginResponse = {
+  access_token: 'jwt-token-abc123',
+  token_type: 'bearer',
+  user: mockUser,
+};
+
+const mockCredentials = {
+  email: 'test@nexo.com',
+  password: 'SecurePass123!',
+};
+
+// ============================================
+// HELPER: Reset store state
+// ============================================
+
+const resetStore = () => {
+  useAuthStore.setState({
+    user: null,
+    token: null,
+    isAuthenticated: false,
+    isLoading: false,
+    error: null,
+  });
+};
+
+// ============================================
+// TESTS
+// ============================================
+
+describe('useAuthStore', () => {
+  beforeEach(() => {
+    resetStore();
+    jest.clearAllMocks();
+    localStorage.clear();
+  });
+
+  // ------------------------------------------
+  // Initial State Tests
+  // ------------------------------------------
+  
+  describe('estado inicial', () => {
+    it('debe tener estado inicial correcto', () => {
+      const { result } = renderHook(() => useAuthStore());
+
+      expect(result.current.user).toBeNull();
+      expect(result.current.token).toBeNull();
+      expect(result.current.isAuthenticated).toBe(false);
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.error).toBeNull();
+    });
+
+    it('debe exponer todas las acciones requeridas', () => {
+      const { result } = renderHook(() => useAuthStore());
+
+      expect(typeof result.current.login).toBe('function');
+      expect(typeof result.current.register).toBe('function');
+      expect(typeof result.current.logout).toBe('function');
+      expect(typeof result.current.loadUser).toBe('function');
+      expect(typeof result.current.clearError).toBe('function');
+    });
+  });
+
+  // ------------------------------------------
+  // Login Tests
+  // ------------------------------------------
+
+  describe('login', () => {
+    it('debe autenticar usuario exitosamente', async () => {
+      (authApi.login as jest.Mock).mockResolvedValue(mockLoginResponse);
+
+      const { result } = renderHook(() => useAuthStore());
+
+      await act(async () => {
+        await result.current.login(mockCredentials);
+      });
+
+      expect(result.current.isAuthenticated).toBe(true);
+      expect(result.current.user).toEqual(mockUser);
+      expect(result.current.token).toBe('jwt-token-abc123');
+      expect(result.current.error).toBeNull();
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    it('debe guardar token en localStorage', async () => {
+      (authApi.login as jest.Mock).mockResolvedValue(mockLoginResponse);
+
+      const { result } = renderHook(() => useAuthStore());
+
+      await act(async () => {
+        await result.current.login(mockCredentials);
+      });
+
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        'nexo_token',
+        'jwt-token-abc123'
+      );
+    });
+
+    it('debe manejar error de credenciales inválidas', async () => {
+      const mockError = {
+        response: {
+          data: { message: 'Credenciales inválidas' },
+        },
+      };
+      (authApi.login as jest.Mock).mockRejectedValue(mockError);
+
+      const { result } = renderHook(() => useAuthStore());
+
+      await act(async () => {
+        try {
+          await result.current.login(mockCredentials);
+        } catch {
+          // Expected to throw
+        }
+      });
+
+      expect(result.current.isAuthenticated).toBe(false);
+      expect(result.current.user).toBeNull();
+      expect(result.current.error).toBe('Credenciales inválidas');
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    it('debe mostrar isLoading durante el login', async () => {
+      let resolveLogin: (value: typeof mockLoginResponse) => void;
+      const loginPromise = new Promise<typeof mockLoginResponse>((resolve) => {
+        resolveLogin = resolve;
+      });
+      (authApi.login as jest.Mock).mockReturnValue(loginPromise);
+
+      const { result } = renderHook(() => useAuthStore());
+
+      // Start login (don't await)
+      act(() => {
+        result.current.login(mockCredentials);
+      });
+
+      // Should be loading
+      expect(result.current.isLoading).toBe(true);
+
+      // Resolve login
+      await act(async () => {
+        resolveLogin!(mockLoginResponse);
+        await loginPromise;
+      });
+
+      // Should not be loading anymore
+      expect(result.current.isLoading).toBe(false);
+    });
+  });
+
+  // ------------------------------------------
+  // Logout Tests
+  // ------------------------------------------
+
+  describe('logout', () => {
+    it('debe limpiar estado al hacer logout', async () => {
+      // First, set authenticated state
+      useAuthStore.setState({
+        user: mockUser,
+        token: 'test-token',
+        isAuthenticated: true,
+      });
+
+      (authApi.logout as jest.Mock).mockResolvedValue(undefined);
+
+      const { result } = renderHook(() => useAuthStore());
+
+      act(() => {
+        result.current.logout();
+      });
+
+      expect(result.current.user).toBeNull();
+      expect(result.current.token).toBeNull();
+      expect(result.current.isAuthenticated).toBe(false);
+    });
+
+    it('debe eliminar token de localStorage', () => {
+      useAuthStore.setState({
+        user: mockUser,
+        token: 'test-token',
+        isAuthenticated: true,
+      });
+
+      (authApi.logout as jest.Mock).mockResolvedValue(undefined);
+
+      const { result } = renderHook(() => useAuthStore());
+
+      act(() => {
+        result.current.logout();
+      });
+
+      expect(localStorage.removeItem).toHaveBeenCalledWith('nexo_token');
+      expect(localStorage.removeItem).toHaveBeenCalledWith('nexo_user');
+    });
+
+    it('debe funcionar aunque falle API de logout', async () => {
+      useAuthStore.setState({
+        user: mockUser,
+        token: 'test-token',
+        isAuthenticated: true,
+      });
+
+      (authApi.logout as jest.Mock).mockRejectedValue(new Error('Network error'));
+
+      const { result } = renderHook(() => useAuthStore());
+
+      act(() => {
+        result.current.logout();
+      });
+
+      // Should still clear state even if API fails
+      expect(result.current.isAuthenticated).toBe(false);
+      expect(result.current.user).toBeNull();
+    });
+  });
+
+  // ------------------------------------------
+  // Register Tests
+  // ------------------------------------------
+
+  describe('register', () => {
+    it('debe registrar y autenticar automáticamente', async () => {
+      (authApi.register as jest.Mock).mockResolvedValue({ user: mockUser });
+      (authApi.login as jest.Mock).mockResolvedValue(mockLoginResponse);
+
+      const { result } = renderHook(() => useAuthStore());
+
+      await act(async () => {
+        await result.current.register({
+          email: 'nuevo@nexo.com',
+          password: 'NewPass123!',
+          display_name: 'Nuevo Usuario',
+        });
+      });
+
+      // Should be authenticated after register
+      expect(result.current.isAuthenticated).toBe(true);
+      expect(authApi.login).toHaveBeenCalled();
+    });
+
+    it('debe manejar error de email duplicado', async () => {
+      const mockError = {
+        response: {
+          data: { message: 'El email ya está registrado' },
+        },
+      };
+      (authApi.register as jest.Mock).mockRejectedValue(mockError);
+
+      const { result } = renderHook(() => useAuthStore());
+
+      await act(async () => {
+        try {
+          await result.current.register({
+            email: 'existente@nexo.com',
+            password: 'Pass123!',
+          });
+        } catch {
+          // Expected
+        }
+      });
+
+      expect(result.current.error).toBe('El email ya está registrado');
+      expect(result.current.isAuthenticated).toBe(false);
+    });
+  });
+
+  // ------------------------------------------
+  // LoadUser Tests
+  // ------------------------------------------
+
+  describe('loadUser', () => {
+    it('debe cargar usuario desde token guardado', async () => {
+      // Simulate existing token in localStorage
+      localStorage.setItem('nexo_token', 'existing-token');
+      (localStorage.getItem as jest.Mock).mockReturnValue('existing-token');
+      (authApi.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+
+      const { result } = renderHook(() => useAuthStore());
+
+      await act(async () => {
+        await result.current.loadUser();
+      });
+
+      expect(result.current.isAuthenticated).toBe(true);
+      expect(result.current.user).toEqual(mockUser);
+    });
+
+    it('debe hacer logout si token es inválido', async () => {
+      (localStorage.getItem as jest.Mock).mockReturnValue('invalid-token');
+      (authApi.getCurrentUser as jest.Mock).mockRejectedValue(
+        new Error('Token expired')
+      );
+
+      const { result } = renderHook(() => useAuthStore());
+
+      await act(async () => {
+        await result.current.loadUser();
+      });
+
+      expect(result.current.isAuthenticated).toBe(false);
+      expect(result.current.user).toBeNull();
+    });
+
+    it('no debe hacer nada si no hay token', async () => {
+      (localStorage.getItem as jest.Mock).mockReturnValue(null);
+
+      const { result } = renderHook(() => useAuthStore());
+
+      await act(async () => {
+        await result.current.loadUser();
+      });
+
+      expect(authApi.getCurrentUser).not.toHaveBeenCalled();
+      expect(result.current.isAuthenticated).toBe(false);
+    });
+  });
+
+  // ------------------------------------------
+  // Utility Actions Tests
+  // ------------------------------------------
+
+  describe('acciones utilitarias', () => {
+    it('clearError debe limpiar el error', () => {
+      useAuthStore.setState({ error: 'Algún error' });
+
+      const { result } = renderHook(() => useAuthStore());
+
+      act(() => {
+        result.current.clearError();
+      });
+
+      expect(result.current.error).toBeNull();
+    });
+
+    it('setLoading debe cambiar estado de loading', () => {
+      const { result } = renderHook(() => useAuthStore());
+
+      act(() => {
+        result.current.setLoading(true);
+      });
+
+      expect(result.current.isLoading).toBe(true);
+
+      act(() => {
+        result.current.setLoading(false);
+      });
+
+      expect(result.current.isLoading).toBe(false);
+    });
+  });
+});
+
