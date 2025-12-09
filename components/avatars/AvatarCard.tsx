@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { Lock, MessageCircle, Sparkles, User } from "lucide-react";
+import { Lock, MessageCircle, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { AvatarId, RelationshipType, PlanType } from "@/types/avatar";
 import { AVATARS, RELATIONSHIP_LEVELS, isAvatarAvailableForPlan } from "@/types/avatar";
@@ -16,9 +17,6 @@ interface AvatarCardProps {
   className?: string;
 }
 
-/**
- * Get border and glow colors for each avatar
- */
 function getAvatarStyles(avatarId: AvatarId) {
   const styles: Record<AvatarId, { 
     border: string; 
@@ -52,38 +50,28 @@ function getAvatarStyles(avatarId: AvatarId) {
   return styles[avatarId];
 }
 
-/**
- * Get relationship display info
- */
 function getRelationshipDisplay(type: RelationshipType) {
   const level = RELATIONSHIP_LEVELS.find((l) => l.type === type);
   return level || RELATIONSHIP_LEVELS[0];
 }
 
-/**
- * Placeholder component for avatar image
- * Will be replaced with actual images later
- */
-function AvatarPlaceholder({ 
+function AvatarImage({ 
   avatarId, 
   name 
 }: { 
   avatarId: AvatarId; 
   name: string;
 }) {
-  const styles = getAvatarStyles(avatarId);
-  
   return (
-    <div 
-      className={cn(
-        "flex h-full w-full flex-col items-center justify-center gap-3",
-        styles.bgColor
-      )}
-    >
-      <User className={cn("h-20 w-20", styles.textColor)} />
-      <span className={cn("text-2xl font-bold", styles.textColor)}>
-        {name}
-      </span>
+    <div className="relative h-full w-full">
+      <Image
+        src={`/avatars/${avatarId}.png`}
+        alt={name}
+        fill
+        className="object-cover"
+        sizes="(max-width: 768px) 100vw, 33vw"
+        priority
+      />
     </div>
   );
 }
@@ -99,11 +87,8 @@ export function AvatarCard({
   const avatar = AVATARS[avatarId];
   const styles = getAvatarStyles(avatarId);
   const relationshipInfo = getRelationshipDisplay(currentRelationship);
-  
-  // Determine if avatar is locked based on plan
   const isLocked = forceLockedState ?? !isAvatarAvailableForPlan(avatarId, userPlan);
 
-  // Card content
   const cardContent = (
     <div
       className={cn(
@@ -115,7 +100,6 @@ export function AvatarCard({
         className
       )}
     >
-      {/* Gradient overlay at top */}
       <div
         className={cn(
           "absolute inset-x-0 top-0 h-32 bg-gradient-to-b pointer-events-none z-10",
@@ -123,11 +107,9 @@ export function AvatarCard({
         )}
       />
 
-      {/* Avatar image placeholder */}
       <div className="relative aspect-[3/4] w-full overflow-hidden">
-        <AvatarPlaceholder avatarId={avatarId} name={avatar.name} />
+        <AvatarImage avatarId={avatarId} name={avatar.name} />
 
-        {/* Locked overlay */}
         {isLocked && (
           <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-sm z-20">
             <div className="flex flex-col items-center gap-2 text-center">
@@ -139,7 +121,6 @@ export function AvatarCard({
           </div>
         )}
 
-        {/* Romantic badge if supported */}
         {avatar.supportsRomantic && !isLocked && (
           <div className="absolute right-2 top-2 z-20">
             <Badge variant="secondary" className="gap-1 bg-accent/90 text-accent-foreground">
@@ -150,20 +131,16 @@ export function AvatarCard({
         )}
       </div>
 
-      {/* Avatar info */}
       <div className="flex flex-1 flex-col p-4">
-        {/* Name and age */}
         <div className="mb-1 flex items-baseline gap-2">
           <h3 className="text-xl font-bold">{avatar.name}</h3>
           <span className="text-sm text-muted-foreground">{avatar.age}</span>
         </div>
 
-        {/* Role */}
         <p className="mb-3 text-sm text-muted-foreground line-clamp-2">
           {avatar.role}
         </p>
 
-        {/* Relationship badge and message count */}
         <div className="mt-auto flex items-center justify-between">
           <Badge variant="outline" className="gap-1">
             {relationshipInfo.name}
@@ -180,29 +157,21 @@ export function AvatarCard({
     </div>
   );
 
-  // If locked, don't wrap in link
   if (isLocked) {
     return cardContent;
   }
 
-  // Wrap in link to chat
   return (
-    <Link href={`/chat/${avatarId}`} className="block">
+    <Link href={`/dashboard/chat/${avatarId}`} className="block">
       {cardContent}
     </Link>
   );
 }
 
-/**
- * Skeleton loader for avatar card
- */
 export function AvatarCardSkeleton() {
   return (
     <div className="flex flex-col overflow-hidden rounded-xl border-2 border-border bg-card">
-      {/* Image skeleton */}
       <div className="aspect-[3/4] w-full animate-pulse bg-muted" />
-
-      {/* Info skeleton */}
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="h-6 w-24 animate-pulse rounded bg-muted" />
         <div className="h-4 w-32 animate-pulse rounded bg-muted" />
@@ -211,4 +180,3 @@ export function AvatarCardSkeleton() {
     </div>
   );
 }
-
