@@ -36,8 +36,8 @@ const registerSchema = z
   .object({
     display_name: z
       .string()
-      .optional()
-      .transform((val) => val?.trim() || undefined),
+      .transform((val) => val?.trim() || "")
+      .optional(),
     email: z
       .string()
       .min(1, "El email es requerido")
@@ -77,7 +77,7 @@ export default function RegisterPage() {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      display_name: "",
+      display_name: undefined,
       email: "",
       password: "",
       confirm_password: "",

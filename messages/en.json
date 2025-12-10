@@ -1,0 +1,125 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "noResults": "No results",
+    "retry": "Retry"
+  },
+  "auth": {
+    "login": "Log In",
+    "register": "Sign Up",
+    "logout": "Log Out",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "forgotPassword": "Forgot your password?",
+    "rememberMe": "Remember me",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "loginSuccess": "Welcome back!",
+    "registerSuccess": "Account created successfully!",
+    "logoutSuccess": "Logged out",
+    "invalidCredentials": "Invalid credentials",
+    "emailRequired": "Email is required",
+    "passwordRequired": "Password is required",
+    "passwordMinLength": "Minimum 8 characters",
+    "emailInvalid": "Invalid email"
+  },
+  "chat": {
+    "placeholder": "Type a message...",
+    "send": "Send",
+    "typing": "typing...",
+    "messageSent": "Message sent",
+    "messageError": "Error sending message",
+    "startConversation": "Start a conversation",
+    "selectAvatar": "Select an avatar to begin",
+    "dailyLimitReached": "You've reached your daily message limit",
+    "upgradeForMore": "Upgrade your plan for more messages"
+  },
+  "avatars": {
+    "lia": {
+      "name": "Lía",
+      "role": "Empathic Companion",
+      "description": "Warm, intuitive, and always ready to listen"
+    },
+    "mia": {
+      "name": "Mía",
+      "role": "Adventurer",
+      "description": "Energetic, fun, and full of curiosity"
+    },
+    "allan": {
+      "name": "Allan",
+      "role": "Wise Mentor",
+      "description": "Thoughtful, deep, and insightful"
+    },
+    "chooseAvatar": "Choose your companion",
+    "currentAvatar": "Current avatar"
+  },
+  "subscription": {
+    "free": "Free",
+    "plus": "Plus",
+    "premium": "Premium",
+    "currentPlan": "Current plan",
+    "upgrade": "Upgrade",
+    "downgrade": "Change plan",
+    "messagesPerDay": "{count} messages/day",
+    "unlimited": "Unlimited",
+    "features": "Features",
+    "price": "{price}/month",
+    "trial": "Free trial",
+    "trialDays": "{days} day trial"
+  },
+  "dashboard": {
+    "welcome": "Welcome, {name}",
+    "recentChats": "Recent conversations",
+    "noChats": "No conversations yet",
+    "startChatting": "Start chatting",
+    "stats": "Statistics",
+    "messagesThisWeek": "Messages this week",
+    "totalMessages": "Total messages",
+    "memberSince": "Member since"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "account": "Account",
+    "preferences": "Preferences",
+    "language": "Language",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "theme": "Theme",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode",
+    "saveChanges": "Save changes",
+    "changesSaved": "Changes saved"
+  },
+  "errors": {
+    "generic": "Something went wrong",
+    "network": "Connection error",
+    "unauthorized": "Unauthorized",
+    "notFound": "Not found",
+    "serverError": "Server error",
+    "tryAgain": "Please try again"
+  },
+  "navigation": {
+    "home": "Home",
+    "chat": "Chat",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "profile": "Profile",
+    "subscription": "Subscription",
+    "help": "Help",
+    "logout": "Logout"
+  }
+}
+

@@ -5,7 +5,7 @@
  * Endpoints based on actual backend implementation.
  */
 
-import apiClient from "./client";
+import { apiClient } from "./client";
 
 // ============================================
 // Types (aligned with backend schemas)

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import {
   MessageCircle,
@@ -13,6 +14,8 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/auth";
 import { Button } from "@/components/ui/button";
+import { LanguageSelector } from "@/components/ui/language-selector";
+import { Locale } from "@/i18n/config";
 
 interface NavItem {
   href: string;
@@ -45,6 +48,7 @@ const navItems: NavItem[] = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const locale = useLocale() as Locale;
   const { user, logout } = useAuthStore();
 
   const handleLogout = () => {
@@ -110,6 +114,16 @@ export function Sidebar() {
                 {user?.email}
               </p>
             </div>
+          </div>
+
+          {/* Language selector */}
+          <div className="mb-3">
+            <LanguageSelector 
+              currentLocale={locale} 
+              variant="ghost"
+              showLabel={true}
+              className="w-full justify-start"
+            />
           </div>
 
           {/* Logout button */}

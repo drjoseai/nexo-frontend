@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Montserrat, Geist_Mono } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -58,18 +60,23 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" className="dark">
+    <html lang={locale} className="dark">
       <body
         className={`${montserrat.variable} ${geistMono.variable} font-sans antialiased`}
       >
-        {children}
-        <Toaster position="top-right" richColors />
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          {children}
+          <Toaster position="top-right" richColors />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

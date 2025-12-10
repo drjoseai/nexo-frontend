@@ -1,0 +1,125 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "back": "Volver",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "search": "Buscar",
+    "noResults": "Sin resultados",
+    "retry": "Reintentar"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar Sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "rememberMe": "Recordarme",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "loginSuccess": "¡Bienvenido de vuelta!",
+    "registerSuccess": "¡Cuenta creada exitosamente!",
+    "logoutSuccess": "Sesión cerrada",
+    "invalidCredentials": "Credenciales inválidas",
+    "emailRequired": "El correo es requerido",
+    "passwordRequired": "La contraseña es requerida",
+    "passwordMinLength": "Mínimo 8 caracteres",
+    "emailInvalid": "Correo inválido"
+  },
+  "chat": {
+    "placeholder": "Escribe un mensaje...",
+    "send": "Enviar",
+    "typing": "escribiendo...",
+    "messageSent": "Mensaje enviado",
+    "messageError": "Error al enviar mensaje",
+    "startConversation": "Inicia una conversación",
+    "selectAvatar": "Selecciona un avatar para comenzar",
+    "dailyLimitReached": "Has alcanzado tu límite diario de mensajes",
+    "upgradeForMore": "Actualiza tu plan para más mensajes"
+  },
+  "avatars": {
+    "lia": {
+      "name": "Lía",
+      "role": "Compañera Empática",
+      "description": "Cálida, intuitiva y siempre dispuesta a escuchar"
+    },
+    "mia": {
+      "name": "Mía",
+      "role": "Aventurera",
+      "description": "Energética, divertida y llena de curiosidad"
+    },
+    "allan": {
+      "name": "Allan",
+      "role": "Mentor Sabio",
+      "description": "Reflexivo, profundo y perspicaz"
+    },
+    "chooseAvatar": "Elige tu compañero",
+    "currentAvatar": "Avatar actual"
+  },
+  "subscription": {
+    "free": "Gratis",
+    "plus": "Plus",
+    "premium": "Premium",
+    "currentPlan": "Plan actual",
+    "upgrade": "Mejorar plan",
+    "downgrade": "Cambiar plan",
+    "messagesPerDay": "{count} mensajes/día",
+    "unlimited": "Ilimitado",
+    "features": "Características",
+    "price": "{price}/mes",
+    "trial": "Prueba gratuita",
+    "trialDays": "{days} días de prueba"
+  },
+  "dashboard": {
+    "welcome": "Bienvenido, {name}",
+    "recentChats": "Conversaciones recientes",
+    "noChats": "Aún no tienes conversaciones",
+    "startChatting": "Comienza a chatear",
+    "stats": "Estadísticas",
+    "messagesThisWeek": "Mensajes esta semana",
+    "totalMessages": "Total de mensajes",
+    "memberSince": "Miembro desde"
+  },
+  "settings": {
+    "title": "Configuración",
+    "profile": "Perfil",
+    "account": "Cuenta",
+    "preferences": "Preferencias",
+    "language": "Idioma",
+    "notifications": "Notificaciones",
+    "privacy": "Privacidad",
+    "theme": "Tema",
+    "darkMode": "Modo oscuro",
+    "lightMode": "Modo claro",
+    "saveChanges": "Guardar cambios",
+    "changesSaved": "Cambios guardados"
+  },
+  "errors": {
+    "generic": "Algo salió mal",
+    "network": "Error de conexión",
+    "unauthorized": "No autorizado",
+    "notFound": "No encontrado",
+    "serverError": "Error del servidor",
+    "tryAgain": "Por favor, intenta de nuevo"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "chat": "Chat",
+    "dashboard": "Panel",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "subscription": "Suscripción",
+    "help": "Ayuda",
+    "logout": "Salir"
+  }
+}
+
