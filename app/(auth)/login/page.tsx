@@ -5,6 +5,7 @@
  * 
  * Handles user authentication with email and password
  * Features form validation with react-hook-form and zod
+ * Internationalized with next-intl
  * 
  * @module app/(auth)/login/page
  */
@@ -15,6 +16,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/lib/store/auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,24 +32,29 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
 /**
- * Login form validation schema
+ * Login form validation schema with i18n messages
  */
-const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, "El email es requerido")
-    .email("Formato de email inválido"),
-  password: z
-    .string()
-    .min(6, "La contraseña debe tener al menos 6 caracteres")
-    .max(100, "La contraseña es demasiado larga"),
-});
+const createLoginSchema = (t: (key: string) => string) =>
+  z.object({
+    email: z
+      .string()
+      .min(1, t("emailRequired"))
+      .email(t("emailInvalid")),
+    password: z
+      .string()
+      .min(6, t("passwordMinLength6"))
+      .max(100, t("passwordMaxLength")),
+  });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type LoginFormData = z.infer<ReturnType<typeof createLoginSchema>>;
 
 export default function LoginPage() {
   const router = useRouter();
   const { login, isLoading, isAuthenticated } = useAuthStore();
+  const t = useTranslations("auth");
+
+  // Create schema with translated messages
+  const loginSchema = createLoginSchema(t);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -75,18 +82,19 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       await login(data);
-      toast.success("¡Bienvenido de vuelta!", {
-        description: "Has iniciado sesión exitosamente",
+      toast.success(t("loginSuccess"), {
+        description: t("loginSuccessDescription"),
       });
       router.push("/dashboard");
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Error handling
       const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Error al iniciar sesión. Por favor, verifica tus credenciales.";
-      
-      toast.error("Error al iniciar sesión", {
+        (error as { response?: { data?: { message?: string } }; message?: string })
+          ?.response?.data?.message ||
+        (error as { message?: string })?.message ||
+        t("loginErrorDescription");
+
+      toast.error(t("loginError"), {
         description: errorMessage,
       });
     }
@@ -102,9 +110,9 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <CardTitle className="text-2xl">Iniciar Sesión</CardTitle>
+        <CardTitle className="text-2xl">{t("login")}</CardTitle>
         <CardDescription>
-          Ingresa tus credenciales para acceder a tu cuenta
+          {t("enterCredentials")}
         </CardDescription>
       </CardHeader>
 
@@ -112,7 +120,7 @@ export default function LoginPage() {
         <CardContent className="space-y-4">
           {/* Email Field */}
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("email")}</Label>
             <Input
               id="email"
               type="email"
@@ -131,7 +139,7 @@ export default function LoginPage() {
 
           {/* Password Field */}
           <div className="space-y-2">
-            <Label htmlFor="password">Contraseña</Label>
+            <Label htmlFor="password">{t("password")}</Label>
             <Input
               id="password"
               type="password"
@@ -155,7 +163,7 @@ export default function LoginPage() {
               disabled
               className="text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              ¿Olvidaste tu contraseña?
+              {t("forgotPassword")}
             </button>
           </div>
         </CardContent>
@@ -168,17 +176,17 @@ export default function LoginPage() {
             disabled={isLoading}
             size="lg"
           >
-            {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
+            {isLoading ? t("loggingIn") : t("login")}
           </Button>
 
           {/* Register Link */}
           <p className="text-sm text-center text-muted-foreground">
-            ¿No tienes cuenta?{" "}
+            {t("noAccount")}{" "}
             <Link
               href="/register"
               className="text-primary font-medium hover:underline"
             >
-              Regístrate
+              {t("register")}
             </Link>
           </p>
         </CardFooter>
@@ -186,4 +194,3 @@ export default function LoginPage() {
     </Card>
   );
 }
-

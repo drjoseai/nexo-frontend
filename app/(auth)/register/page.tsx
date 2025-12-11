@@ -5,6 +5,7 @@
  * 
  * Handles user registration with email, password, and optional display name
  * Features form validation with react-hook-form and zod
+ * Internationalized with next-intl
  * 
  * @module app/(auth)/register/page
  */
@@ -15,6 +16,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/lib/store/auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,37 +32,43 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
 /**
- * Register form validation schema
+ * Register form validation schema with i18n messages
  */
-const registerSchema = z
-  .object({
-    display_name: z
-      .string()
-      .transform((val) => val?.trim() || "")
-      .optional(),
-    email: z
-      .string()
-      .min(1, "El email es requerido")
-      .email("Formato de email inválido"),
-    password: z
-      .string()
-      .min(8, "La contraseña debe tener al menos 8 caracteres")
-      .regex(/\d/, "La contraseña debe contener al menos un número")
-      .max(100, "La contraseña es demasiado larga"),
-    confirm_password: z
-      .string()
-      .min(1, "Debes confirmar tu contraseña"),
-  })
-  .refine((data) => data.password === data.confirm_password, {
-    message: "Las contraseñas no coinciden",
-    path: ["confirm_password"],
-  });
+const createRegisterSchema = (t: (key: string) => string) =>
+  z
+    .object({
+      display_name: z
+        .string()
+        .transform((val) => val?.trim() || "")
+        .optional(),
+      email: z
+        .string()
+        .min(1, t("emailRequired"))
+        .email(t("emailInvalid")),
+      password: z
+        .string()
+        .min(8, t("passwordMinLength8"))
+        .regex(/\d/, t("passwordNeedsNumber"))
+        .max(100, t("passwordMaxLength")),
+      confirm_password: z
+        .string()
+        .min(1, t("confirmPasswordRequired")),
+    })
+    .refine((data) => data.password === data.confirm_password, {
+      message: t("passwordsDoNotMatch"),
+      path: ["confirm_password"],
+    });
 
-type RegisterFormData = z.infer<typeof registerSchema>;
+type RegisterFormData = z.infer<ReturnType<typeof createRegisterSchema>>;
 
 export default function RegisterPage() {
   const router = useRouter();
   const { register: registerUser, isLoading, isAuthenticated } = useAuthStore();
+  const t = useTranslations("auth");
+  const tCommon = useTranslations("common");
+
+  // Create schema with translated messages
+  const registerSchema = createRegisterSchema(t);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -94,19 +102,20 @@ export default function RegisterPage() {
       
       await registerUser(registerData);
       
-      toast.success("¡Cuenta creada exitosamente!", {
-        description: "Bienvenido a NEXO",
+      toast.success(t("registerSuccess"), {
+        description: t("registerSuccessDescription"),
       });
       
       router.push("/dashboard");
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Error handling
       const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Error al crear la cuenta. Por favor, intenta de nuevo.";
+        (error as { response?: { data?: { message?: string } }; message?: string })
+          ?.response?.data?.message ||
+        (error as { message?: string })?.message ||
+        t("registerErrorDescription");
       
-      toast.error("Error al crear cuenta", {
+      toast.error(t("registerError"), {
         description: errorMessage,
       });
     }
@@ -122,9 +131,9 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        <CardTitle className="text-2xl">Crear Cuenta</CardTitle>
+        <CardTitle className="text-2xl">{t("createAccount")}</CardTitle>
         <CardDescription>
-          Únete a NEXO y conoce a tus compañeros de IA
+          {t("createAccountDescription")}
         </CardDescription>
       </CardHeader>
 
@@ -133,7 +142,8 @@ export default function RegisterPage() {
           {/* Display Name Field (Optional) */}
           <div className="space-y-2">
             <Label htmlFor="display_name">
-              Nombre para mostrar <span className="text-muted-foreground">(opcional)</span>
+              {t("displayName")}{" "}
+              <span className="text-muted-foreground">({tCommon("optional")})</span>
             </Label>
             <Input
               id="display_name"
@@ -153,7 +163,7 @@ export default function RegisterPage() {
 
           {/* Email Field */}
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("email")}</Label>
             <Input
               id="email"
               type="email"
@@ -172,7 +182,7 @@ export default function RegisterPage() {
 
           {/* Password Field */}
           <div className="space-y-2">
-            <Label htmlFor="password">Contraseña</Label>
+            <Label htmlFor="password">{t("password")}</Label>
             <Input
               id="password"
               type="password"
@@ -191,7 +201,7 @@ export default function RegisterPage() {
 
           {/* Confirm Password Field */}
           <div className="space-y-2">
-            <Label htmlFor="confirm_password">Confirmar Contraseña</Label>
+            <Label htmlFor="confirm_password">{t("confirmPassword")}</Label>
             <Input
               id="confirm_password"
               type="password"
@@ -217,17 +227,17 @@ export default function RegisterPage() {
             disabled={isLoading}
             size="lg"
           >
-            {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
+            {isLoading ? t("creatingAccount") : t("createAccount")}
           </Button>
 
           {/* Login Link */}
           <p className="text-sm text-center text-muted-foreground">
-            ¿Ya tienes cuenta?{" "}
+            {t("hasAccount")}{" "}
             <Link
               href="/login"
               className="text-primary font-medium hover:underline"
             >
-              Inicia sesión
+              {t("login")}
             </Link>
           </p>
         </CardFooter>
@@ -235,4 +245,3 @@ export default function RegisterPage() {
     </Card>
   );
 }
-

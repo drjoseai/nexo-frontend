@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import {
   MessageCircle,
@@ -19,29 +19,29 @@ import { Locale } from "@/i18n/config";
 
 interface NavItem {
   href: string;
-  label: string;
+  labelKey: "avatars" | "profile" | "subscription" | "settings";
   icon: React.ReactNode;
 }
 
 const navItems: NavItem[] = [
   {
     href: "/dashboard",
-    label: "Avatares",
+    labelKey: "avatars",
     icon: <MessageCircle className="h-5 w-5" />,
   },
   {
     href: "/dashboard/profile",
-    label: "Perfil",
+    labelKey: "profile",
     icon: <User className="h-5 w-5" />,
   },
   {
     href: "/dashboard/subscription",
-    label: "Suscripción",
+    labelKey: "subscription",
     icon: <CreditCard className="h-5 w-5" />,
   },
   {
     href: "/dashboard/settings",
-    label: "Configuración",
+    labelKey: "settings",
     icon: <Settings className="h-5 w-5" />,
   },
 ];
@@ -50,6 +50,9 @@ export function Sidebar() {
   const pathname = usePathname();
   const locale = useLocale() as Locale;
   const { user, logout } = useAuthStore();
+  const t = useTranslations("navigation");
+  const tSidebar = useTranslations("sidebar");
+  const tAuth = useTranslations("auth");
 
   const handleLogout = () => {
     logout();
@@ -85,7 +88,7 @@ export function Sidebar() {
                 )}
               >
                 {item.icon}
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             );
           })}
@@ -95,7 +98,9 @@ export function Sidebar() {
         <div className="border-t border-sidebar-border p-4">
           {/* Plan badge */}
           <div className="mb-3 flex items-center justify-between rounded-lg bg-sidebar-accent/50 px-3 py-2">
-            <span className="text-xs text-muted-foreground">Plan actual</span>
+            <span className="text-xs text-muted-foreground">
+              {tSidebar("currentPlan")}
+            </span>
             <span className="rounded-full bg-primary/20 px-2 py-0.5 text-xs font-semibold capitalize text-primary">
               {user?.plan || "free"}
             </span>
@@ -118,8 +123,8 @@ export function Sidebar() {
 
           {/* Language selector */}
           <div className="mb-3">
-            <LanguageSelector 
-              currentLocale={locale} 
+            <LanguageSelector
+              currentLocale={locale}
               variant="ghost"
               showLabel={true}
               className="w-full justify-start"
@@ -133,13 +138,10 @@ export function Sidebar() {
             onClick={handleLogout}
           >
             <LogOut className="h-4 w-4" />
-            Cerrar sesión
+            {tAuth("logout")}
           </Button>
         </div>
       </div>
     </aside>
   );
 }
-
-
-

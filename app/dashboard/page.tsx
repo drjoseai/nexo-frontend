@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/lib/store/auth";
 import { AvatarCard, AvatarCardSkeleton } from "@/components/avatars/AvatarCard";
 import { getAllAvatars } from "@/types/avatar";
@@ -23,6 +24,7 @@ const mockRelationships: UserAvatarRelationship[] = [
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
+  const t = useTranslations("dashboard");
   const [isLoading, setIsLoading] = useState(true);
   const [relationships, setRelationships] = useState<UserAvatarRelationship[]>([]);
 
@@ -62,11 +64,11 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">
-          <span className="text-gradient">¡Hola</span>
+          <span className="text-gradient">{t("greeting")}</span>
           {user?.display_name ? `, ${user.display_name}` : ""}!
         </h1>
         <p className="text-muted-foreground">
-          ¿Con quién quieres hablar hoy?
+          {t("whoToTalkTo")}
         </p>
       </div>
 
@@ -75,16 +77,16 @@ export default function DashboardPage() {
         <div className="flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/10 p-4">
           <Sparkles className="h-5 w-5 text-primary" />
           <div className="flex-1">
-            <p className="font-medium">Desbloquea todos los avatares</p>
+            <p className="font-medium">{t("unlockAllAvatars")}</p>
             <p className="text-sm text-muted-foreground">
-              Actualiza a Plus para acceder a Mía y Allan
+              {t("upgradeToPlus")}
             </p>
           </div>
           <Link
             href="/dashboard/subscription"
             className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Ver planes
+            {t("viewPlans")}
           </Link>
         </div>
       )}
@@ -115,12 +117,11 @@ export default function DashboardPage() {
       {relationships.every((r) => r.messageCount === 0) && !isLoading && (
         <div className="rounded-lg border border-border bg-card/50 p-6 text-center">
           <p className="text-muted-foreground">
-            👋 <span className="font-medium text-foreground">¡Bienvenido a NEXO!</span>{" "}
-            Haz clic en un avatar para comenzar tu primera conversación.
+            👋 <span className="font-medium text-foreground">{t("welcomeToNexo")}</span>{" "}
+            {t("clickAvatarToStart")}
           </p>
         </div>
       )}
     </div>
   );
 }
-

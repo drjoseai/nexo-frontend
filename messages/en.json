@@ -13,7 +13,8 @@
     "previous": "Previous",
     "search": "Search",
     "noResults": "No results",
-    "retry": "Retry"
+    "retry": "Retry",
+    "optional": "optional"
   },
   "auth": {
     "login": "Log In",
@@ -27,13 +28,30 @@
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
     "loginSuccess": "Welcome back!",
+    "loginSuccessDescription": "You have logged in successfully",
     "registerSuccess": "Account created successfully!",
+    "registerSuccessDescription": "Welcome to NEXO",
     "logoutSuccess": "Logged out",
     "invalidCredentials": "Invalid credentials",
     "emailRequired": "Email is required",
     "passwordRequired": "Password is required",
-    "passwordMinLength": "Minimum 8 characters",
-    "emailInvalid": "Invalid email"
+    "passwordMinLength6": "Password must be at least 6 characters",
+    "passwordMinLength8": "Password must be at least 8 characters",
+    "passwordMaxLength": "Password is too long",
+    "passwordNeedsNumber": "Password must contain at least one number",
+    "emailInvalid": "Invalid email format",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "confirmPasswordRequired": "You must confirm your password",
+    "displayName": "Display name",
+    "enterCredentials": "Enter your credentials to access your account",
+    "createAccountDescription": "Join NEXO and meet your AI companions",
+    "creatingAccount": "Creating account...",
+    "loggingIn": "Logging in...",
+    "createAccount": "Create Account",
+    "loginError": "Login error",
+    "loginErrorDescription": "Error logging in. Please check your credentials.",
+    "registerError": "Registration error",
+    "registerErrorDescription": "Error creating account. Please try again."
   },
   "chat": {
     "placeholder": "Type a message...",
@@ -80,7 +98,13 @@
     "trialDays": "{days} day trial"
   },
   "dashboard": {
-    "welcome": "Welcome, {name}",
+    "greeting": "Hello",
+    "whoToTalkTo": "Who would you like to talk to today?",
+    "unlockAllAvatars": "Unlock all avatars",
+    "upgradeToPlus": "Upgrade to Plus to access Mía and Allan",
+    "viewPlans": "View plans",
+    "welcomeToNexo": "Welcome to NEXO!",
+    "clickAvatarToStart": "Click on an avatar to start your first conversation.",
     "recentChats": "Recent conversations",
     "noChats": "No conversations yet",
     "startChatting": "Start chatting",
@@ -114,12 +138,15 @@
   "navigation": {
     "home": "Home",
     "chat": "Chat",
+    "avatars": "Avatars",
     "dashboard": "Dashboard",
     "settings": "Settings",
     "profile": "Profile",
     "subscription": "Subscription",
     "help": "Help",
-    "logout": "Logout"
+    "logout": "Log out"
+  },
+  "sidebar": {
+    "currentPlan": "Current plan"
   }
 }
-

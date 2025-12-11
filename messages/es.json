@@ -13,7 +13,8 @@
     "previous": "Anterior",
     "search": "Buscar",
     "noResults": "Sin resultados",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "optional": "opcional"
   },
   "auth": {
     "login": "Iniciar Sesión",
@@ -27,13 +28,30 @@
     "noAccount": "¿No tienes cuenta?",
     "hasAccount": "¿Ya tienes cuenta?",
     "loginSuccess": "¡Bienvenido de vuelta!",
+    "loginSuccessDescription": "Has iniciado sesión exitosamente",
     "registerSuccess": "¡Cuenta creada exitosamente!",
+    "registerSuccessDescription": "Bienvenido a NEXO",
     "logoutSuccess": "Sesión cerrada",
     "invalidCredentials": "Credenciales inválidas",
-    "emailRequired": "El correo es requerido",
+    "emailRequired": "El email es requerido",
     "passwordRequired": "La contraseña es requerida",
-    "passwordMinLength": "Mínimo 8 caracteres",
-    "emailInvalid": "Correo inválido"
+    "passwordMinLength6": "La contraseña debe tener al menos 6 caracteres",
+    "passwordMinLength8": "La contraseña debe tener al menos 8 caracteres",
+    "passwordMaxLength": "La contraseña es demasiado larga",
+    "passwordNeedsNumber": "La contraseña debe contener al menos un número",
+    "emailInvalid": "Formato de email inválido",
+    "passwordsDoNotMatch": "Las contraseñas no coinciden",
+    "confirmPasswordRequired": "Debes confirmar tu contraseña",
+    "displayName": "Nombre para mostrar",
+    "enterCredentials": "Ingresa tus credenciales para acceder a tu cuenta",
+    "createAccountDescription": "Únete a NEXO y conoce a tus compañeros de IA",
+    "creatingAccount": "Creando cuenta...",
+    "loggingIn": "Iniciando sesión...",
+    "createAccount": "Crear Cuenta",
+    "loginError": "Error al iniciar sesión",
+    "loginErrorDescription": "Error al iniciar sesión. Por favor, verifica tus credenciales.",
+    "registerError": "Error al crear cuenta",
+    "registerErrorDescription": "Error al crear la cuenta. Por favor, intenta de nuevo."
   },
   "chat": {
     "placeholder": "Escribe un mensaje...",
@@ -80,7 +98,13 @@
     "trialDays": "{days} días de prueba"
   },
   "dashboard": {
-    "welcome": "Bienvenido, {name}",
+    "greeting": "¡Hola",
+    "whoToTalkTo": "¿Con quién quieres hablar hoy?",
+    "unlockAllAvatars": "Desbloquea todos los avatares",
+    "upgradeToPlus": "Actualiza a Plus para acceder a Mía y Allan",
+    "viewPlans": "Ver planes",
+    "welcomeToNexo": "¡Bienvenido a NEXO!",
+    "clickAvatarToStart": "Haz clic en un avatar para comenzar tu primera conversación.",
     "recentChats": "Conversaciones recientes",
     "noChats": "Aún no tienes conversaciones",
     "startChatting": "Comienza a chatear",
@@ -114,12 +138,15 @@
   "navigation": {
     "home": "Inicio",
     "chat": "Chat",
+    "avatars": "Avatares",
     "dashboard": "Panel",
     "settings": "Configuración",
     "profile": "Perfil",
     "subscription": "Suscripción",
     "help": "Ayuda",
-    "logout": "Salir"
+    "logout": "Cerrar sesión"
+  },
+  "sidebar": {
+    "currentPlan": "Plan actual"
   }
 }
-
