@@ -63,6 +63,12 @@ export interface LoginResponse {
   /** JWT access token for authenticated requests */
   access_token: string;
   
+  /** JWT refresh token for obtaining new access tokens */
+  refresh_token: string;
+  
+  /** Token validity period in seconds */
+  expires_in: number;
+  
   /** Type of the token (typically "Bearer") */
   token_type: string;
   

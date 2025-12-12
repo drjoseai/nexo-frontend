@@ -16,6 +16,27 @@ jest.mock('@/lib/api/auth', () => ({
   getCurrentUser: jest.fn(),
 }));
 
+// ============================================
+// MOCK: TokenManager
+// ============================================
+
+jest.mock('@/lib/services/token-manager', () => ({
+  tokenManager: {
+    setTokens: jest.fn(),
+    clearTokens: jest.fn(),
+    getAccessToken: jest.fn(),
+    getRefreshToken: jest.fn(),
+    hasTokens: jest.fn(),
+    isExpired: jest.fn(),
+    shouldRefresh: jest.fn(),
+    refresh: jest.fn(),
+    initialize: jest.fn(),
+    onLogout: jest.fn(),
+    onRefresh: jest.fn(),
+  },
+}));
+
+import { tokenManager } from '@/lib/services/token-manager';
 import * as authApi from '@/lib/api/auth';
 
 // ============================================
@@ -35,6 +56,8 @@ const mockUser = {
 
 const mockLoginResponse = {
   access_token: 'jwt-token-abc123',
+  refresh_token: 'refresh-token-xyz789',
+  expires_in: 3600,
   token_type: 'bearer',
   user: mockUser,
 };
@@ -116,7 +139,7 @@ describe('useAuthStore', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    it('debe guardar token en localStorage', async () => {
+    it('debe guardar token usando TokenManager', async () => {
       (authApi.login as jest.Mock).mockResolvedValue(mockLoginResponse);
 
       const { result } = renderHook(() => useAuthStore());
@@ -125,9 +148,18 @@ describe('useAuthStore', () => {
         await result.current.login(mockCredentials);
       });
 
+      // Verify TokenManager was called with correct tokens
+      expect(tokenManager.setTokens).toHaveBeenCalledWith({
+        access_token: 'jwt-token-abc123',
+        refresh_token: 'refresh-token-xyz789',
+        token_type: 'bearer',
+        expires_in: 3600,
+      });
+      
+      // Verify user was saved to localStorage
       expect(localStorage.setItem).toHaveBeenCalledWith(
-        'nexo_token',
-        'jwt-token-abc123'
+        'nexo_user',
+        JSON.stringify(mockUser)
       );
     });
 
@@ -209,22 +241,29 @@ describe('useAuthStore', () => {
       expect(result.current.isAuthenticated).toBe(false);
     });
 
-    it('debe eliminar token de localStorage', () => {
+    it('debe limpiar tokens usando TokenManager', async () => {
+      // Setup authenticated state
       useAuthStore.setState({
         user: mockUser,
-        token: 'test-token',
+        token: 'jwt-token-abc123',
         isAuthenticated: true,
+        isLoading: false,
+        error: null,
       });
-
+      
+      (tokenManager.getRefreshToken as jest.Mock).mockReturnValue('refresh-token');
       (authApi.logout as jest.Mock).mockResolvedValue(undefined);
 
       const { result } = renderHook(() => useAuthStore());
 
-      act(() => {
+      await act(async () => {
         result.current.logout();
       });
 
-      expect(localStorage.removeItem).toHaveBeenCalledWith('nexo_token');
+      // Verify TokenManager cleared tokens
+      expect(tokenManager.clearTokens).toHaveBeenCalled();
+      
+      // Verify user was removed from localStorage
       expect(localStorage.removeItem).toHaveBeenCalledWith('nexo_user');
     });
 
@@ -305,9 +344,10 @@ describe('useAuthStore', () => {
 
   describe('loadUser', () => {
     it('debe cargar usuario desde token guardado', async () => {
-      // Simulate existing token in localStorage
-      localStorage.setItem('nexo_token', 'existing-token');
-      (localStorage.getItem as jest.Mock).mockReturnValue('existing-token');
+      // Mock TokenManager to return valid token
+      (tokenManager.getAccessToken as jest.Mock).mockReturnValue('existing-token');
+      (tokenManager.hasTokens as jest.Mock).mockReturnValue(true);
+      (tokenManager.isExpired as jest.Mock).mockReturnValue(false);
       (authApi.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
 
       const { result } = renderHook(() => useAuthStore());
@@ -316,12 +356,15 @@ describe('useAuthStore', () => {
         await result.current.loadUser();
       });
 
+      expect(tokenManager.initialize).toHaveBeenCalled();
       expect(result.current.isAuthenticated).toBe(true);
       expect(result.current.user).toEqual(mockUser);
     });
 
     it('debe hacer logout si token es inválido', async () => {
-      (localStorage.getItem as jest.Mock).mockReturnValue('invalid-token');
+      (tokenManager.getAccessToken as jest.Mock).mockReturnValue('invalid-token');
+      (tokenManager.hasTokens as jest.Mock).mockReturnValue(true);
+      (tokenManager.isExpired as jest.Mock).mockReturnValue(false);
       (authApi.getCurrentUser as jest.Mock).mockRejectedValue(
         new Error('Token expired')
       );
@@ -337,7 +380,8 @@ describe('useAuthStore', () => {
     });
 
     it('no debe hacer nada si no hay token', async () => {
-      (localStorage.getItem as jest.Mock).mockReturnValue(null);
+      (tokenManager.getAccessToken as jest.Mock).mockReturnValue(null);
+      (tokenManager.hasTokens as jest.Mock).mockReturnValue(false);
 
       const { result } = renderHook(() => useAuthStore());
 

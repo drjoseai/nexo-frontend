@@ -25,6 +25,7 @@ interface BackendTokenResponse {
   access_token: string;
   refresh_token: string;
   token_type: string;
+  expires_in: number;
 }
 
 /** User response from backend /auth/me */
@@ -104,6 +105,8 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
   // Return combined response matching frontend expectations
   return {
     access_token: accessToken,
+    refresh_token: tokenResponse.data.refresh_token,
+    expires_in: tokenResponse.data.expires_in || 3600,
     token_type: tokenResponse.data.token_type,
     user: transformUser(userResponse.data),
   };
