@@ -143,6 +143,12 @@ Object.defineProperty(window, 'ResizeObserver', {
 });
 
 // ============================================
+// MOCK: scrollIntoView (for ChatInterface)
+// ============================================
+
+Element.prototype.scrollIntoView = jest.fn();
+
+// ============================================
 // CLEANUP: Reset mocks between tests
 // ============================================
 
