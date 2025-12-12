@@ -122,7 +122,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full" data-testid="register-card">
       <CardHeader className="text-center space-y-1">
         {/* Logo/Brand */}
         <div className="flex justify-center mb-4">
@@ -137,7 +137,7 @@ export default function RegisterPage() {
         </CardDescription>
       </CardHeader>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} data-testid="register-form">
         <CardContent className="space-y-4">
           {/* Display Name Field (Optional) */}
           <div className="space-y-2">
@@ -147,6 +147,7 @@ export default function RegisterPage() {
             </Label>
             <Input
               id="display_name"
+              data-testid="register-display-name"
               type="text"
               placeholder="Tu nombre"
               autoComplete="name"
@@ -155,7 +156,7 @@ export default function RegisterPage() {
               {...register("display_name")}
             />
             {errors.display_name && (
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-destructive" data-testid="register-display-name-error">
                 {errors.display_name.message}
               </p>
             )}
@@ -166,6 +167,7 @@ export default function RegisterPage() {
             <Label htmlFor="email">{t("email")}</Label>
             <Input
               id="email"
+              data-testid="register-email"
               type="email"
               placeholder="tu@email.com"
               autoComplete="email"
@@ -174,7 +176,7 @@ export default function RegisterPage() {
               {...register("email")}
             />
             {errors.email && (
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-destructive" data-testid="register-email-error">
                 {errors.email.message}
               </p>
             )}
@@ -185,6 +187,7 @@ export default function RegisterPage() {
             <Label htmlFor="password">{t("password")}</Label>
             <Input
               id="password"
+              data-testid="register-password"
               type="password"
               placeholder="••••••••"
               autoComplete="new-password"
@@ -193,7 +196,7 @@ export default function RegisterPage() {
               {...register("password")}
             />
             {errors.password && (
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-destructive" data-testid="register-password-error">
                 {errors.password.message}
               </p>
             )}
@@ -204,6 +207,7 @@ export default function RegisterPage() {
             <Label htmlFor="confirm_password">{t("confirmPassword")}</Label>
             <Input
               id="confirm_password"
+              data-testid="register-confirm-password"
               type="password"
               placeholder="••••••••"
               autoComplete="new-password"
@@ -212,7 +216,7 @@ export default function RegisterPage() {
               {...register("confirm_password")}
             />
             {errors.confirm_password && (
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-destructive" data-testid="register-confirm-password-error">
                 {errors.confirm_password.message}
               </p>
             )}
@@ -223,6 +227,7 @@ export default function RegisterPage() {
           {/* Submit Button */}
           <Button
             type="submit"
+            data-testid="register-submit"
             className="w-full"
             disabled={isLoading}
             size="lg"
@@ -235,6 +240,7 @@ export default function RegisterPage() {
             {t("hasAccount")}{" "}
             <Link
               href="/login"
+              data-testid="register-login-link"
               className="text-primary font-medium hover:underline"
             >
               {t("login")}

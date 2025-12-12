@@ -101,7 +101,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full" data-testid="login-card">
       <CardHeader className="text-center space-y-1">
         {/* Logo/Brand */}
         <div className="flex justify-center mb-4">
@@ -116,13 +116,14 @@ export default function LoginPage() {
         </CardDescription>
       </CardHeader>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} data-testid="login-form">
         <CardContent className="space-y-4">
           {/* Email Field */}
           <div className="space-y-2">
             <Label htmlFor="email">{t("email")}</Label>
             <Input
               id="email"
+              data-testid="login-email"
               type="email"
               placeholder="tu@email.com"
               autoComplete="email"
@@ -131,7 +132,7 @@ export default function LoginPage() {
               {...register("email")}
             />
             {errors.email && (
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-destructive" data-testid="login-email-error">
                 {errors.email.message}
               </p>
             )}
@@ -142,6 +143,7 @@ export default function LoginPage() {
             <Label htmlFor="password">{t("password")}</Label>
             <Input
               id="password"
+              data-testid="login-password"
               type="password"
               placeholder="••••••••"
               autoComplete="current-password"
@@ -150,7 +152,7 @@ export default function LoginPage() {
               {...register("password")}
             />
             {errors.password && (
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-destructive" data-testid="login-password-error">
                 {errors.password.message}
               </p>
             )}
@@ -162,6 +164,7 @@ export default function LoginPage() {
               type="button"
               disabled
               className="text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              data-testid="login-forgot-password"
             >
               {t("forgotPassword")}
             </button>
@@ -172,6 +175,7 @@ export default function LoginPage() {
           {/* Submit Button */}
           <Button
             type="submit"
+            data-testid="login-submit"
             className="w-full"
             disabled={isLoading}
             size="lg"
@@ -184,6 +188,7 @@ export default function LoginPage() {
             {t("noAccount")}{" "}
             <Link
               href="/register"
+              data-testid="login-register-link"
               className="text-primary font-medium hover:underline"
             >
               {t("register")}
