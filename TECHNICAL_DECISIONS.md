@@ -482,4 +482,35 @@ frontend/
 
 ---
 
+## MSW (Mock Service Worker) - Decisión Diferida
+
+### Contexto
+Se intentó configurar MSW 2.x para tests de integración (Día 5).
+
+### Problema Encontrado
+MSW 2.x + Jest + JSDOM tienen incompatibilidades conocidas:
+- Conflictos de polyfills (TextEncoder, streams, fetch)
+- Error: "Cannot redefine property: Request"
+- Tiempo invertido: ~45 min sin resolución
+
+### Decisión
+**Diferir MSW a E2E con Playwright (Día 9)**
+
+### Justificación
+1. Los 110 tests actuales con mocks manuales de Jest funcionan correctamente
+2. MSW funciona sin problemas en Playwright (browser real)
+3. ROI: El tiempo de debugging > beneficio para MVP
+4. Principio aplicado: "Fail fast, learn, move on"
+
+### Plan Futuro
+- Día 9: Configurar Playwright para E2E
+- MSW se integrará ahí sin conflictos JSDOM
+- Los mocks manuales de Jest permanecen para unit tests
+
+### Referencias
+- [MSW + Jest issues](https://github.com/mswjs/msw/issues)
+- [MSW recomienda Vitest o Playwright](https://mswjs.io/docs/migrations/1.x-to-2.x)
+
+---
+
 *"No hay atajos en la excelencia"*
