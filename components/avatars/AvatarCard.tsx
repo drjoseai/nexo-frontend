@@ -65,7 +65,7 @@ function AvatarImage({
   return (
     <div className="relative h-full w-full">
       <Image
-        src={`/avatars/${avatarId}.png`}
+        src={`/avatars/${avatarId}.webp`}
         alt={name}
         fill
         className="object-cover"
