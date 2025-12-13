@@ -183,7 +183,7 @@ describe('useAuthStore', () => {
 
       expect(result.current.isAuthenticated).toBe(false);
       expect(result.current.user).toBeNull();
-      expect(result.current.error).toBe('Credenciales inválidas');
+      expect(result.current.error).toBe('Credenciales inválidas. Verifica tu email y contraseña.');
       expect(result.current.isLoading).toBe(false);
     });
 
@@ -333,7 +333,7 @@ describe('useAuthStore', () => {
         }
       });
 
-      expect(result.current.error).toBe('El email ya está registrado');
+      expect(result.current.error).toBe('Este email ya está registrado.');
       expect(result.current.isAuthenticated).toBe(false);
     });
   });

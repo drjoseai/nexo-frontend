@@ -12,6 +12,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type { AuthStore, LoginRequest, RegisterRequest } from '@/types/auth';
 import * as authApi from '@/lib/api/auth';
 import { tokenManager } from '@/lib/services/token-manager';
+import { toast } from '@/lib/services/toast-service';
 
 // ============================================
 // Cookie helpers for middleware compatibility
@@ -65,6 +66,8 @@ export const useAuthStore = create<AuthStore>()(
        * Authenticate a user with email and password
        */
       login: async (credentials: LoginRequest) => {
+        const toastId = toast.loading('Iniciando sesión...');
+        
         try {
           set({ isLoading: true, error: null });
 
@@ -93,10 +96,13 @@ export const useAuthStore = create<AuthStore>()(
             isAuthenticated: true,
             error: null,
           });
+
+          toast.dismiss(toastId);
+          toast.success(`¡Bienvenido, ${response.user.display_name || response.user.email}!`);
         } catch (error: any) {
-          const errorMessage = error.response?.data?.message || 
-                             error.message || 
-                             'Error al iniciar sesión. Por favor, intenta de nuevo.';
+          toast.dismiss(toastId);
+          const errorMessage = toast.parseApiError(error);
+          toast.error(errorMessage);
           
           set({ 
             error: errorMessage,
@@ -115,10 +121,15 @@ export const useAuthStore = create<AuthStore>()(
        * Register a new user account
        */
       register: async (data: RegisterRequest) => {
+        const toastId = toast.loading('Creando tu cuenta...');
+        
         try {
           set({ isLoading: true, error: null });
 
           await authApi.register(data);
+
+          toast.dismiss(toastId);
+          toast.success('¡Cuenta creada exitosamente!');
 
           // After successful registration, automatically log in
           await get().login({
@@ -126,9 +137,9 @@ export const useAuthStore = create<AuthStore>()(
             password: data.password,
           });
         } catch (error: any) {
-          const errorMessage = error.response?.data?.message || 
-                             error.message || 
-                             'Error al registrar usuario. Por favor, intenta de nuevo.';
+          toast.dismiss(toastId);
+          const errorMessage = toast.parseApiError(error);
+          toast.error(errorMessage);
           
           set({ 
             error: errorMessage,
@@ -170,6 +181,8 @@ export const useAuthStore = create<AuthStore>()(
 
         // Reset state to initial values
         set(initialState);
+        
+        toast.info('Sesión cerrada');
       },
 
       /**
