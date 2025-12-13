@@ -2,7 +2,7 @@
 // Página de chat con avatar específico - NEXO v2.0
 
 import { notFound } from "next/navigation";
-import { ChatInterface } from "@/components/chat/ChatInterface";
+import { ChatInterfaceLazy } from "@/components/chat/ChatInterfaceLazy";
 import { AVATARS } from "@/types/avatar";
 import type { AvatarId } from "@/types/chat";
 import type { Metadata } from "next";
@@ -67,7 +67,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
 
   return (
     <div className="h-[calc(100vh-2rem)] overflow-hidden rounded-lg border border-white/10 bg-black/20 backdrop-blur-sm">
-      <ChatInterface avatarId={avatarId} />
+      <ChatInterfaceLazy avatarId={avatarId} />
     </div>
   );
 }
