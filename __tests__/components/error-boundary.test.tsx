@@ -62,7 +62,11 @@ describe('ErrorBoundary', () => {
 
     it('should show error message in development', () => {
       const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'development';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'development',
+        writable: true,
+        configurable: true,
+      });
 
       render(
         <ErrorBoundary>
@@ -72,7 +76,11 @@ describe('ErrorBoundary', () => {
 
       expect(screen.getByText(/Test error message/)).toBeInTheDocument();
 
-      process.env.NODE_ENV = originalEnv;
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: originalEnv,
+        writable: true,
+        configurable: true,
+      });
     });
 
     it('should render custom fallback when provided', () => {
