@@ -161,6 +161,7 @@ describe('Sidebar', () => {
     });
 
     it('should fallback to email prefix when no display name', () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       jest.spyOn(require('@/lib/store/auth'), 'useAuthStore').mockReturnValue({
         user: { ...mockUser, display_name: null },
         logout: mockLogout,
@@ -172,6 +173,7 @@ describe('Sidebar', () => {
     });
 
     it('should show default plan when user has no plan', () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       jest.spyOn(require('@/lib/store/auth'), 'useAuthStore').mockReturnValue({
         user: { ...mockUser, plan: null },
         logout: mockLogout,
