@@ -25,10 +25,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Bell, Moon, Globe, Trash2, Save, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export default function SettingsPage() {
-  const { user, logout } = useAuthStore();
+  const { logout } = useAuthStore();
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   

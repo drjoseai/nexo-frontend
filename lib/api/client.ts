@@ -118,7 +118,7 @@ export const apiClient = createApiClient();
  * @param config - Optional Axios request config
  * @returns Promise with the response data
  */
-export const get = async <T = any>(
+export const get = async <T = unknown>(
   url: string,
   config?: Parameters<typeof apiClient.get>[1]
 ): Promise<T> => {
@@ -133,9 +133,9 @@ export const get = async <T = any>(
  * @param config - Optional Axios request config
  * @returns Promise with the response data
  */
-export const post = async <T = any>(
+export const post = async <T = unknown>(
   url: string,
-  data?: any,
+  data?: unknown,
   config?: Parameters<typeof apiClient.post>[2]
 ): Promise<T> => {
   const response = await apiClient.post<T>(url, data, config);
@@ -149,9 +149,9 @@ export const post = async <T = any>(
  * @param config - Optional Axios request config
  * @returns Promise with the response data
  */
-export const put = async <T = any>(
+export const put = async <T = unknown>(
   url: string,
-  data?: any,
+  data?: unknown,
   config?: Parameters<typeof apiClient.put>[2]
 ): Promise<T> => {
   const response = await apiClient.put<T>(url, data, config);
@@ -164,7 +164,7 @@ export const put = async <T = any>(
  * @param config - Optional Axios request config
  * @returns Promise with the response data
  */
-export const del = async <T = any>(
+export const del = async <T = unknown>(
   url: string,
   config?: Parameters<typeof apiClient.delete>[1]
 ): Promise<T> => {

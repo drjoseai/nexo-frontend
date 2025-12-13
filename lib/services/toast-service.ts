@@ -137,7 +137,8 @@ export function promise<T>(
     error: string | ((error: Error) => string);
   }
 ): Promise<T> {
-  return sonnerToast.promise(promise, messages);
+  sonnerToast.promise(promise, messages);
+  return promise;
 }
 
 /**
@@ -151,6 +152,7 @@ export function parseApiError(error: unknown): string {
   }
   
   if (error && typeof error === 'object') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const err = error as any;
     
     // Extract message from various error formats

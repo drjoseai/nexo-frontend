@@ -7,9 +7,7 @@ import { chatApi } from "@/lib/api/chat";
 import type {
   Message,
   AvatarId,
-  ChatMessageResponse,
 } from "@/types/chat";
-import { isRateLimitError } from "@/types/chat";
 
 // ============================================
 // STORE STATE INTERFACE

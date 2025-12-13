@@ -99,7 +99,7 @@ export const useAuthStore = create<AuthStore>()(
 
           toast.dismiss(toastId);
           toast.success(`¡Bienvenido, ${response.user.display_name || response.user.email}!`);
-        } catch (error: any) {
+        } catch (error: unknown) {
           toast.dismiss(toastId);
           const errorMessage = toast.parseApiError(error);
           toast.error(errorMessage);
@@ -136,7 +136,7 @@ export const useAuthStore = create<AuthStore>()(
             email: data.email,
             password: data.password,
           });
-        } catch (error: any) {
+        } catch (error: unknown) {
           toast.dismiss(toastId);
           const errorMessage = toast.parseApiError(error);
           toast.error(errorMessage);
@@ -254,7 +254,7 @@ export const useAuthStore = create<AuthStore>()(
             isAuthenticated: true,
             error: null,
           });
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.warn('Failed to load user, logging out:', error);
           get().logout();
         } finally {
