@@ -2,7 +2,7 @@
 // Tests unitarios para el Auth Store de NEXO v2.0
 // Verifica: login, logout, register, loadUser, error handling
 
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useAuthStore } from '@/lib/store/auth';
 
 // ============================================

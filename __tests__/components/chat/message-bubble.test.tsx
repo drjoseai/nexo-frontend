@@ -4,7 +4,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { MessageBubble } from "@/components/chat/MessageBubble";
-import type { Message, AvatarId } from "@/types/chat";
+import type { Message } from "@/types/chat";
 
 // ============================================
 // MOCK SETUP
@@ -150,7 +150,7 @@ describe("MessageBubble", () => {
   describe("Avatar Colors", () => {
     it("applies Lía colors (purple) for lia avatar", () => {
       const message = createMessage({ role: "assistant" });
-      const { container } = render(
+      render(
         <MessageBubble message={message} avatarId="lia" avatarName="Lía" />
       );
       
@@ -181,7 +181,7 @@ describe("MessageBubble", () => {
 
     it("defaults to lia colors when avatarId not provided", () => {
       const message = createMessage({ role: "assistant" });
-      const { container } = render(
+      render(
         <MessageBubble message={message} avatarName="Test" />
       );
       
@@ -267,4 +267,3 @@ describe("MessageBubble", () => {
     });
   });
 });
-

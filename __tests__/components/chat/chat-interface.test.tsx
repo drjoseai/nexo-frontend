@@ -47,7 +47,7 @@ jest.mock("@/components/chat/ChatInput", () => ({
 
 // Mock MessageBubble
 jest.mock("@/components/chat/MessageBubble", () => ({
-  MessageBubble: ({ message, avatarId, avatarName }: { 
+  MessageBubble: ({ message }: { 
     message: Message; 
     avatarId?: string;
     avatarName?: string;

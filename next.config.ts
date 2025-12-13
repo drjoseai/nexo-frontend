@@ -60,6 +60,42 @@ const nextConfig: NextConfig = {
             key: "X-XSS-Protection",
             value: "1; mode=block",
           },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+          },
+          // Content Security Policy
+          {
+            key: "Content-Security-Policy",
+            value: [
+              // Default: solo desde el mismo origen
+              "default-src 'self'",
+              // Scripts: self + inline (Next.js lo requiere) + eval (dev mode)
+              process.env.NODE_ENV === "production"
+                ? "script-src 'self' 'unsafe-inline'"
+                : "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              // Estilos: self + inline (Tailwind/CSS-in-JS)
+              "style-src 'self' 'unsafe-inline'",
+              // Imágenes: self + data URLs + HTTPS externo
+              "img-src 'self' data: https:",
+              // Fuentes: self + Google Fonts
+              "font-src 'self' https://fonts.gstatic.com",
+              // Conexiones API: self + backend + WebSocket dev
+              "connect-src 'self' https://api.nexo.ai http://localhost:8000 ws://localhost:3000 wss://localhost:3000",
+              // No permitir frames externos
+              "frame-ancestors 'none'",
+              // Form actions solo al mismo origen
+              "form-action 'self'",
+              // Base URI restringido
+              "base-uri 'self'",
+              // Upgrade HTTP a HTTPS en producción
+              process.env.NODE_ENV === "production" ? "upgrade-insecure-requests" : "",
+            ].filter(Boolean).join("; "),
+          },
         ],
       },
       {
