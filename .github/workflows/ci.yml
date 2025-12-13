@@ -143,14 +143,13 @@ jobs:
       - name: 📚 Install dependencies
         run: npm ci
 
+      - name: 🏗️ Build application
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ env.NEXT_PUBLIC_API_URL }}
+
       - name: 🎭 Install Playwright browsers
         run: npx playwright install --with-deps chromium
-
-      - name: 📥 Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: nextjs-build
-          path: .next
 
       - name: 🎭 Run E2E tests
         run: npm run test:e2e
