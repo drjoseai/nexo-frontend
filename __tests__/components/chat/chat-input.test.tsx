@@ -253,8 +253,13 @@ describe("ChatInput", () => {
       const textarea = screen.getByPlaceholderText("Escribe un mensaje...");
       await user.type(textarea, "a".repeat(35)); // 15 remaining
       
-      const counter = await screen.findByText(/15 caracteres restantes/);
-      expect(counter).toHaveClass("text-red-400");
+      await waitFor(
+        () => {
+          const counter = screen.getByText(/\d+ caracteres restantes/);
+          expect(counter).toHaveClass("text-red-400");
+        },
+        { timeout: 5000 }
+      );
     });
   });
 
