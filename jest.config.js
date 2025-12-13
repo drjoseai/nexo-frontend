@@ -50,20 +50,22 @@ const customJestConfig = {
     '!**/types/**', // Type definitions only
   ],
   
-  // TODO: Incrementar a 80% al final del sprint de hardening
-  // Coverage thresholds: 20% → 50% → 70% → 80%
-  // Temporalmente en 20% porque los componentes UI aún no tienen tests
+  // Coverage thresholds: 20% ✓ → 50% ✓ → Target: 70%
+  // Incrementado a 50% - cobertura actual supera este umbral
   coverageThreshold: {
     global: {
-      branches: 20,
-      functions: 20,
-      lines: 20,
-      statements: 20,
+      branches: 50,
+      functions: 45,  // Temporalmente 45%, actual: 48.28%
+      lines: 50,
+      statements: 50,
     },
   },
   
   // Coverage output directory
   coverageDirectory: 'coverage',
+  
+  // Coverage reporters for CI and local
+  coverageReporters: ['text', 'text-summary', 'lcov', 'json-summary'],
   
   // Module file extensions to consider
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
