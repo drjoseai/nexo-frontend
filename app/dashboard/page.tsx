@@ -8,16 +8,18 @@ import { getAllAvatars } from "@/types/avatar";
 import type { AvatarId, PlanType, RelationshipType } from "@/types/avatar";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
+import { getRelationshipsSummary } from "@/lib/api/avatars";
 
-// Temporary mock data for relationships (will come from API later)
+// Interface for processed relationship data
 interface UserAvatarRelationship {
   avatarId: AvatarId;
   relationship: RelationshipType;
   messageCount: number;
 }
 
-const mockRelationships: UserAvatarRelationship[] = [
-  { avatarId: "lia", relationship: "friend", messageCount: 0 },
+// Default relationships for new users or API failure
+const defaultRelationships: UserAvatarRelationship[] = [
+  { avatarId: "lia", relationship: "assistant", messageCount: 0 },
   { avatarId: "mia", relationship: "assistant", messageCount: 0 },
   { avatarId: "allan", relationship: "assistant", messageCount: 0 },
 ];
@@ -31,18 +33,34 @@ export default function DashboardPage() {
   // Get all avatars from static data
   const avatars = getAllAvatars();
 
-  // Simulate loading relationships (replace with API call later)
+  // Load relationships from API
   useEffect(() => {
     const loadRelationships = async () => {
       setIsLoading(true);
       try {
-        // TODO: Replace with actual API call
-        // const summary = await avatarsApi.getRelationshipsSummary();
-        await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate delay
-        setRelationships(mockRelationships);
+        const summary = await getRelationshipsSummary();
+        
+        // Transform API response to component format
+        const transformed: UserAvatarRelationship[] = Object.entries(
+          summary.relationships
+        ).map(([avatarId, rel]) => ({
+          avatarId: avatarId as AvatarId,
+          relationship: rel.type as RelationshipType,
+          messageCount: rel.conversations,
+        }));
+
+        // Ensure all avatars have an entry (for new users)
+        const allAvatarIds: AvatarId[] = ["lia", "mia", "allan"];
+        const completeRelationships = allAvatarIds.map((id) => {
+          const existing = transformed.find((r) => r.avatarId === id);
+          return existing || { avatarId: id, relationship: "assistant" as RelationshipType, messageCount: 0 };
+        });
+
+        setRelationships(completeRelationships);
       } catch (error) {
         console.error("Error loading relationships:", error);
-        setRelationships(mockRelationships);
+        // Use defaults on error (graceful degradation)
+        setRelationships(defaultRelationships);
       } finally {
         setIsLoading(false);
       }
