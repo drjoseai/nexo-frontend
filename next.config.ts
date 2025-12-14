@@ -85,7 +85,7 @@ const nextConfig: NextConfig = {
               // Fuentes: self + Google Fonts
               "font-src 'self' https://fonts.gstatic.com",
               // Conexiones API: self + backend + WebSocket dev
-              "connect-src 'self' https://api.nexo.ai http://localhost:8000 ws://localhost:3000 wss://localhost:3000",
+              "connect-src 'self' https://api.nexo.ai https://nexo-v2-core.onrender.com http://localhost:8000 ws://localhost:3000 wss://localhost:3000",
               // No permitir frames externos
               "frame-ancestors 'none'",
               // Form actions solo al mismo origen
