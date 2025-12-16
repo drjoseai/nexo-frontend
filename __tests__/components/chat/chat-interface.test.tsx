@@ -17,6 +17,21 @@ jest.mock("next/link", () => {
   };
 });
 
+// Mock RelationshipTypeSelector
+jest.mock("@/components/chat/RelationshipTypeSelector", () => ({
+  RelationshipTypeSelector: ({ value, onChange }: any) => (
+    <select
+      data-testid="relationship-selector"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    >
+      <option value="assistant">Asistente</option>
+      <option value="friend">Amigo</option>
+      <option value="romantic">Romántico</option>
+    </select>
+  ),
+}));
+
 // Mock lucide-react
 jest.mock("lucide-react", () => ({
   ArrowLeft: () => <svg data-testid="icon-arrow-left" />,
@@ -76,9 +91,46 @@ jest.mock("@/lib/store/chat", () => ({
   useChatStore: () => mockStoreState,
 }));
 
+// Mock useAuthStore
+jest.mock("@/lib/store/auth", () => ({
+  useAuthStore: () => ({
+    user: { plan: "free" },
+  }),
+}));
+
+// Mock toast service
+jest.mock("@/lib/services/toast-service", () => ({
+  toast: {
+    success: jest.fn(),
+    error: jest.fn(),
+  },
+}));
+
 // ============================================
 // HELPER FUNCTIONS
 // ============================================
+
+// Mock localStorage
+const mockLocalStorage = (() => {
+  let store: Record<string, string> = {};
+
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value.toString();
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+  };
+})();
+
+Object.defineProperty(window, 'localStorage', {
+  value: mockLocalStorage,
+});
 
 function createMessage(overrides: Partial<Message> = {}): Message {
   return {
@@ -101,6 +153,7 @@ function resetMockStore() {
   mockStoreState.loadHistory.mockClear();
   mockStoreState.clearMessages.mockClear();
   mockStoreState.clearError.mockClear();
+  mockLocalStorage.clear();
 }
 
 // ============================================
@@ -159,7 +212,7 @@ describe("ChatInterface", () => {
       mockStoreState.messagesRemaining = 42;
       render(<ChatInterface avatarId="lia" />);
       
-      expect(screen.getByText("42 mensajes restantes")).toBeInTheDocument();
+      expect(screen.getByText("42 mensajes")).toBeInTheDocument();
     });
 
     it("does not show messages remaining when null", () => {
@@ -347,7 +400,7 @@ describe("ChatInterface", () => {
       fireEvent.change(input, { target: { value: "SEND_TEST" } });
       
       await waitFor(() => {
-        expect(mockStoreState.sendMessage).toHaveBeenCalledWith("Test message", "lia");
+        expect(mockStoreState.sendMessage).toHaveBeenCalledWith("Test message", "lia", "assistant");
       });
     });
   });
