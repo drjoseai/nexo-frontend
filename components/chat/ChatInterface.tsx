@@ -3,15 +3,18 @@
 
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useChatStore } from "@/lib/store/chat";
+import { useAuthStore } from "@/lib/store/auth";
 import { ChatInput } from "./ChatInput";
 import { MessageBubble } from "./MessageBubble";
+import { RelationshipTypeSelector } from "./RelationshipTypeSelector";
 import { cn } from "@/lib/utils";
-import type { AvatarId } from "@/types/chat";
+import { toast } from "@/lib/services/toast-service";
+import type { AvatarId, RelationshipType } from "@/types/chat";
 import { AVATARS } from "@/types/avatar";
 
 // ============================================
@@ -30,6 +33,21 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const avatar = AVATARS[avatarId];
 
+  // Local storage key para relationship type
+  const STORAGE_KEY = `nexo_relationship_${avatarId}`;
+
+  // Estado local para relationship type
+  const [relationshipType, setRelationshipType] = useState<RelationshipType>(() => {
+    // Cargar desde localStorage al iniciar
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored && ["assistant", "friend", "romantic"].includes(stored)) {
+        return stored as RelationshipType;
+      }
+    }
+    return "assistant"; // Default
+  });
+
   // Store
   const {
     messages,
@@ -43,6 +61,10 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     clearError,
   } = useChatStore();
 
+  // Auth store para obtener plan del usuario
+  const user = useAuthStore((state) => state.user);
+  const userPlan = user?.plan || "free";
+
   // Cargar historial al montar
   useEffect(() => {
     clearMessages();
@@ -54,9 +76,33 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Guardar relationship type en localStorage cuando cambie
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY, relationshipType);
+    }
+  }, [relationshipType, STORAGE_KEY]);
+
+  // Handler para cambiar relationship type
+  const handleRelationshipTypeChange = (newType: RelationshipType) => {
+    setRelationshipType(newType);
+    toast.success(`Tipo de relación cambiado a: ${
+      newType === "assistant" ? "Asistente" :
+      newType === "friend" ? "Amigo" : "Romántico"
+    }`);
+  };
+
+  // Handler cuando se requiere premium
+  const handlePremiumRequired = () => {
+    toast.error("Esta función requiere el plan Premium", {
+      duration: 4000,
+    });
+    // TODO: Aquí se podría abrir un modal de upgrade o redirigir a /dashboard/subscription
+  };
+
   // Handler para enviar mensaje
   const handleSendMessage = async (content: string) => {
-    await sendMessage(content, avatarId);
+    await sendMessage(content, avatarId, relationshipType);
   };
 
   // Avatar colors para el header
@@ -105,12 +151,23 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
           </div>
         </div>
 
-        {/* Mensajes restantes */}
-        {messagesRemaining !== null && (
-          <div className="ml-auto text-xs text-white/40">
-            {messagesRemaining} mensajes restantes
-          </div>
-        )}
+        {/* Relationship Type Selector */}
+        <div className="ml-auto flex items-center gap-3">
+          <RelationshipTypeSelector
+            value={relationshipType}
+            onChange={handleRelationshipTypeChange}
+            userPlan={userPlan}
+            onPremiumRequired={handlePremiumRequired}
+            disabled={isSending || isLoading}
+          />
+
+          {/* Mensajes restantes */}
+          {messagesRemaining !== null && (
+            <div className="text-xs text-white/40">
+              {messagesRemaining} mensajes
+            </div>
+          )}
+        </div>
       </header>
 
       {/* ============================================ */}

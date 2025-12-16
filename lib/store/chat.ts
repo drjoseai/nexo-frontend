@@ -23,7 +23,7 @@ interface ChatState {
   messagesRemaining: number | null;
   
   // Acciones
-  sendMessage: (content: string, avatarId: string) => Promise<boolean>;
+  sendMessage: (content: string, avatarId: string, relationshipType?: string) => Promise<boolean>;
   loadHistory: (avatarId: string, limit?: number) => Promise<void>;
   setCurrentAvatar: (avatarId: AvatarId) => void;
   clearMessages: () => void;
@@ -100,7 +100,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
    * Envía un mensaje al avatar
    * Usa optimistic update para UX fluida
    */
-  sendMessage: async (content: string, avatarId: string): Promise<boolean> => {
+  sendMessage: async (content: string, avatarId: string, relationshipType?: string): Promise<boolean> => {
     const trimmedContent = content.trim();
     if (!trimmedContent) return false;
 
@@ -110,8 +110,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
     set({ isSending: true, error: null });
 
     try {
-      // Llamar al API
-      const response = await chatApi.sendMessage(avatarId, trimmedContent);
+      // Llamar al API con relationship_type
+      const response = await chatApi.sendMessage(avatarId, trimmedContent, relationshipType);
 
       if (!response.success) {
         // Manejar error del backend
