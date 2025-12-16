@@ -74,10 +74,8 @@ const nextConfig: NextConfig = {
             value: [
               // Default: solo desde el mismo origen
               "default-src 'self'",
-              // Scripts: self + inline (Next.js lo requiere) + eval (dev mode)
-              process.env.NODE_ENV === "production"
-                ? "script-src 'self' 'unsafe-inline'"
-                : "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              // Scripts: self + inline (Next.js lo requiere) + eval (requerido para hidratación)
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               // Estilos: self + inline (Tailwind/CSS-in-JS)
               "style-src 'self' 'unsafe-inline'",
               // Imágenes: self + data URLs + HTTPS externo
