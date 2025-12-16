@@ -19,7 +19,7 @@ jest.mock("next/link", () => {
 
 // Mock RelationshipTypeSelector
 jest.mock("@/components/chat/RelationshipTypeSelector", () => ({
-  RelationshipTypeSelector: ({ value, onChange }: any) => (
+  RelationshipTypeSelector: ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
     <select
       data-testid="relationship-selector"
       value={value}
