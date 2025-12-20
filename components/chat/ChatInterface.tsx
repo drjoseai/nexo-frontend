@@ -159,6 +159,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
             userPlan={userPlan}
             onPremiumRequired={handlePremiumRequired}
             disabled={isSending || isLoading}
+            ageVerified={user?.age_verified ?? false}
           />
 
           {/* Mensajes restantes */}

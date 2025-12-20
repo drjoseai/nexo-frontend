@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { RelationshipType } from "@/types/chat";
 import type { UserPlan } from "@/types/auth";
+import { AgeVerificationModal } from "./AgeVerificationModal";
 
 // ============================================
 // TYPES
@@ -34,6 +35,7 @@ interface RelationshipTypeSelectorProps {
   userPlan: UserPlan;
   onPremiumRequired?: () => void;
   disabled?: boolean;
+  ageVerified?: boolean;
 }
 
 // ============================================
@@ -87,15 +89,18 @@ export function RelationshipTypeSelector({
   userPlan,
   onPremiumRequired,
   disabled = false,
+  ageVerified = false,
 }: RelationshipTypeSelectorProps) {
   const [open, setOpen] = useState(false);
+  const [showAgeModal, setShowAgeModal] = useState(false);
+  const [pendingSelection, setPendingSelection] = useState<RelationshipOption | null>(null);
 
   const currentOption = RELATIONSHIP_OPTIONS.find((opt) => opt.value === value) || RELATIONSHIP_OPTIONS[0];
   const canAccessCurrent = canAccessOption(currentOption, userPlan);
 
   const handleSelect = (option: RelationshipOption) => {
+    // Check premium plan requirement
     if (!canAccessOption(option, userPlan)) {
-      // Usuario intenta seleccionar opción premium sin tener el plan
       setOpen(false);
       if (onPremiumRequired) {
         onPremiumRequired();
@@ -103,12 +108,30 @@ export function RelationshipTypeSelector({
       return;
     }
 
+    // Check age verification for romantic mode
+    if (option.value === "romantic" && !ageVerified) {
+      setOpen(false);
+      setPendingSelection(option);
+      setShowAgeModal(true);
+      return;
+    }
+
+    // All checks passed, change relationship type
     onChange(option.value);
     setOpen(false);
   };
 
+  const handleAgeVerified = () => {
+    // User verified age, apply pending selection
+    if (pendingSelection) {
+      onChange(pendingSelection.value);
+      setPendingSelection(null);
+    }
+  };
+
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    <>
+      <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -191,6 +214,14 @@ export function RelationshipTypeSelector({
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
+
+      {/* Age Verification Modal */}
+      <AgeVerificationModal
+        open={showAgeModal}
+        onOpenChange={setShowAgeModal}
+        onVerified={handleAgeVerified}
+      />
+    </>
   );
 }
 

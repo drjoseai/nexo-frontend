@@ -211,3 +211,20 @@ export const resetPassword = async (
   });
   return response.data;
 };
+
+/**
+ * Verify user's age (18+) for romantic mode access
+ */
+export const verifyAge = async (): Promise<{
+  success: boolean;
+  message: string;
+  verified_at: string | null;
+}> => {
+  const response = await apiClient.post<{
+    success: boolean;
+    message: string;
+    verified_at: string | null;
+  }>('/auth/verify-age');
+  
+  return response.data;
+};
