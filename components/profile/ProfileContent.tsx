@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { User, Mail, Calendar, Shield, Save, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AgeVerificationModal } from "@/components/chat/AgeVerificationModal";
+import { toast } from "sonner";
 
 export function ProfileContent() {
   const { user } = useAuthStore();
@@ -17,6 +19,7 @@ export function ProfileContent() {
   const [formData, setFormData] = useState({
     displayName: user?.display_name || user?.email?.split("@")[0] || "",
   });
+  const [showAgeModal, setShowAgeModal] = useState(false);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -211,20 +214,43 @@ export function ProfileContent() {
                 <p className="text-sm text-muted-foreground">Cuenta creada</p>
                 <p className="font-medium">{formatDate(user.created_at)}</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Verificación de edad</p>
-                <p className="font-medium">
-                  {user.age_verified ? (
-                    <span className="text-green-400">Verificado (18+)</span>
-                  ) : (
-                    <span className="text-muted-foreground">No verificado</span>
-                  )}
-                </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Verificación de edad</p>
+                  <p className="font-medium">
+                    {user.age_verified ? (
+                      <span className="text-green-400">Verificado (18+)</span>
+                    ) : (
+                      <span className="text-muted-foreground">No verificado</span>
+                    )}
+                  </p>
+                </div>
+                {!user.age_verified && (
+                  <Button
+                    size="sm"
+                    onClick={() => setShowAgeModal(true)}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    Verificar edad 18+
+                  </Button>
+                )}
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Age Verification Modal */}
+      <AgeVerificationModal
+        open={showAgeModal}
+        onOpenChange={setShowAgeModal}
+        onVerified={async () => {
+          // Reload user data
+          const { loadUser } = useAuthStore.getState();
+          await loadUser();
+          toast.success("Edad verificada exitosamente");
+        }}
+      />
     </div>
   );
 }
