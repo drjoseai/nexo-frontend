@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/components/providers/auth-provider";
 
 const montserrat = Montserrat({
   variable: "--font-sans",
@@ -74,7 +75,9 @@ export default async function RootLayout({
         className={`${montserrat.variable} ${geistMono.variable} font-sans antialiased`}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
           <Toaster position="top-right" richColors />
         </NextIntlClientProvider>
       </body>

@@ -187,6 +187,10 @@ export const useAuthStore = create<AuthStore>()(
 
       /**
        * Load user data from stored token
+       * 
+       * Enhanced version that validates consistency between:
+       * - Zustand persist storage (nexo-auth-storage)
+       * - TokenManager storage (nexo_refresh_token, etc)
        */
       loadUser: async () => {
         try {
@@ -217,12 +221,65 @@ export const useAuthStore = create<AuthStore>()(
             }
           });
 
+          // ============================================
+          // CONSISTENCY CHECK - Fix for cache issues
+          // ============================================
+          
+          const persistedState = get();
+          const hasTokenInManager = !!tokenManager.getAccessToken();
+          const hasRefreshToken = !!tokenManager.getRefreshToken();
+          
+          console.log('[AuthStore] State check:', {
+            persistedAuth: persistedState.isAuthenticated,
+            hasAccessToken: hasTokenInManager,
+            hasRefreshToken: hasRefreshToken,
+          });
+
+          // CASE 1: No tokens at all - ensure clean state
+          if (!hasTokenInManager && !hasRefreshToken) {
+            console.log('[AuthStore] No tokens found, ensuring clean state');
+            if (persistedState.isAuthenticated) {
+              console.warn('[AuthStore] Inconsistent state detected - clearing');
+              set(initialState);
+            }
+            return;
+          }
+
+          // CASE 2: Have tokens but state says not authenticated - FIX THIS
+          if ((hasTokenInManager || hasRefreshToken) && !persistedState.isAuthenticated) {
+            console.log('[AuthStore] Tokens exist but state not authenticated - validating tokens');
+          }
+
+          // CASE 3: State says authenticated but no tokens - CLEAR STATE
+          if (persistedState.isAuthenticated && !hasTokenInManager && !hasRefreshToken) {
+            console.warn('[AuthStore] Authenticated state but no tokens - clearing');
+            set(initialState);
+            return;
+          }
+
+          // ============================================
+          // TOKEN VALIDATION
+          // ============================================
+
           // Get token from TokenManager
           const token = tokenManager.getAccessToken();
           
           if (!token) {
-            set(initialState);
-            return;
+            // Try to refresh if we have refresh token
+            if (hasRefreshToken) {
+              console.log('[AuthStore] No access token but have refresh - attempting refresh');
+              const refreshed = await tokenManager.refresh();
+              
+              if (!refreshed) {
+                console.log('[AuthStore] Refresh failed, logging out');
+                get().logout();
+                return;
+              }
+            } else {
+              console.log('[AuthStore] No tokens available');
+              set(initialState);
+              return;
+            }
           }
 
           // Check if token is expired and needs refresh
@@ -248,14 +305,17 @@ export const useAuthStore = create<AuthStore>()(
           // Fetch current user data
           const user = await authApi.getCurrentUser();
 
+          // Update state with validated data
           set({
             user,
             token: currentToken,
             isAuthenticated: true,
             error: null,
           });
+
+          console.log('[AuthStore] User loaded successfully:', user.email);
         } catch (error: unknown) {
-          console.warn('Failed to load user, logging out:', error);
+          console.warn('[AuthStore] Failed to load user, logging out:', error);
           get().logout();
         } finally {
           set({ isLoading: false });
