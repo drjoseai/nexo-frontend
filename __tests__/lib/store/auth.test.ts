@@ -22,14 +22,6 @@ jest.mock('@/lib/api/auth', () => ({
 
 jest.mock('@/lib/services/token-manager', () => ({
   tokenManager: {
-    setTokens: jest.fn(),
-    clearTokens: jest.fn(),
-    getAccessToken: jest.fn(),
-    getRefreshToken: jest.fn(),
-    hasTokens: jest.fn(),
-    isExpired: jest.fn(),
-    shouldRefresh: jest.fn(),
-    refresh: jest.fn(),
     initialize: jest.fn(),
     onLogout: jest.fn(),
     onRefresh: jest.fn(),
@@ -217,7 +209,7 @@ describe('useAuthStore', () => {
       expect(result.current.isAuthenticated).toBe(false);
     });
 
-    it('debe limpiar tokens usando TokenManager', async () => {
+    it('debe limpiar estado y llamar API de logout', async () => {
       // Setup authenticated state
       useAuthStore.setState({
         user: mockUser,
@@ -227,7 +219,6 @@ describe('useAuthStore', () => {
         error: null,
       });
       
-      (tokenManager.getRefreshToken as jest.Mock).mockReturnValue('refresh-token');
       (authApi.logout as jest.Mock).mockResolvedValue(undefined);
 
       const { result } = renderHook(() => useAuthStore());
@@ -236,9 +227,10 @@ describe('useAuthStore', () => {
         result.current.logout();
       });
 
-      // clearTokens is called by logout, but it's async now
-      // Just verify state was cleared
+      // Verify state was cleared
       expect(result.current.isAuthenticated).toBe(false);
+      expect(result.current.user).toBeNull();
+      expect(authApi.logout).toHaveBeenCalled();
     });
 
     it('debe funcionar aunque falle API de logout', async () => {
@@ -324,11 +316,8 @@ describe('useAuthStore', () => {
 
   describe('loadUser', () => {
     it('debe cargar usuario desde token guardado', async () => {
-      // Mock TokenManager to return valid token
-      (tokenManager.getAccessToken as jest.Mock).mockReturnValue('existing-token');
-      (tokenManager.hasTokens as jest.Mock).mockReturnValue(true);
-      (tokenManager.isExpired as jest.Mock).mockReturnValue(false);
-      (authApi.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+      // Mock API to return user (tokens are in httpOnly cookies)
+      (authApi.getCurrentUser as jest.Mock).mockResolvedValueOnce(mockUser);
 
       const { result } = renderHook(() => useAuthStore());
 
@@ -337,14 +326,14 @@ describe('useAuthStore', () => {
       });
 
       expect(tokenManager.initialize).toHaveBeenCalled();
+      expect(tokenManager.onLogout).toHaveBeenCalled();
+      expect(authApi.getCurrentUser).toHaveBeenCalled();
       expect(result.current.isAuthenticated).toBe(true);
       expect(result.current.user).toEqual(mockUser);
     });
 
     it('debe hacer logout si token es inválido', async () => {
-      (tokenManager.getAccessToken as jest.Mock).mockReturnValue('invalid-token');
-      (tokenManager.hasTokens as jest.Mock).mockReturnValue(true);
-      (tokenManager.isExpired as jest.Mock).mockReturnValue(false);
+      // Mock API to reject (invalid cookie)
       (authApi.getCurrentUser as jest.Mock).mockRejectedValue(
         new Error('Token expired')
       );
@@ -360,8 +349,10 @@ describe('useAuthStore', () => {
     });
 
     it('no debe hacer nada si no hay token', async () => {
-      (tokenManager.getAccessToken as jest.Mock).mockReturnValue(null);
-      (tokenManager.hasTokens as jest.Mock).mockReturnValue(false);
+      // Mock API to reject (no cookie)
+      (authApi.getCurrentUser as jest.Mock).mockRejectedValueOnce(
+        new Error('No authentication')
+      );
 
       const { result } = renderHook(() => useAuthStore());
 
@@ -373,6 +364,7 @@ describe('useAuthStore', () => {
       // Backend will return 401 if no valid cookie exists
       expect(authApi.getCurrentUser).toHaveBeenCalled();
       expect(result.current.isAuthenticated).toBe(false);
+      expect(result.current.user).toBeNull();
     });
   });
 
