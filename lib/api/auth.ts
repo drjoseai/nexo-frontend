@@ -83,7 +83,7 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
 
   // Send login request with form-urlencoded content type
   const tokenResponse = await apiClient.post<BackendTokenResponse>(
-    '/auth/login',
+    '/api/v1/auth/login',
     formData,
     {
       headers: {
@@ -96,7 +96,7 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
   const accessToken = tokenResponse.data.access_token;
 
   // Fetch user data using the new token
-  const userResponse = await apiClient.get<BackendUserResponse>('/auth/me', {
+  const userResponse = await apiClient.get<BackendUserResponse>('/api/v1/auth/me', {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -128,7 +128,7 @@ export const register = async (data: RegisterRequest): Promise<RegisterResponse>
 
   // Send registration request
   const tokenResponse = await apiClient.post<BackendTokenResponse>(
-    '/auth/register',
+    '/api/v1/auth/register',
     backendData
   );
 
@@ -136,7 +136,7 @@ export const register = async (data: RegisterRequest): Promise<RegisterResponse>
   const accessToken = tokenResponse.data.access_token;
 
   // Fetch user data using the new token
-  const userResponse = await apiClient.get<BackendUserResponse>('/auth/me', {
+  const userResponse = await apiClient.get<BackendUserResponse>('/api/v1/auth/me', {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -153,7 +153,7 @@ export const register = async (data: RegisterRequest): Promise<RegisterResponse>
  * Get the currently authenticated user's profile
  */
 export const getCurrentUser = async (): Promise<User> => {
-  const response = await apiClient.get<BackendUserResponse>('/auth/me');
+  const response = await apiClient.get<BackendUserResponse>('/api/v1/auth/me');
   return transformUser(response.data);
 };
 
@@ -162,7 +162,7 @@ export const getCurrentUser = async (): Promise<User> => {
  */
 export const logout = async (): Promise<void> => {
   try {
-    await apiClient.post('/auth/logout');
+    await apiClient.post('/api/v1/auth/logout');
   } catch (error) {
     // Logout can fail silently - client-side cleanup is more important
     console.warn('Server logout failed, continuing with client-side cleanup', error);
@@ -178,7 +178,7 @@ export const refreshToken = async (currentRefreshToken: string): Promise<{
   access_token: string;
   refresh_token: string;
 }> => {
-  const response = await apiClient.post<BackendTokenResponse>('/auth/refresh', {
+  const response = await apiClient.post<BackendTokenResponse>('/api/v1/auth/refresh', {
     refresh_token: currentRefreshToken,
   });
 
@@ -192,7 +192,7 @@ export const refreshToken = async (currentRefreshToken: string): Promise<{
  * Request password reset email
  */
 export const forgotPassword = async (email: string): Promise<{ message: string }> => {
-  const response = await apiClient.post<{ message: string }>('/auth/forgot-password', null, {
+  const response = await apiClient.post<{ message: string }>('/api/v1/auth/forgot-password', null, {
     params: { email },
   });
   return response.data;
@@ -205,7 +205,7 @@ export const resetPassword = async (
   token: string,
   newPassword: string
 ): Promise<{ message: string }> => {
-  const response = await apiClient.post<{ message: string }>('/auth/reset-password', {
+  const response = await apiClient.post<{ message: string }>('/api/v1/auth/reset-password', {
     token,
     new_password: newPassword,
   });
@@ -224,7 +224,7 @@ export const verifyAge = async (): Promise<{
     success: boolean;
     message: string;
     verified_at: string | null;
-  }>('/auth/verify-age');
+  }>('/api/v1/auth/verify-age');
   
   return response.data;
 };

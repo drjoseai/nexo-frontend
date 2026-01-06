@@ -93,7 +93,7 @@ describe('Auth API', () => {
       await login(mockCredentials);
 
       expect(mockedApiClient.post).toHaveBeenCalledWith(
-        '/auth/login',
+        '/api/v1/auth/login',
         expect.any(URLSearchParams),
         {
           headers: {
@@ -114,7 +114,7 @@ describe('Auth API', () => {
 
       await login(mockCredentials);
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/auth/me', {
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/auth/me', {
         headers: {
           Authorization: 'Bearer mock-access-token',
         },
@@ -239,7 +239,7 @@ describe('Auth API', () => {
 
       await register(mockRegisterData);
 
-      expect(mockedApiClient.post).toHaveBeenCalledWith('/auth/register', {
+      expect(mockedApiClient.post).toHaveBeenCalledWith('/api/v1/auth/register', {
         email: 'new@nexo.ai',
         password: 'securePass123',
         name: 'New User',
@@ -256,7 +256,7 @@ describe('Auth API', () => {
         password: 'securePass123',
       });
 
-      expect(mockedApiClient.post).toHaveBeenCalledWith('/auth/register', {
+      expect(mockedApiClient.post).toHaveBeenCalledWith('/api/v1/auth/register', {
         email: 'new@nexo.ai',
         password: 'securePass123',
         name: null,
@@ -325,7 +325,7 @@ describe('Auth API', () => {
 
       await getCurrentUser();
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/auth/me');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/auth/me');
     });
 
     it('should throw on failure', async () => {
@@ -344,7 +344,7 @@ describe('Auth API', () => {
 
       await logout();
 
-      expect(mockedApiClient.post).toHaveBeenCalledWith('/auth/logout');
+      expect(mockedApiClient.post).toHaveBeenCalledWith('/api/v1/auth/logout');
     });
 
     it('should not throw on server error (silent fail)', async () => {
@@ -391,7 +391,7 @@ describe('Auth API', () => {
 
       await refreshToken('old-refresh-token');
 
-      expect(mockedApiClient.post).toHaveBeenCalledWith('/auth/refresh', {
+      expect(mockedApiClient.post).toHaveBeenCalledWith('/api/v1/auth/refresh', {
         refresh_token: 'old-refresh-token',
       });
     });
@@ -425,7 +425,7 @@ describe('Auth API', () => {
       await forgotPassword('user@nexo.ai');
 
       expect(mockedApiClient.post).toHaveBeenCalledWith(
-        '/auth/forgot-password',
+        '/api/v1/auth/forgot-password',
         null,
         { params: { email: 'user@nexo.ai' } }
       );
@@ -459,7 +459,7 @@ describe('Auth API', () => {
 
       await resetPassword('valid-token', 'newPassword123');
 
-      expect(mockedApiClient.post).toHaveBeenCalledWith('/auth/reset-password', {
+      expect(mockedApiClient.post).toHaveBeenCalledWith('/api/v1/auth/reset-password', {
         token: 'valid-token',
         new_password: 'newPassword123',
       });
