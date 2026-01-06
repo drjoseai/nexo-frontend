@@ -6,47 +6,11 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
 /**
- * Check if we're running in the browser (not SSR)
- */
-const isBrowser = typeof window !== 'undefined';
-
-/**
  * Get the API base URL from environment variables
  */
 const getBaseURL = (): string => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
   return apiUrl;
-};
-
-/**
- * Safely get token from localStorage
- * Returns null if running in SSR or token doesn't exist
- */
-const getToken = (): string | null => {
-  if (!isBrowser) return null;
-  
-  try {
-    return localStorage.getItem('nexo_token');
-  } catch (error) {
-    console.error('Error accessing localStorage:', error);
-    return null;
-  }
-};
-
-/**
- * Safely clear localStorage and redirect to login
- * Only works in browser context
- */
-const clearAuthAndRedirect = (): void => {
-  if (!isBrowser) return;
-  
-  try {
-    localStorage.removeItem('nexo_token');
-    localStorage.removeItem('nexo_user');
-    window.location.href = '/login';
-  } catch (error) {
-    console.error('Error clearing auth:', error);
-  }
 };
 
 /**
@@ -59,20 +23,17 @@ const createApiClient = (): AxiosInstance => {
     headers: {
       'Content-Type': 'application/json',
     },
+    withCredentials: true, // Enable sending httpOnly cookies with requests
   });
 
   /**
    * Request interceptor
-   * Adds Authorization header with JWT token if available
+   * No manual token handling needed - cookies are sent automatically with withCredentials: true
    */
   instance.interceptors.request.use(
     (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-      const token = getToken();
-      
-      if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      
+      // Cookies (including httpOnly auth cookies) are sent automatically
+      // No need to manually add Authorization header
       return config;
     },
     (error: AxiosError) => {
@@ -82,18 +43,14 @@ const createApiClient = (): AxiosInstance => {
 
   /**
    * Response interceptor
-   * Handles 401 errors by clearing auth and redirecting to login
+   * Handles errors and passes them to calling code
+   * 401 errors are handled by the auth store
    */
   instance.interceptors.response.use(
     (response: AxiosResponse): AxiosResponse => {
       return response;
     },
     (error: AxiosError) => {
-      // Handle 401 Unauthorized errors
-      if (error.response?.status === 401) {
-        clearAuthAndRedirect();
-      }
-      
       // Return error.response.data if available, otherwise generic message
       const errorMessage = error.response?.data || {
         message: error.message || 'An unexpected error occurred',

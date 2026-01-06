@@ -8,37 +8,10 @@
  */
 
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
 import type { AuthStore, LoginRequest, RegisterRequest } from '@/types/auth';
 import * as authApi from '@/lib/api/auth';
 import { tokenManager } from '@/lib/services/token-manager';
 import { toast } from '@/lib/services/toast-service';
-
-// ============================================
-// Cookie helpers for middleware compatibility
-// ============================================
-
-const COOKIE_NAME = 'nexo_access_token';
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
-
-/**
- * Set authentication cookie
- * Required for Next.js middleware to verify auth state
- */
-function setAuthCookie(token: string): void {
-  if (typeof window === 'undefined') return;
-  
-  document.cookie = `${COOKIE_NAME}=${token}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax; Secure`;
-}
-
-/**
- * Remove authentication cookie
- */
-function removeAuthCookie(): void {
-  if (typeof window === 'undefined') return;
-  
-  document.cookie = `${COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax; Secure`;
-}
 
 /**
  * Initial authentication state
@@ -54,16 +27,16 @@ const initialState = {
 /**
  * Authentication store with Zustand
  * 
- * Provides authentication state management with persistence across sessions.
- * Integrates with TokenManager for automatic token refresh.
+ * Simplified for httpOnly cookie authentication.
+ * No persistence needed - backend manages session via cookies.
+ * State is loaded fresh on each page load via loadUser().
  */
-export const useAuthStore = create<AuthStore>()(
-  persist(
-    (set, get) => ({
-      ...initialState,
+export const useAuthStore = create<AuthStore>()((set, get) => ({
+  ...initialState,
 
       /**
        * Authenticate a user with email and password
+       * Backend sets httpOnly cookies automatically via Set-Cookie headers
        */
       login: async (credentials: LoginRequest) => {
         const toastId = toast.loading('Iniciando sesión...');
@@ -73,26 +46,13 @@ export const useAuthStore = create<AuthStore>()(
 
           const response = await authApi.login(credentials);
 
-          // Store tokens using TokenManager
-          tokenManager.setTokens({
-            access_token: response.access_token,
-            refresh_token: response.refresh_token,
-            token_type: response.token_type,
-            expires_in: response.expires_in,
-          });
+          // Backend sets httpOnly cookies (nexo_access_token, nexo_refresh_token)
+          // No need to store tokens manually - browser handles it automatically
 
-          // Store user in localStorage
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('nexo_user', JSON.stringify(response.user));
-          }
-
-          // Store token in cookie for middleware access
-          setAuthCookie(response.access_token);
-
-          // Update store state
+          // Update store state with user data
           set({
             user: response.user,
-            token: response.access_token,
+            token: null, // Token not stored in frontend anymore
             isAuthenticated: true,
             error: null,
           });
@@ -156,41 +116,32 @@ export const useAuthStore = create<AuthStore>()(
 
       /**
        * Log out the current user
+       * Backend clears httpOnly cookies via logout endpoint
        */
-      logout: () => {
-        // Get refresh token before clearing
-        const refreshToken = tokenManager.getRefreshToken();
-        
-        // Call logout API with refresh token
-        if (refreshToken) {
-          authApi.logout().catch((error) => {
-            console.warn('Logout API call failed:', error);
-          });
+      logout: async () => {
+        try {
+          // Call backend logout endpoint to clear httpOnly cookies
+          await authApi.logout();
+          
+          // Reset state to initial values
+          set(initialState);
+          
+          toast.info('Sesión cerrada');
+        } catch (error) {
+          console.warn('Logout API call failed:', error);
+          
+          // Clear state anyway even if API call fails
+          set(initialState);
+          
+          toast.info('Sesión cerrada');
         }
-
-        // Clear tokens using TokenManager
-        tokenManager.clearTokens();
-
-        // Remove auth cookie
-        removeAuthCookie();
-
-        // Clear user from localStorage
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('nexo_user');
-        }
-
-        // Reset state to initial values
-        set(initialState);
-        
-        toast.info('Sesión cerrada');
       },
 
       /**
-       * Load user data from stored token
+       * Load user data from backend
        * 
-       * Enhanced version that validates consistency between:
-       * - Zustand persist storage (nexo-auth-storage)
-       * - TokenManager storage (nexo_refresh_token, etc)
+       * Simplified for httpOnly cookie authentication.
+       * Backend verifies cookies and returns user data or 401.
        */
       loadUser: async () => {
         try {
@@ -198,125 +149,38 @@ export const useAuthStore = create<AuthStore>()(
             return;
           }
 
-          // Initialize TokenManager
+          console.log('[AuthStore] Loading user from backend...');
+
+          // Initialize TokenManager (registers callbacks)
           tokenManager.initialize();
 
           // Register logout callback
           tokenManager.onLogout(() => {
             console.log('[AuthStore] TokenManager triggered logout');
-            removeAuthCookie();
-            if (typeof window !== 'undefined') {
-              localStorage.removeItem('nexo_user');
-            }
             set(initialState);
           });
-
-          // Register refresh callback to update cookie
-          tokenManager.onRefresh(() => {
-            const newToken = tokenManager.getAccessToken();
-            if (newToken) {
-              console.log('[AuthStore] Token refreshed, updating cookie');
-              setAuthCookie(newToken);
-              set({ token: newToken });
-            }
-          });
-
-          // ============================================
-          // CONSISTENCY CHECK - Fix for cache issues
-          // ============================================
-          
-          const persistedState = get();
-          const hasTokenInManager = !!tokenManager.getAccessToken();
-          const hasRefreshToken = !!tokenManager.getRefreshToken();
-          
-          console.log('[AuthStore] State check:', {
-            persistedAuth: persistedState.isAuthenticated,
-            hasAccessToken: hasTokenInManager,
-            hasRefreshToken: hasRefreshToken,
-          });
-
-          // CASE 1: No tokens at all - ensure clean state
-          if (!hasTokenInManager && !hasRefreshToken) {
-            console.log('[AuthStore] No tokens found, ensuring clean state');
-            if (persistedState.isAuthenticated) {
-              console.warn('[AuthStore] Inconsistent state detected - clearing');
-              set(initialState);
-            }
-            return;
-          }
-
-          // CASE 2: Have tokens but state says not authenticated - FIX THIS
-          if ((hasTokenInManager || hasRefreshToken) && !persistedState.isAuthenticated) {
-            console.log('[AuthStore] Tokens exist but state not authenticated - validating tokens');
-          }
-
-          // CASE 3: State says authenticated but no tokens - CLEAR STATE
-          if (persistedState.isAuthenticated && !hasTokenInManager && !hasRefreshToken) {
-            console.warn('[AuthStore] Authenticated state but no tokens - clearing');
-            set(initialState);
-            return;
-          }
-
-          // ============================================
-          // TOKEN VALIDATION
-          // ============================================
-
-          // Get token from TokenManager
-          const token = tokenManager.getAccessToken();
-          
-          if (!token) {
-            // Try to refresh if we have refresh token
-            if (hasRefreshToken) {
-              console.log('[AuthStore] No access token but have refresh - attempting refresh');
-              const refreshed = await tokenManager.refresh();
-              
-              if (!refreshed) {
-                console.log('[AuthStore] Refresh failed, logging out');
-                get().logout();
-                return;
-              }
-            } else {
-              console.log('[AuthStore] No tokens available');
-              set(initialState);
-              return;
-            }
-          }
-
-          // Check if token is expired and needs refresh
-          if (tokenManager.isExpired()) {
-            console.log('[AuthStore] Token expired, attempting refresh...');
-            const refreshed = await tokenManager.refresh();
-            
-            if (!refreshed) {
-              console.log('[AuthStore] Refresh failed, logging out');
-              get().logout();
-              return;
-            }
-          }
-
-          // Ensure cookie is set
-          const currentToken = tokenManager.getAccessToken();
-          if (currentToken) {
-            setAuthCookie(currentToken);
-          }
 
           set({ isLoading: true, error: null });
 
           // Fetch current user data
+          // Backend verifies httpOnly cookies automatically
+          // Returns user data if valid, or 401 if not authenticated
           const user = await authApi.getCurrentUser();
 
-          // Update state with validated data
+          // Update state with user data
           set({
             user,
-            token: currentToken,
+            token: null, // Token not stored in frontend
             isAuthenticated: true,
             error: null,
           });
 
           console.log('[AuthStore] User loaded successfully:', user.email);
         } catch (error: unknown) {
-          console.warn('[AuthStore] Failed to load user, logging out:', error);
-          get().logout();
+          console.log('[AuthStore] Failed to load user (not authenticated)');
+          
+          // Clear state if not authenticated
+          set(initialState);
         } finally {
           set({ isLoading: false });
         }
@@ -335,27 +199,7 @@ export const useAuthStore = create<AuthStore>()(
       setLoading: (isLoading: boolean) => {
         set({ isLoading });
       },
-    }),
-    {
-      name: 'nexo-auth-storage',
-      storage: createJSONStorage(() => {
-        if (typeof window === 'undefined') {
-          return {
-            getItem: () => null,
-            setItem: () => {},
-            removeItem: () => {},
-          };
-        }
-        return localStorage;
-      }),
-      partialize: (state) => ({
-        user: state.user,
-        token: state.token,
-        isAuthenticated: state.isAuthenticated,
-      }),
-    }
-  )
-);
+    }));
 
 /**
  * Hook to get authentication state without subscribing to all changes
