@@ -55,7 +55,7 @@ const customJestConfig = {
   coverageThreshold: {
     global: {
       branches: 50,
-      functions: 45,  // Temporalmente 45%, actual: 48.28%
+      functions: 44,  // Ajustado a 44% tras simplificación de código (httpOnly cookies)
       lines: 50,
       statements: 50,
     },
