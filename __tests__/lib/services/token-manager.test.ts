@@ -8,8 +8,8 @@ import { tokenManager } from '@/lib/services/token-manager';
 describe('TokenManager', () => {
   beforeEach(() => {
     // Reset callbacks before each test
-    tokenManager.setLogoutCallback(null as any);
-    tokenManager.setRefreshCallback(null as any);
+    tokenManager.setLogoutCallback(() => {});
+    tokenManager.setRefreshCallback(() => {});
   });
 
   describe('Callback Registration', () => {
