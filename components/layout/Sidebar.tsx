@@ -60,13 +60,22 @@ export function Sidebar() {
       // Call logout to clear state and cookies
       await logout();
       
-      // Use Next.js router to navigate to login
-      // router.replace is used for immediate navigation without adding to history
+      // Hybrid navigation approach for maximum reliability
+      // Try Next.js router first
       router.replace('/login');
+      
+      // Fallback: If router doesn't navigate within 300ms, force navigation with window.location
+      // This handles edge cases where React unmounts before router completes
+      setTimeout(() => {
+        if (window.location.pathname !== '/login') {
+          console.warn('[Logout] Router navigation incomplete, using window.location fallback');
+          window.location.href = '/login';
+        }
+      }, 300);
     } catch (error) {
-      console.error('Logout error:', error);
-      // Even if logout fails, redirect to login
-      router.replace('/login');
+      console.error('[Logout] Error during logout:', error);
+      // On error, force navigation immediately
+      window.location.href = '/login';
     }
   };
 

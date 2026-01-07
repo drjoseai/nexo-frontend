@@ -5,13 +5,23 @@
  * @module __tests__/components/layout/Sidebar.test
  */
 
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { Sidebar } from '@/components/layout/Sidebar';
 
 // Mock next/navigation
 const mockPathname = jest.fn();
+const mockReplace = jest.fn();
+const mockRouter = {
+  replace: mockReplace,
+  push: jest.fn(),
+  back: jest.fn(),
+  forward: jest.fn(),
+  refresh: jest.fn(),
+  prefetch: jest.fn(),
+};
 jest.mock('next/navigation', () => ({
   usePathname: () => mockPathname(),
+  useRouter: () => mockRouter,
 }));
 
 // Mock next-intl
@@ -63,6 +73,7 @@ describe('Sidebar', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockPathname.mockReturnValue('/dashboard');
+    mockReplace.mockClear();
   });
 
   describe('Branding', () => {
@@ -200,19 +211,57 @@ describe('Sidebar', () => {
   });
 
   describe('Logout', () => {
+    beforeEach(() => {
+      mockReplace.mockClear();
+      mockLogout.mockClear();
+    });
+
     it('should render logout button', () => {
       render(<Sidebar />);
       
       expect(screen.getByRole('button', { name: /cerrar sesión/i })).toBeInTheDocument();
     });
 
-    it('should call logout when button is clicked', () => {
+    it('should call logout and redirect when button is clicked', async () => {
+      mockLogout.mockResolvedValue(undefined);
+      
       render(<Sidebar />);
       
       const logoutButton = screen.getByRole('button', { name: /cerrar sesión/i });
-      fireEvent.click(logoutButton);
       
-      expect(mockLogout).toHaveBeenCalledTimes(1);
+      await act(async () => {
+        fireEvent.click(logoutButton);
+      });
+      
+      // Wait for logout to be called
+      await waitFor(() => {
+        expect(mockLogout).toHaveBeenCalledTimes(1);
+      });
+      
+      // Verify router.replace was called with /login
+      await waitFor(() => {
+        expect(mockReplace).toHaveBeenCalledWith('/login');
+      }, { timeout: 1000 });
+    });
+
+    it('should call logout even if it fails', async () => {
+      mockLogout.mockRejectedValue(new Error('Logout failed'));
+      
+      render(<Sidebar />);
+      
+      const logoutButton = screen.getByRole('button', { name: /cerrar sesión/i });
+      
+      await act(async () => {
+        fireEvent.click(logoutButton);
+      });
+      
+      // Wait for logout to be called
+      await waitFor(() => {
+        expect(mockLogout).toHaveBeenCalledTimes(1);
+      });
+      
+      // Note: window.location.href assignment is not easily testable in JSDOM
+      // The important behavior (calling logout) is verified above
     });
   });
 
