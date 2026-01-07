@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import {
@@ -49,13 +49,25 @@ const navItems: NavItem[] = [
 export function Sidebar() {
   const pathname = usePathname();
   const locale = useLocale() as Locale;
+  const router = useRouter();
   const { user, logout } = useAuthStore();
   const t = useTranslations("navigation");
   const tSidebar = useTranslations("sidebar");
   const tAuth = useTranslations("auth");
 
   const handleLogout = async () => {
-    await logout();
+    try {
+      // Call logout to clear state and cookies
+      await logout();
+      
+      // Use Next.js router to navigate to login
+      // router.replace is used for immediate navigation without adding to history
+      router.replace('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Even if logout fails, redirect to login
+      router.replace('/login');
+    }
   };
 
   return (

@@ -117,6 +117,9 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       /**
        * Log out the current user
        * Backend clears httpOnly cookies via logout endpoint
+       * 
+       * NOTE: Redirect should be handled by the component calling this function,
+       * not by the store itself, to avoid conflicts with Next.js routing.
        */
       logout: async () => {
         try {
@@ -127,14 +130,6 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
           set(initialState);
           
           toast.info('Sesión cerrada');
-          
-          // Redirect to login page after a brief delay to ensure state cleanup
-          // Use window.location.replace for full page reload and clean navigation
-          if (typeof window !== 'undefined') {
-            setTimeout(() => {
-              window.location.replace('/login');
-            }, 100);
-          }
         } catch (error) {
           console.warn('Logout API call failed:', error);
           
@@ -142,13 +137,6 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
           set(initialState);
           
           toast.info('Sesión cerrada');
-          
-          // Redirect to login page even on error
-          if (typeof window !== 'undefined') {
-            setTimeout(() => {
-              window.location.replace('/login');
-            }, 100);
-          }
         }
       },
 
