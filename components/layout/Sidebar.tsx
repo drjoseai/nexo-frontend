@@ -54,8 +54,8 @@ export function Sidebar() {
   const tSidebar = useTranslations("sidebar");
   const tAuth = useTranslations("auth");
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
   };
 
   return (
