@@ -128,10 +128,12 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
           
           toast.info('Sesión cerrada');
           
-          // Redirect to login page
-          // Use window.location for reliable redirect outside React context
+          // Redirect to login page after a brief delay to ensure state cleanup
+          // Use window.location.replace for full page reload and clean navigation
           if (typeof window !== 'undefined') {
-            window.location.href = '/login';
+            setTimeout(() => {
+              window.location.replace('/login');
+            }, 100);
           }
         } catch (error) {
           console.warn('Logout API call failed:', error);
@@ -143,7 +145,9 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
           
           // Redirect to login page even on error
           if (typeof window !== 'undefined') {
-            window.location.href = '/login';
+            setTimeout(() => {
+              window.location.replace('/login');
+            }, 100);
           }
         }
       },
