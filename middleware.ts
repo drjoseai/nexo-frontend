@@ -10,7 +10,7 @@ const protectedRoutes = [
   "/profile",
 ];
 
-// Rutas de auth (redirigen a dashboard si ya están autenticados)
+// Rutas de auth (siempre accesibles - componentes manejan redirección)
 const authRoutes = ["/login", "/register", "/forgot-password"];
 
 export function middleware(request: NextRequest) {
@@ -43,10 +43,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Si está autenticado e intenta acceder a login/register → redirigir a dashboard
-  if (isAuthRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
+  // Auth routes are always accessible
+  // Client-side components will handle redirect to dashboard if already authenticated
+  // This prevents race conditions during logout when cookies are being cleared
 
   // Continuar normalmente
   return NextResponse.next();
