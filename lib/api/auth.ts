@@ -28,7 +28,7 @@ interface BackendTokenResponse {
   expires_in: number;
 }
 
-/** User response from backend /auth/me */
+/** User response from backend /auth/me and /auth/login */
 interface BackendUserResponse {
   id: string;
   email: string;
@@ -37,9 +37,7 @@ interface BackendUserResponse {
   language: string;
   age_verified: boolean;
   trial_ends_at: string | null;
-  messages_remaining: number;
-  profile_data: Record<string, unknown>;
-  preferences: Record<string, unknown>;
+  created_at: string;
 }
 
 // ============================================
@@ -57,7 +55,7 @@ function transformUser(backendUser: BackendUserResponse): User {
     plan: backendUser.plan as User['plan'],
     age_verified: backendUser.age_verified,
     preferred_language: (backendUser.language || 'es') as User['preferred_language'],
-    created_at: new Date().toISOString(), // Backend doesn't return this
+    created_at: backendUser.created_at,
     trial_ends_at: backendUser.trial_ends_at,
   };
 }
@@ -73,43 +71,29 @@ function transformUser(backendUser: BackendUserResponse): User {
  * - Content-Type: application/x-www-form-urlencoded
  * - Field name: 'username' (not 'email')
  * 
- * After successful login, we fetch user data from /auth/me
+ * Backend now returns user object directly and handles tokens via httpOnly cookies.
+ * This eliminates the race condition from the previous two-step login process.
  */
-export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
+export const login = async (credentials: LoginRequest): Promise<User> => {
   // Create form data for OAuth2PasswordRequestForm
   const formData = new URLSearchParams();
   formData.append('username', credentials.email); // Backend expects 'username'
   formData.append('password', credentials.password);
 
-  // Send login request with form-urlencoded content type
-  const tokenResponse = await apiClient.post<BackendTokenResponse>(
+  // Backend returns user object directly; tokens are handled via httpOnly cookies
+  const response = await apiClient.post<BackendUserResponse>(
     '/api/v1/auth/login',
     formData,
     {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
+      withCredentials: true, // Ensure cookies are sent/received
     }
   );
 
-  // Store token temporarily to fetch user data
-  const accessToken = tokenResponse.data.access_token;
-
-  // Fetch user data using the new token
-  const userResponse = await apiClient.get<BackendUserResponse>('/api/v1/auth/me', {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  // Return combined response matching frontend expectations
-  return {
-    access_token: accessToken,
-    refresh_token: tokenResponse.data.refresh_token,
-    expires_in: tokenResponse.data.expires_in || 3600,
-    token_type: tokenResponse.data.token_type,
-    user: transformUser(userResponse.data),
-  };
+  // Transform and return the user directly (no second API call needed)
+  return transformUser(response.data);
 };
 
 /**

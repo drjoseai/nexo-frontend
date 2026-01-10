@@ -44,21 +44,22 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
         try {
           set({ isLoading: true, error: null });
 
-          const response = await authApi.login(credentials);
+          // Backend returns user object directly and sets httpOnly cookies
+          const user = await authApi.login(credentials);
 
           // Backend sets httpOnly cookies (nexo_access_token, nexo_refresh_token)
           // No need to store tokens manually - browser handles it automatically
 
           // Update store state with user data
           set({
-            user: response.user,
+            user,
             token: null, // Token not stored in frontend anymore
             isAuthenticated: true,
             error: null,
           });
 
           toast.dismiss(toastId);
-          toast.success(`¡Bienvenido, ${response.user.display_name || response.user.email}!`);
+          toast.success(`¡Bienvenido, ${user.display_name || user.email}!`);
         } catch (error: unknown) {
           toast.dismiss(toastId);
           const errorMessage = toast.parseApiError(error);

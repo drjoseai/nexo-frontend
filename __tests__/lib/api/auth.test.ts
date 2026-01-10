@@ -38,15 +38,6 @@ describe('Auth API', () => {
       password: 'password123',
     };
 
-    const mockTokenResponse = {
-      data: {
-        access_token: 'mock-access-token',
-        refresh_token: 'mock-refresh-token',
-        token_type: 'bearer',
-        expires_in: 3600,
-      },
-    };
-
     const mockUserResponse = {
       data: {
         id: 'user-123',
@@ -56,39 +47,29 @@ describe('Auth API', () => {
         language: 'es',
         age_verified: true,
         trial_ends_at: null,
-        messages_remaining: 30,
-        profile_data: {},
-        preferences: {},
+        created_at: '2024-01-01T00:00:00Z',
       },
     };
 
     it('should login successfully with correct credentials', async () => {
-      mockedApiClient.post.mockResolvedValueOnce(mockTokenResponse);
-      mockedApiClient.get.mockResolvedValueOnce(mockUserResponse);
+      mockedApiClient.post.mockResolvedValueOnce(mockUserResponse);
 
       const result = await login(mockCredentials);
 
       expect(result).toEqual({
-        access_token: 'mock-access-token',
-        refresh_token: 'mock-refresh-token',
-        expires_in: 3600,
-        token_type: 'bearer',
-        user: {
-          id: 'user-123',
-          email: 'test@nexo.ai',
-          display_name: 'Test User',
-          plan: 'free',
-          age_verified: true,
-          preferred_language: 'es',
-          created_at: expect.any(String),
-          trial_ends_at: null,
-        },
+        id: 'user-123',
+        email: 'test@nexo.ai',
+        display_name: 'Test User',
+        plan: 'free',
+        age_verified: true,
+        preferred_language: 'es',
+        created_at: '2024-01-01T00:00:00Z',
+        trial_ends_at: null,
       });
     });
 
     it('should send form-urlencoded data with username field', async () => {
-      mockedApiClient.post.mockResolvedValueOnce(mockTokenResponse);
-      mockedApiClient.get.mockResolvedValueOnce(mockUserResponse);
+      mockedApiClient.post.mockResolvedValueOnce(mockUserResponse);
 
       await login(mockCredentials);
 
@@ -99,6 +80,7 @@ describe('Auth API', () => {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
+          withCredentials: true,
         }
       );
 
@@ -108,22 +90,8 @@ describe('Auth API', () => {
       expect(formData.get('password')).toBe('password123');
     });
 
-    it('should fetch user data with access token', async () => {
-      mockedApiClient.post.mockResolvedValueOnce(mockTokenResponse);
-      mockedApiClient.get.mockResolvedValueOnce(mockUserResponse);
-
-      await login(mockCredentials);
-
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/v1/auth/me', {
-        headers: {
-          Authorization: 'Bearer mock-access-token',
-        },
-      });
-    });
-
     it('should handle user with null name', async () => {
-      mockedApiClient.post.mockResolvedValueOnce(mockTokenResponse);
-      mockedApiClient.get.mockResolvedValueOnce({
+      mockedApiClient.post.mockResolvedValueOnce({
         data: {
           ...mockUserResponse.data,
           name: null,
@@ -132,12 +100,11 @@ describe('Auth API', () => {
 
       const result = await login(mockCredentials);
 
-      expect(result.user.display_name).toBeNull();
+      expect(result.display_name).toBeNull();
     });
 
     it('should default language to es when not provided', async () => {
-      mockedApiClient.post.mockResolvedValueOnce(mockTokenResponse);
-      mockedApiClient.get.mockResolvedValueOnce({
+      mockedApiClient.post.mockResolvedValueOnce({
         data: {
           ...mockUserResponse.data,
           language: '',
@@ -146,34 +113,13 @@ describe('Auth API', () => {
 
       const result = await login(mockCredentials);
 
-      expect(result.user.preferred_language).toBe('es');
-    });
-
-    it('should use default expires_in when not provided', async () => {
-      mockedApiClient.post.mockResolvedValueOnce({
-        data: {
-          ...mockTokenResponse.data,
-          expires_in: undefined,
-        },
-      });
-      mockedApiClient.get.mockResolvedValueOnce(mockUserResponse);
-
-      const result = await login(mockCredentials);
-
-      expect(result.expires_in).toBe(3600);
+      expect(result.preferred_language).toBe('es');
     });
 
     it('should throw on login failure', async () => {
       mockedApiClient.post.mockRejectedValueOnce(new Error('Invalid credentials'));
 
       await expect(login(mockCredentials)).rejects.toThrow('Invalid credentials');
-    });
-
-    it('should throw if user fetch fails', async () => {
-      mockedApiClient.post.mockResolvedValueOnce(mockTokenResponse);
-      mockedApiClient.get.mockRejectedValueOnce(new Error('User not found'));
-
-      await expect(login(mockCredentials)).rejects.toThrow('User not found');
     });
   });
 
@@ -206,9 +152,7 @@ describe('Auth API', () => {
         language: 'en',
         age_verified: false,
         trial_ends_at: '2025-01-01T00:00:00Z',
-        messages_remaining: 100,
-        profile_data: {},
-        preferences: {},
+        created_at: '2024-01-01T00:00:00Z',
       },
     };
 
@@ -226,7 +170,7 @@ describe('Auth API', () => {
           plan: 'trial',
           age_verified: false,
           preferred_language: 'en',
-          created_at: expect.any(String),
+          created_at: '2024-01-01T00:00:00Z',
           trial_ends_at: '2025-01-01T00:00:00Z',
         },
         message: 'Registration successful',
@@ -297,9 +241,7 @@ describe('Auth API', () => {
         language: 'es',
         age_verified: true,
         trial_ends_at: null,
-        messages_remaining: 50,
-        profile_data: {},
-        preferences: {},
+        created_at: '2024-01-01T00:00:00Z',
       },
     };
 
@@ -315,7 +257,7 @@ describe('Auth API', () => {
         plan: 'plus',
         age_verified: true,
         preferred_language: 'es',
-        created_at: expect.any(String),
+        created_at: '2024-01-01T00:00:00Z',
         trial_ends_at: null,
       });
     });

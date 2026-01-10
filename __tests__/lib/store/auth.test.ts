@@ -46,14 +46,6 @@ const mockUser = {
   trial_ends_at: null,
 };
 
-const mockLoginResponse = {
-  access_token: 'jwt-token-abc123',
-  refresh_token: 'refresh-token-xyz789',
-  expires_in: 3600,
-  token_type: 'bearer',
-  user: mockUser,
-};
-
 const mockCredentials = {
   email: 'test@nexo.com',
   password: 'SecurePass123!',
@@ -116,7 +108,7 @@ describe('useAuthStore', () => {
 
   describe('login', () => {
     it('debe autenticar usuario exitosamente', async () => {
-      (authApi.login as jest.Mock).mockResolvedValue(mockLoginResponse);
+      (authApi.login as jest.Mock).mockResolvedValue(mockUser);
 
       const { result } = renderHook(() => useAuthStore());
 
@@ -156,8 +148,8 @@ describe('useAuthStore', () => {
     });
 
     it('debe mostrar isLoading durante el login', async () => {
-      let resolveLogin: (value: typeof mockLoginResponse) => void;
-      const loginPromise = new Promise<typeof mockLoginResponse>((resolve) => {
+      let resolveLogin: (value: typeof mockUser) => void;
+      const loginPromise = new Promise<typeof mockUser>((resolve) => {
         resolveLogin = resolve;
       });
       (authApi.login as jest.Mock).mockReturnValue(loginPromise);
@@ -174,7 +166,7 @@ describe('useAuthStore', () => {
 
       // Resolve login
       await act(async () => {
-        resolveLogin!(mockLoginResponse);
+        resolveLogin!(mockUser);
         await loginPromise;
       });
 
@@ -234,7 +226,7 @@ describe('useAuthStore', () => {
     });
 
     it('debe funcionar aunque falle API de logout', async () => {
-      (authApi.login as jest.Mock).mockResolvedValue(mockLoginResponse);
+      (authApi.login as jest.Mock).mockResolvedValue(mockUser);
       
       const { result } = renderHook(() => useAuthStore());
 
@@ -267,7 +259,7 @@ describe('useAuthStore', () => {
   describe('register', () => {
     it('debe registrar y autenticar automáticamente', async () => {
       (authApi.register as jest.Mock).mockResolvedValue({ user: mockUser });
-      (authApi.login as jest.Mock).mockResolvedValue(mockLoginResponse);
+      (authApi.login as jest.Mock).mockResolvedValue(mockUser);
 
       const { result } = renderHook(() => useAuthStore());
 
