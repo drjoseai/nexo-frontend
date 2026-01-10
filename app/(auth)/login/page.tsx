@@ -10,7 +10,7 @@
  * @module app/(auth)/login/page
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,9 +50,19 @@ type LoginFormData = z.infer<ReturnType<typeof createLoginSchema>>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isLoading } = useAuthStore();
+  const { login, isLoading, isAuthenticated } = useAuthStore();
   const t = useTranslations("auth");
   const [isRedirecting, setIsRedirecting] = useState(false);
+
+  // Redirect to dashboard if already authenticated
+  // This handles the case when user refreshes the login page
+  // The isRedirecting flag prevents race condition with onSubmit redirect
+  useEffect(() => {
+    if (isAuthenticated && !isRedirecting && !isLoading) {
+      console.log('[LoginPage] User already authenticated, redirecting to dashboard');
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, isRedirecting, isLoading, router]);
 
   // Create schema with translated messages
   const loginSchema = createLoginSchema(t);
