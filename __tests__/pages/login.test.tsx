@@ -349,12 +349,16 @@ describe('LoginPage', () => {
   // ============================================
 
   describe('Authentication Redirect', () => {
-    it('redirects to dashboard if already authenticated', () => {
-      mockIsAuthenticated = true;
-      render(<LoginPage />);
-      
-      expect(mockPush).toHaveBeenCalledWith('/dashboard');
-    });
+    // NOTE: Automatic redirect on isAuthenticated removed to fix race condition (Ventana #7)
+    // The previous implementation had a useEffect that redirected when isAuthenticated changed,
+    // but this caused a race condition with the onSubmit redirect after successful login.
+    // 
+    // Current behavior:
+    // - Middleware (middleware.ts) handles redirecting authenticated users away from /login
+    // - Login component only redirects after successful form submission in onSubmit
+    // - This eliminates the race condition and provides more predictable behavior
+    //
+    // If you need to test the redirect behavior, test the middleware or the onSubmit flow
   });
 
   // ============================================

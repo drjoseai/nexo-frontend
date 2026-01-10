@@ -10,7 +10,7 @@
  * @module app/(auth)/login/page
  */
 
-import { useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,18 +50,12 @@ type LoginFormData = z.infer<ReturnType<typeof createLoginSchema>>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isLoading, isAuthenticated } = useAuthStore();
+  const { login, isLoading } = useAuthStore();
   const t = useTranslations("auth");
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   // Create schema with translated messages
   const loginSchema = createLoginSchema(t);
-
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.push("/dashboard");
-    }
-  }, [isAuthenticated, router]);
 
   // Initialize form with react-hook-form and zod validation
   const {
@@ -81,12 +75,28 @@ export default function LoginPage() {
    */
   const onSubmit = async (data: LoginFormData) => {
     try {
+      console.log('[LoginPage] Login attempt started');
+      setIsRedirecting(true);
+      
       await login(data);
+      
+      console.log('[LoginPage] Login successful, redirecting...');
+      
+      // Show success toast
       toast.success(t("loginSuccess"), {
         description: t("loginSuccessDescription"),
       });
+      
+      // Small delay to ensure state is fully updated
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      console.log('[LoginPage] Executing redirect to /dashboard');
+      
+      // Redirect to dashboard
       router.push("/dashboard");
     } catch (error: unknown) {
+      setIsRedirecting(false); // Reset on error
+      
       // Error handling
       const errorMessage =
         (error as { response?: { data?: { message?: string } }; message?: string })
@@ -128,7 +138,7 @@ export default function LoginPage() {
               placeholder="tu@email.com"
               autoComplete="email"
               aria-invalid={!!errors.email}
-              disabled={isLoading}
+              disabled={isLoading || isRedirecting}
               {...register("email")}
             />
             {errors.email && (
@@ -148,7 +158,7 @@ export default function LoginPage() {
               placeholder="••••••••"
               autoComplete="current-password"
               aria-invalid={!!errors.password}
-              disabled={isLoading}
+              disabled={isLoading || isRedirecting}
               {...register("password")}
             />
             {errors.password && (
@@ -177,10 +187,10 @@ export default function LoginPage() {
             type="submit"
             data-testid="login-submit"
             className="w-full"
-            disabled={isLoading}
+            disabled={isLoading || isRedirecting}
             size="lg"
           >
-            {isLoading ? t("loggingIn") : t("login")}
+            {isLoading || isRedirecting ? t("loggingIn") : t("login")}
           </Button>
 
           {/* Register Link */}
