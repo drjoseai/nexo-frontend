@@ -2,6 +2,8 @@
 // Tests unitarios para el API Client de NEXO v2.0
 // Verifica: interceptores, auth headers, error handling, auto-refresh
 
+/* eslint-disable @typescript-eslint/no-require-imports */
+
 import type { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 
