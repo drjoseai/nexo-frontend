@@ -320,7 +320,7 @@ describe('Auth API', () => {
     it('should refresh token successfully', async () => {
       mockedApiClient.post.mockResolvedValueOnce(mockRefreshResponse);
 
-      const result = await refreshToken('old-refresh-token');
+      const result = await refreshToken();
 
       expect(result).toEqual({
         access_token: 'new-access-token',
@@ -328,20 +328,22 @@ describe('Auth API', () => {
       });
     });
 
-    it('should send refresh token in body', async () => {
+    it('should send empty body with credentials (cookie-based auth)', async () => {
       mockedApiClient.post.mockResolvedValueOnce(mockRefreshResponse);
 
-      await refreshToken('old-refresh-token');
+      await refreshToken();
 
-      expect(mockedApiClient.post).toHaveBeenCalledWith('/api/v1/auth/refresh', {
-        refresh_token: 'old-refresh-token',
-      });
+      expect(mockedApiClient.post).toHaveBeenCalledWith(
+        '/api/v1/auth/refresh',
+        {},
+        { withCredentials: true }
+      );
     });
 
     it('should throw on refresh failure', async () => {
       mockedApiClient.post.mockRejectedValueOnce(new Error('Token expired'));
 
-      await expect(refreshToken('expired-token')).rejects.toThrow('Token expired');
+      await expect(refreshToken()).rejects.toThrow('Token expired');
     });
   });
 

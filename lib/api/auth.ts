@@ -156,15 +156,20 @@ export const logout = async (): Promise<void> => {
 /**
  * Refresh the current access token
  * 
- * NOTE: Backend expects { refresh_token: "..." } in the body
+ * NOTE: Backend reads refresh_token from httpOnly cookie automatically.
+ * No need to pass the token as parameter anymore.
  */
-export const refreshToken = async (currentRefreshToken: string): Promise<{
+export const refreshToken = async (): Promise<{
   access_token: string;
   refresh_token: string;
 }> => {
-  const response = await apiClient.post<BackendTokenResponse>('/api/v1/auth/refresh', {
-    refresh_token: currentRefreshToken,
-  });
+  const response = await apiClient.post<BackendTokenResponse>(
+    '/api/v1/auth/refresh',
+    {},
+    {
+      withCredentials: true,
+    }
+  );
 
   return {
     access_token: response.data.access_token,
