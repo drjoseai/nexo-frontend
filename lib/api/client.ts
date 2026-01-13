@@ -31,6 +31,10 @@ let failedQueue: Array<{
   reject: (reason?: unknown) => void;
 }> = [];
 
+/** Counter to prevent infinite refresh attempts */
+let refreshAttemptCount = 0;
+const MAX_REFRESH_ATTEMPTS = 1;
+
 /**
  * Process queued requests after token refresh
  * @param error - Error to reject with (if refresh failed)
@@ -88,9 +92,12 @@ const createApiClient = (): AxiosInstance => {
       // Check if this is a 401 error and we haven't already tried to refresh
       if (error.response?.status === 401 && !originalRequest._retry) {
         
-        // Don't try to refresh if we're already on the refresh or login endpoint
+        // CRITICAL: Exclude ALL auth endpoints to prevent infinite loops
         const requestUrl = originalRequest.url || '';
-        if (requestUrl.includes('/auth/refresh') || requestUrl.includes('/auth/login')) {
+        if (requestUrl.includes('/auth/refresh') || 
+            requestUrl.includes('/auth/login') || 
+            requestUrl.includes('/auth/me')) {
+          console.log('[API Client] Auth endpoint failed, not retrying:', requestUrl);
           return Promise.reject(error);
         }
 
@@ -107,6 +114,21 @@ const createApiClient = (): AxiosInstance => {
             });
         }
 
+        // Prevent infinite refresh attempts
+        if (refreshAttemptCount >= MAX_REFRESH_ATTEMPTS) {
+          console.log('[API Client] Max refresh attempts reached, redirecting to login');
+          refreshAttemptCount = 0;
+          if (typeof window !== 'undefined') {
+            const currentPath = window.location.pathname;
+            if (currentPath !== '/login' && currentPath !== '/register') {
+              sessionStorage.setItem('redirectAfterLogin', currentPath);
+            }
+            window.location.href = '/login?session_expired=true';
+          }
+          return Promise.reject(error);
+        }
+        refreshAttemptCount++;
+
         originalRequest._retry = true;
         isRefreshing = true;
 
@@ -120,6 +142,7 @@ const createApiClient = (): AxiosInstance => {
           console.log('[API Client] Token refresh successful, retrying original request');
           
           processQueue(null);
+          refreshAttemptCount = 0; // Reset on success
           
           return instance(originalRequest);
           
@@ -225,3 +248,13 @@ export const del = async <T = unknown>(
 
 // Export as 'delete' as well for convenience
 export { del as delete };
+
+/**
+ * Reset internal state - ONLY FOR TESTING
+ * @internal
+ */
+export const __resetForTesting = (): void => {
+  isRefreshing = false;
+  failedQueue = [];
+  refreshAttemptCount = 0;
+};

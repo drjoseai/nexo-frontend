@@ -142,6 +142,10 @@ describe('apiClient', () => {
     // Reset sessionStorage mock calls
     (window.sessionStorage.setItem as jest.Mock).mockClear();
     (window.sessionStorage.getItem as jest.Mock).mockClear();
+    
+    // Reset internal state between tests
+    const { __resetForTesting } = require('@/lib/api/client');
+    __resetForTesting();
   });
 
   afterAll(() => {
@@ -223,6 +227,13 @@ describe('apiClient', () => {
 
     it('no debe intentar refresh para endpoint /auth/login', async () => {
       const error = createMockError(401, '/api/v1/auth/login');
+
+      await expect(capturedResponseErrorInterceptor(error)).rejects.toBe(error);
+      expect(mockAxiosInstance.post).not.toHaveBeenCalled();
+    });
+
+    it('no debe intentar refresh para endpoint /auth/me (previene loop infinito)', async () => {
+      const error = createMockError(401, '/api/v1/auth/me');
 
       await expect(capturedResponseErrorInterceptor(error)).rejects.toBe(error);
       expect(mockAxiosInstance.post).not.toHaveBeenCalled();
