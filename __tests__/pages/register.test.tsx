@@ -1,10 +1,17 @@
 // __tests__/pages/register.test.tsx
 // Tests para Register Page de NEXO v2.0
-// Cobertura: Rendering, Validación, Submit, Errores, Navegación
+// Cobertura: Rendering, Validación, Submit, Errores, Navegación, Legal & Compliance
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import RegisterPage from '@/app/(auth)/register/page';
+
+// Helper to get a valid adult date of birth (25 years ago)
+const getAdultDateOfBirth = (): string => {
+  const date = new Date();
+  date.setFullYear(date.getFullYear() - 25);
+  return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD format
+};
 
 // ============================================
 // MOCKS
@@ -45,6 +52,16 @@ jest.mock('next-intl', () => ({
         passwordNeedsNumber: 'La contraseña debe contener al menos un número',
         confirmPasswordRequired: 'Debes confirmar tu contraseña',
         passwordsDoNotMatch: 'Las contraseñas no coinciden',
+        // Legal & Compliance V19
+        dateOfBirth: 'Fecha de nacimiento',
+        dateOfBirthRequired: 'La fecha de nacimiento es requerida',
+        dateOfBirthInvalid: 'Fecha de nacimiento inválida',
+        mustBe18: 'Debes ser mayor de 18 años',
+        tosAcceptance: 'Acepto los',
+        termsOfService: 'Términos de Servicio',
+        privacyPolicy: 'Política de Privacidad',
+        and: 'y la',
+        tosRequired: 'Debes aceptar los términos de servicio',
       },
       common: {
         optional: 'opcional',
@@ -141,6 +158,26 @@ describe('RegisterPage', () => {
       render(<RegisterPage />);
       expect(screen.getByText('¿Ya tienes cuenta?')).toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'Iniciar Sesión' })).toHaveAttribute('href', '/login');
+    });
+
+    // Legal & Compliance V19 - Rendering
+    it('renders date of birth input with label', () => {
+      render(<RegisterPage />);
+      expect(screen.getByLabelText('Fecha de nacimiento')).toBeInTheDocument();
+      expect(screen.getByTestId('register-date-of-birth')).toBeInTheDocument();
+    });
+
+    it('renders terms of service checkbox', () => {
+      render(<RegisterPage />);
+      expect(screen.getByTestId('register-tos-checkbox')).toBeInTheDocument();
+      // The label text is split across elements, so use a more flexible matcher
+      expect(screen.getByLabelText(/Acepto los/)).toBeInTheDocument();
+    });
+
+    it('renders terms and privacy links', () => {
+      render(<RegisterPage />);
+      expect(screen.getByRole('link', { name: 'Términos de Servicio' })).toHaveAttribute('href', '/terms');
+      expect(screen.getByRole('link', { name: 'Política de Privacidad' })).toHaveAttribute('href', '/privacy');
     });
   });
 
@@ -269,6 +306,14 @@ describe('RegisterPage', () => {
       await userEvent.type(emailInput, 'newuser@nexo.com');
       await userEvent.type(passwordInput, 'securepass123');
       await userEvent.type(confirmInput, 'securepass123');
+
+      // Fill date of birth (Legal & Compliance V19)
+      const dobInput = screen.getByTestId('register-date-of-birth');
+      fireEvent.change(dobInput, { target: { value: getAdultDateOfBirth() } });
+
+      // Accept Terms of Service (Legal & Compliance V19)
+      const tosCheckbox = screen.getByTestId('register-tos-checkbox');
+      await userEvent.click(tosCheckbox);
       
       const submitButton = screen.getByRole('button', { name: 'Crear Cuenta' });
       fireEvent.click(submitButton);
@@ -278,6 +323,8 @@ describe('RegisterPage', () => {
           display_name: '',
           email: 'newuser@nexo.com',
           password: 'securepass123',
+          date_of_birth: getAdultDateOfBirth(),
+          tos_accepted: true,
         });
       });
     });
@@ -294,6 +341,14 @@ describe('RegisterPage', () => {
       await userEvent.type(emailInput, 'juan@nexo.com');
       await userEvent.type(passwordInput, 'securepass123');
       await userEvent.type(confirmInput, 'securepass123');
+
+      // Fill date of birth (Legal & Compliance V19)
+      const dobInput = screen.getByTestId('register-date-of-birth');
+      fireEvent.change(dobInput, { target: { value: getAdultDateOfBirth() } });
+
+      // Accept Terms of Service (Legal & Compliance V19)
+      const tosCheckbox = screen.getByTestId('register-tos-checkbox');
+      await userEvent.click(tosCheckbox);
       
       const submitButton = screen.getByRole('button', { name: 'Crear Cuenta' });
       fireEvent.click(submitButton);
@@ -303,6 +358,8 @@ describe('RegisterPage', () => {
           display_name: 'Juan',
           email: 'juan@nexo.com',
           password: 'securepass123',
+          date_of_birth: getAdultDateOfBirth(),
+          tos_accepted: true,
         });
       });
     });
@@ -317,6 +374,14 @@ describe('RegisterPage', () => {
       await userEvent.type(emailInput, 'test@nexo.com');
       await userEvent.type(passwordInput, 'password123');
       await userEvent.type(confirmInput, 'password123');
+
+      // Fill date of birth (Legal & Compliance V19)
+      const dobInput = screen.getByTestId('register-date-of-birth');
+      fireEvent.change(dobInput, { target: { value: getAdultDateOfBirth() } });
+
+      // Accept Terms of Service (Legal & Compliance V19)
+      const tosCheckbox = screen.getByTestId('register-tos-checkbox');
+      await userEvent.click(tosCheckbox);
       
       const submitButton = screen.getByRole('button', { name: 'Crear Cuenta' });
       fireEvent.click(submitButton);
@@ -338,6 +403,14 @@ describe('RegisterPage', () => {
       await userEvent.type(emailInput, 'newuser@nexo.com');
       await userEvent.type(passwordInput, 'securepass123');
       await userEvent.type(confirmInput, 'securepass123');
+
+      // Fill date of birth (Legal & Compliance V19)
+      const dobInput = screen.getByTestId('register-date-of-birth');
+      fireEvent.change(dobInput, { target: { value: getAdultDateOfBirth() } });
+
+      // Accept Terms of Service (Legal & Compliance V19)
+      const tosCheckbox = screen.getByTestId('register-tos-checkbox');
+      await userEvent.click(tosCheckbox);
       
       const submitButton = screen.getByRole('button', { name: 'Crear Cuenta' });
       fireEvent.click(submitButton);
@@ -363,6 +436,14 @@ describe('RegisterPage', () => {
       await userEvent.type(emailInput, 'newuser@nexo.com');
       await userEvent.type(passwordInput, 'securepass123');
       await userEvent.type(confirmInput, 'securepass123');
+
+      // Fill date of birth (Legal & Compliance V19)
+      const dobInput = screen.getByTestId('register-date-of-birth');
+      fireEvent.change(dobInput, { target: { value: getAdultDateOfBirth() } });
+
+      // Accept Terms of Service (Legal & Compliance V19)
+      const tosCheckbox = screen.getByTestId('register-tos-checkbox');
+      await userEvent.click(tosCheckbox);
       
       const submitButton = screen.getByRole('button', { name: 'Crear Cuenta' });
       fireEvent.click(submitButton);
@@ -383,6 +464,14 @@ describe('RegisterPage', () => {
       await userEvent.type(emailInput, 'existing@nexo.com');
       await userEvent.type(passwordInput, 'password123');
       await userEvent.type(confirmInput, 'password123');
+
+      // Fill date of birth (Legal & Compliance V19)
+      const dobInput = screen.getByTestId('register-date-of-birth');
+      fireEvent.change(dobInput, { target: { value: getAdultDateOfBirth() } });
+
+      // Accept Terms of Service (Legal & Compliance V19)
+      const tosCheckbox = screen.getByTestId('register-tos-checkbox');
+      await userEvent.click(tosCheckbox);
       
       const submitButton = screen.getByRole('button', { name: 'Crear Cuenta' });
       fireEvent.click(submitButton);
@@ -411,6 +500,9 @@ describe('RegisterPage', () => {
       expect(screen.getByLabelText('Correo electrónico')).toBeDisabled();
       expect(screen.getByLabelText('Contraseña')).toBeDisabled();
       expect(screen.getByLabelText('Confirmar contraseña')).toBeDisabled();
+      // Legal & Compliance V19
+      expect(screen.getByTestId('register-date-of-birth')).toBeDisabled();
+      expect(screen.getByTestId('register-tos-checkbox')).toBeDisabled();
     });
 
     it('disables submit button while loading', () => {
@@ -459,6 +551,156 @@ describe('RegisterPage', () => {
       render(<RegisterPage />);
       expect(screen.getByLabelText('Contraseña')).toHaveAttribute('type', 'password');
       expect(screen.getByLabelText('Confirmar contraseña')).toHaveAttribute('type', 'password');
+    });
+
+    it('date of birth input has type date', () => {
+      render(<RegisterPage />);
+      expect(screen.getByTestId('register-date-of-birth')).toHaveAttribute('type', 'date');
+    });
+  });
+
+  // ============================================
+  // LEGAL & COMPLIANCE TESTS (V19)
+  // ============================================
+
+  describe('Legal & Compliance Fields', () => {
+    it('should show error when date of birth is not provided', async () => {
+      render(<RegisterPage />);
+      
+      // Fill other required fields but not date_of_birth
+      await userEvent.type(screen.getByLabelText('Correo electrónico'), 'test@example.com');
+      await userEvent.type(screen.getByLabelText('Contraseña'), 'Test1234');
+      await userEvent.type(screen.getByLabelText('Confirmar contraseña'), 'Test1234');
+      
+      // Accept TOS but don't fill date
+      const tosCheckbox = screen.getByTestId('register-tos-checkbox');
+      await userEvent.click(tosCheckbox);
+      
+      // Submit
+      const submitButton = screen.getByRole('button', { name: 'Crear Cuenta' });
+      fireEvent.click(submitButton);
+      
+      // Should show date of birth error
+      await waitFor(() => {
+        expect(screen.getByTestId('register-date-of-birth-error')).toBeInTheDocument();
+      });
+    });
+
+    it('should show error when TOS is not accepted', async () => {
+      render(<RegisterPage />);
+      
+      // Fill all fields but don't accept TOS
+      await userEvent.type(screen.getByLabelText('Correo electrónico'), 'test@example.com');
+      await userEvent.type(screen.getByLabelText('Contraseña'), 'Test1234');
+      await userEvent.type(screen.getByLabelText('Confirmar contraseña'), 'Test1234');
+      
+      const dobInput = screen.getByTestId('register-date-of-birth');
+      await userEvent.clear(dobInput);
+      await userEvent.type(dobInput, getAdultDateOfBirth());
+      
+      // Submit without accepting TOS
+      const submitButton = screen.getByRole('button', { name: 'Crear Cuenta' });
+      fireEvent.click(submitButton);
+      
+      // Should show TOS error
+      await waitFor(() => {
+        expect(screen.getByTestId('register-tos-error')).toBeInTheDocument();
+      });
+    });
+
+    it('should show error for underage users', async () => {
+      const user = userEvent.setup();
+      render(<RegisterPage />);
+      
+      // Fill all fields with underage date
+      await user.type(screen.getByLabelText('Correo electrónico'), 'test@example.com');
+      await user.type(screen.getByLabelText('Contraseña'), 'Test1234');
+      await user.type(screen.getByLabelText('Confirmar contraseña'), 'Test1234');
+      
+      // Set date to 16 years ago (underage) using fireEvent for reliable date input handling
+      const underageDate = new Date();
+      underageDate.setFullYear(underageDate.getFullYear() - 16);
+      const underageDateString = underageDate.toISOString().split('T')[0];
+      
+      const dobInput = screen.getByTestId('register-date-of-birth');
+      // Use fireEvent with bubbling to properly trigger react-hook-form handlers
+      fireEvent.change(dobInput, { target: { value: underageDateString } });
+      // Also dispatch a blur event to ensure validation runs
+      fireEvent.blur(dobInput);
+      
+      // Accept TOS
+      const tosCheckbox = screen.getByTestId('register-tos-checkbox');
+      await user.click(tosCheckbox);
+      
+      // Submit form
+      const submitButton = screen.getByRole('button', { name: 'Crear Cuenta' });
+      await user.click(submitButton);
+      
+      // The form validation should prevent submission for underage users
+      await waitFor(() => {
+        // Either the error element is shown OR register was not called (validation failed)
+        const hasError = screen.queryByTestId('register-date-of-birth-error') !== null;
+        const registerNotCalled = mockRegister.mock.calls.length === 0;
+        expect(hasError || registerNotCalled).toBe(true);
+      });
+      
+      // Verify the register function was NOT called (validation should have blocked it)
+      expect(mockRegister).not.toHaveBeenCalled();
+    });
+
+    it('should include date_of_birth and tos_accepted in register call', async () => {
+      render(<RegisterPage />);
+      
+      // Fill all fields
+      await userEvent.type(screen.getByLabelText('Correo electrónico'), 'test@example.com');
+      await userEvent.type(screen.getByLabelText('Contraseña'), 'Test1234');
+      await userEvent.type(screen.getByLabelText('Confirmar contraseña'), 'Test1234');
+      
+      const dobInput = screen.getByTestId('register-date-of-birth');
+      await userEvent.clear(dobInput);
+      await userEvent.type(dobInput, getAdultDateOfBirth());
+      
+      const tosCheckbox = screen.getByTestId('register-tos-checkbox');
+      await userEvent.click(tosCheckbox);
+      
+      // Submit
+      const submitButton = screen.getByRole('button', { name: 'Crear Cuenta' });
+      fireEvent.click(submitButton);
+      
+      // Verify register was called with all fields
+      await waitFor(() => {
+        const callArgs = mockRegister.mock.calls[0][0];
+        expect(callArgs).toHaveProperty('date_of_birth', getAdultDateOfBirth());
+        expect(callArgs).toHaveProperty('tos_accepted', true);
+      });
+    });
+
+    it('allows users exactly 18 years old to register', async () => {
+      render(<RegisterPage />);
+      
+      // Fill all fields with exactly 18 years old
+      await userEvent.type(screen.getByLabelText('Correo electrónico'), 'test@example.com');
+      await userEvent.type(screen.getByLabelText('Contraseña'), 'Test1234');
+      await userEvent.type(screen.getByLabelText('Confirmar contraseña'), 'Test1234');
+      
+      // Set date to exactly 18 years ago
+      const eighteenDate = new Date();
+      eighteenDate.setFullYear(eighteenDate.getFullYear() - 18);
+      const dobInput = screen.getByTestId('register-date-of-birth');
+      fireEvent.change(dobInput, { target: { value: eighteenDate.toISOString().split('T')[0] } });
+      
+      // Accept TOS
+      const tosCheckbox = screen.getByTestId('register-tos-checkbox');
+      await userEvent.click(tosCheckbox);
+      
+      // Submit
+      const submitButton = screen.getByRole('button', { name: 'Crear Cuenta' });
+      fireEvent.click(submitButton);
+      
+      // Should not show date of birth error - form should be valid
+      await waitFor(() => {
+        expect(mockRegister).toHaveBeenCalled();
+      });
     });
   });
 });

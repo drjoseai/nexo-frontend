@@ -33,6 +33,12 @@ export interface User {
   /** Whether the user's age has been verified */
   age_verified: boolean;
   
+  /** Whether user has accepted Terms of Service */
+  tos_accepted: boolean;
+  
+  /** User's date of birth */
+  date_of_birth: string | null;
+  
   /** User's preferred language for the interface */
   preferred_language: LanguageCode;
   
@@ -92,6 +98,12 @@ export interface RegisterRequest {
   
   /** Optional preferred language (defaults to 'es' if not provided) */
   preferred_language?: LanguageCode;
+  
+  /** User's date of birth (YYYY-MM-DD format) - Required for age verification */
+  date_of_birth: string;
+  
+  /** User must accept Terms of Service */
+  tos_accepted: boolean;
 }
 
 /**

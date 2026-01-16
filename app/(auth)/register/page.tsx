@@ -3,7 +3,7 @@
 /**
  * Register Page for NEXO v2.0
  * 
- * Handles user registration with email, password, and optional display name
+ * Handles user registration with email, password, date of birth, and TOS acceptance
  * Features form validation with react-hook-form and zod
  * Internationalized with next-intl
  * 
@@ -29,7 +29,21 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
+
+/**
+ * Calculate age from date of birth
+ */
+const calculateAge = (birthDate: Date): number => {
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
 
 /**
  * Register form validation schema with i18n messages
@@ -53,6 +67,20 @@ const createRegisterSchema = (t: (key: string) => string) =>
       confirm_password: z
         .string()
         .min(1, t("confirmPasswordRequired")),
+      date_of_birth: z
+        .string()
+        .min(1, t("dateOfBirthRequired"))
+        .refine((val) => {
+          const date = new Date(val);
+          return !isNaN(date.getTime());
+        }, t("dateOfBirthInvalid"))
+        .refine((val) => {
+          const date = new Date(val);
+          return calculateAge(date) >= 18;
+        }, t("mustBe18")),
+      tos_accepted: z
+        .boolean()
+        .refine((val) => val === true, t("tosRequired")),
     })
     .refine((data) => data.password === data.confirm_password, {
       message: t("passwordsDoNotMatch"),
@@ -81,6 +109,8 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -89,8 +119,13 @@ export default function RegisterPage() {
       email: "",
       password: "",
       confirm_password: "",
+      date_of_birth: "",
+      tos_accepted: false,
     },
   });
+
+  // Watch tos_accepted for controlled checkbox
+  const tosAccepted = watch("tos_accepted");
 
   /**
    * Handle form submission
@@ -183,6 +218,25 @@ export default function RegisterPage() {
             )}
           </div>
 
+          {/* Date of Birth Field */}
+          <div className="space-y-2">
+            <Label htmlFor="date_of_birth">{t("dateOfBirth")}</Label>
+            <Input
+              id="date_of_birth"
+              data-testid="register-date-of-birth"
+              type="date"
+              max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+              aria-invalid={!!errors.date_of_birth}
+              disabled={isLoading}
+              {...register("date_of_birth")}
+            />
+            {errors.date_of_birth && (
+              <p className="text-sm text-destructive" data-testid="register-date-of-birth-error">
+                {errors.date_of_birth.message}
+              </p>
+            )}
+          </div>
+
           {/* Password Field */}
           <div className="space-y-2">
             <Label htmlFor="password">{t("password")}</Label>
@@ -219,6 +273,46 @@ export default function RegisterPage() {
             {errors.confirm_password && (
               <p className="text-sm text-destructive" data-testid="register-confirm-password-error">
                 {errors.confirm_password.message}
+              </p>
+            )}
+          </div>
+
+          {/* Terms of Service Checkbox */}
+          <div className="space-y-2">
+            <div className="flex items-start space-x-2">
+              <Checkbox
+                id="tos_accepted"
+                data-testid="register-tos-checkbox"
+                checked={tosAccepted}
+                onCheckedChange={(checked) => setValue("tos_accepted", checked === true)}
+                disabled={isLoading}
+                aria-invalid={!!errors.tos_accepted}
+              />
+              <Label 
+                htmlFor="tos_accepted" 
+                className="text-sm font-normal leading-relaxed cursor-pointer"
+              >
+                {t("tosAcceptance")}{" "}
+                <Link 
+                  href="/terms" 
+                  target="_blank"
+                  className="text-primary hover:underline"
+                >
+                  {t("termsOfService")}
+                </Link>
+                {" "}{t("and")}{" "}
+                <Link 
+                  href="/privacy" 
+                  target="_blank"
+                  className="text-primary hover:underline"
+                >
+                  {t("privacyPolicy")}
+                </Link>
+              </Label>
+            </div>
+            {errors.tos_accepted && (
+              <p className="text-sm text-destructive" data-testid="register-tos-error">
+                {errors.tos_accepted.message}
               </p>
             )}
           </div>

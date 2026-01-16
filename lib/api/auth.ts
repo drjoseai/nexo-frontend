@@ -36,6 +36,8 @@ interface BackendUserResponse {
   plan: string;
   language: string;
   age_verified: boolean;
+  tos_accepted: boolean;
+  date_of_birth: string | null;
   trial_ends_at: string | null;
   created_at: string;
 }
@@ -54,6 +56,8 @@ function transformUser(backendUser: BackendUserResponse): User {
     display_name: backendUser.name,
     plan: backendUser.plan as User['plan'],
     age_verified: backendUser.age_verified,
+    tos_accepted: backendUser.tos_accepted,
+    date_of_birth: backendUser.date_of_birth,
     preferred_language: (backendUser.language || 'es') as User['preferred_language'],
     created_at: backendUser.created_at,
     trial_ends_at: backendUser.trial_ends_at,
@@ -108,6 +112,8 @@ export const register = async (data: RegisterRequest): Promise<RegisterResponse>
     password: data.password,
     name: data.display_name || null,
     language: data.preferred_language || 'es',
+    date_of_birth: data.date_of_birth,
+    tos_accepted: data.tos_accepted,
   };
 
   // Send registration request

@@ -51,7 +51,16 @@
     "loginError": "Error al iniciar sesión",
     "loginErrorDescription": "Error al iniciar sesión. Por favor, verifica tus credenciales.",
     "registerError": "Error al crear cuenta",
-    "registerErrorDescription": "Error al crear la cuenta. Por favor, intenta de nuevo."
+    "registerErrorDescription": "Error al crear la cuenta. Por favor, intenta de nuevo.",
+    "dateOfBirth": "Fecha de nacimiento",
+    "dateOfBirthRequired": "La fecha de nacimiento es requerida",
+    "dateOfBirthInvalid": "Formato de fecha inválido",
+    "mustBe18": "Debes tener al menos 18 años para registrarte",
+    "tosAcceptance": "Acepto los",
+    "termsOfService": "Términos de Servicio",
+    "and": "y la",
+    "privacyPolicy": "Política de Privacidad",
+    "tosRequired": "Debes aceptar los términos para continuar"
   },
   "chat": {
     "placeholder": "Escribe un mensaje...",

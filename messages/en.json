@@ -51,7 +51,16 @@
     "loginError": "Login error",
     "loginErrorDescription": "Error logging in. Please check your credentials.",
     "registerError": "Registration error",
-    "registerErrorDescription": "Error creating account. Please try again."
+    "registerErrorDescription": "Error creating account. Please try again.",
+    "dateOfBirth": "Date of birth",
+    "dateOfBirthRequired": "Date of birth is required",
+    "dateOfBirthInvalid": "Invalid date format",
+    "mustBe18": "You must be at least 18 years old to register",
+    "tosAcceptance": "I accept the",
+    "termsOfService": "Terms of Service",
+    "and": "and",
+    "privacyPolicy": "Privacy Policy",
+    "tosRequired": "You must accept the terms to continue"
   },
   "chat": {
     "placeholder": "Type a message...",
