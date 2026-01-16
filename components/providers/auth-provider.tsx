@@ -47,3 +47,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+/**
+ * Hook to access authentication state
+ * Provides isAuthenticated and isLoading for redirect logic
+ */
+export function useAuth() {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const user = useAuthStore((state) => state.user);
+  
+  return { isAuthenticated, isLoading, user };
+}
+
