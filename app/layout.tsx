@@ -5,6 +5,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/components/providers/auth-provider";
+import { PWAInstallPrompt } from "@/components/pwa/install-prompt";
 
 const montserrat = Montserrat({
   variable: "--font-sans",
@@ -140,8 +141,9 @@ export default async function RootLayout({
           <AuthProvider>
             {children}
           </AuthProvider>
-          <Toaster position="top-right" richColors />
-        </NextIntlClientProvider>
+        <Toaster position="top-right" richColors />
+        <PWAInstallPrompt />
+      </NextIntlClientProvider>
       </body>
     </html>
   );
