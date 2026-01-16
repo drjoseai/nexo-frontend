@@ -44,6 +44,8 @@ const mockUser = {
   preferred_language: 'es' as const,
   created_at: '2024-01-01T00:00:00Z',
   trial_ends_at: null,
+  tos_accepted: true,
+  date_of_birth: '1990-05-15',
 };
 
 const mockCredentials = {
@@ -268,6 +270,8 @@ describe('useAuthStore', () => {
           email: 'nuevo@nexo.com',
           password: 'NewPass123!',
           display_name: 'Nuevo Usuario',
+          date_of_birth: '1990-05-15',
+          tos_accepted: true,
         });
       });
 
@@ -291,6 +295,8 @@ describe('useAuthStore', () => {
           await result.current.register({
             email: 'existente@nexo.com',
             password: 'Pass123!',
+            date_of_birth: '1990-05-15',
+            tos_accepted: true,
           });
         } catch {
           // Expected

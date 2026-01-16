@@ -132,6 +132,8 @@ describe('Auth API', () => {
       password: 'securePass123',
       display_name: 'New User',
       preferred_language: 'en' as const,
+      date_of_birth: '1990-05-15',
+      tos_accepted: true,
     };
 
     const mockTokenResponse = {
@@ -188,6 +190,8 @@ describe('Auth API', () => {
         password: 'securePass123',
         name: 'New User',
         language: 'en',
+        date_of_birth: '1990-05-15',
+        tos_accepted: true,
       });
     });
 
@@ -198,6 +202,8 @@ describe('Auth API', () => {
       await register({
         email: 'new@nexo.ai',
         password: 'securePass123',
+        date_of_birth: '1990-05-15',
+        tos_accepted: true,
       });
 
       expect(mockedApiClient.post).toHaveBeenCalledWith('/api/v1/auth/register', {
@@ -205,6 +211,8 @@ describe('Auth API', () => {
         password: 'securePass123',
         name: null,
         language: 'es',
+        date_of_birth: '1990-05-15',
+        tos_accepted: true,
       });
     });
 
@@ -215,6 +223,8 @@ describe('Auth API', () => {
       await register({
         email: 'new@nexo.ai',
         password: 'securePass123',
+        date_of_birth: '1990-05-15',
+        tos_accepted: true,
       });
 
       const callArgs = mockedApiClient.post.mock.calls[0][1] as Record<string, unknown>;
