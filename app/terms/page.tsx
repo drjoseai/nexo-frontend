@@ -161,12 +161,24 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2>13. Contact Information</h2>
+            <h2>13. Governing Law</h2>
+            <p>
+              These Terms shall be governed by and construed in accordance with the laws of the 
+              State of Florida, United States, without regard to its conflict of law provisions.
+            </p>
+          </section>
+
+          <section>
+            <h2>14. Contact Information</h2>
             <p>
               If you have any questions about these Terms, please contact us at:
             </p>
             <p>
-              <strong>Email:</strong> legal@trynexo.ai<br />
+              <strong>VENKO AI INNOVATIONS LLC</strong><br />
+              2 S Biscayne Boulevard Suite 3200 #5817<br />
+              Miami, Florida, 33131<br />
+              United States<br /><br />
+              <strong>Email:</strong> info@trynexo.ai<br />
               <strong>Website:</strong> https://trynexo.ai
             </p>
           </section>
@@ -180,7 +192,7 @@ export default function TermsOfServicePage() {
             <Link href="/register" className="hover:text-foreground">Sign Up</Link>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
-            © 2026 NEXO. All rights reserved.
+            © 2026 VENKO AI INNOVATIONS LLC. All rights reserved.
           </p>
         </div>
       </div>

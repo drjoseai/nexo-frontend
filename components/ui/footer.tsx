@@ -34,7 +34,7 @@ export function Footer({ className = "" }: FooterProps) {
           
           {/* Copyright */}
           <p className="text-sm text-muted-foreground">
-            © {currentYear} NEXO
+            © {currentYear} VENKO AI INNOVATIONS LLC
           </p>
         </div>
       </div>
