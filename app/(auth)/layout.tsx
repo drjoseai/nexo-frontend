@@ -8,6 +8,7 @@
  */
 
 import type { Metadata } from "next";
+import { Footer } from "@/components/ui/footer";
 
 export const metadata: Metadata = {
   title: "NEXO - Autenticación",
@@ -20,11 +21,16 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 dark:from-purple-950 dark:via-blue-950 dark:to-indigo-950 p-4">
-      <div className="w-full max-w-md">
-        {children}
-      </div>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 dark:from-purple-950 dark:via-blue-950 dark:to-indigo-950">
+      {/* Main content area */}
+      <main className="flex-1 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          {children}
+        </div>
+      </main>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
-
