@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { useAuthStore } from "@/lib/store/auth";
+import { PWAInstallPrompt } from "@/components/pwa/install-prompt";
 
 export default function DashboardLayout({
   children,
@@ -51,6 +52,7 @@ export default function DashboardLayout({
       <main className="pl-64">
         <div className="container py-8">{children}</div>
       </main>
+      <PWAInstallPrompt />
     </div>
   );
 }

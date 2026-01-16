@@ -18,6 +18,20 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// PWA Viewport Configuration
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#7c3aed" },
+    { media: "(prefers-color-scheme: dark)", color: "#7c3aed" },
+  ],
+  colorScheme: "dark",
+};
+
+// PWA Metadata Configuration
 export const metadata: Metadata = {
   title: {
     default: "NEXO - Authentic Emotional Connection with AI",
@@ -31,34 +45,82 @@ export const metadata: Metadata = {
     "virtual companion",
     "AI chat",
     "NEXO",
+    "AI friend",
+    "emotional support",
   ],
-  authors: [{ name: "NEXO Team" }],
-  creator: "NEXO",
+  authors: [{ name: "VENKO AI INNOVATIONS LLC" }],
+  creator: "VENKO AI INNOVATIONS LLC",
+  publisher: "VENKO AI INNOVATIONS LLC",
+  
+  // PWA Manifest
+  manifest: "/manifest.json",
+  
+  // Apple PWA Meta Tags
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "NEXO",
+  },
+  
+  // Format Detection
+  formatDetection: {
+    telephone: false,
+    email: false,
+    address: false,
+  },
+  
+  // Open Graph
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://nexo.ai",
+    url: "https://app.trynexo.ai",
     siteName: "NEXO",
     title: "NEXO - Authentic Emotional Connection with AI",
     description:
-      "NEXO offers genuine companionship through three distinct AI personalities.",
+      "NEXO offers genuine companionship through three distinct AI personalities. Available 24/7 in any language.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "NEXO - AI Companion",
+      },
+    ],
   },
+  
+  // Twitter
   twitter: {
     card: "summary_large_image",
     title: "NEXO - Authentic Emotional Connection with AI",
     description:
       "NEXO offers genuine companionship through three distinct AI personalities.",
+    images: ["/og-image.png"],
   },
-  robots: {
-    index: true,
-    follow: true,
+  
+  // Application
+  applicationName: "NEXO",
+  category: "lifestyle",
+  
+  // Icons
+  icons: {
+    icon: [
+      { url: "/icons/icon-32x32.svg", sizes: "32x32", type: "image/svg+xml" },
+      { url: "/icons/icon-16x16.svg", sizes: "16x16", type: "image/svg+xml" },
+    ],
+    apple: [
+      { url: "/icons/apple-touch-icon.svg", sizes: "180x180", type: "image/svg+xml" },
+    ],
+    shortcut: ["/icons/icon-32x32.svg"],
   },
-};
-
-export const viewport: Viewport = {
-  themeColor: "#1A1B3D",
-  width: "device-width",
-  initialScale: 1,
+  
+  // Other PWA meta
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
+    "msapplication-TileColor": "#7c3aed",
+    "msapplication-tap-highlight": "no",
+  },
 };
 
 export default async function RootLayout({

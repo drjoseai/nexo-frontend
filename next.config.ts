@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import withPWAInit from "@ducanh2912/next-pwa";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
@@ -7,6 +8,70 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
+});
+
+const withPWA = withPWAInit({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  register: true,
+  reloadOnOnline: true,
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  fallbacks: {
+    document: "/offline",
+  },
+  workboxOptions: {
+    disableDevLogs: true,
+    skipWaiting: true,
+    clientsClaim: true,
+    runtimeCaching: [
+      {
+        urlPattern: /^https:\/\/api\.trynexo\.ai\/.*/i,
+        handler: "NetworkFirst",
+        options: {
+          cacheName: "api-cache",
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 60 * 60 * 24,
+          },
+          networkTimeoutSeconds: 10,
+        },
+      },
+      {
+        urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "google-fonts",
+          expiration: {
+            maxEntries: 10,
+            maxAgeSeconds: 60 * 60 * 24 * 365,
+          },
+        },
+      },
+      {
+        urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|avif|ico)$/i,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "images-cache",
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 60 * 60 * 24 * 30,
+          },
+        },
+      },
+      {
+        urlPattern: /\.(?:js|css)$/i,
+        handler: "StaleWhileRevalidate",
+        options: {
+          cacheName: "static-resources",
+          expiration: {
+            maxEntries: 50,
+            maxAgeSeconds: 60 * 60 * 24 * 7,
+          },
+        },
+      },
+    ],
+  },
 });
 
 const nextConfig: NextConfig = {
@@ -106,6 +171,16 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        // Cache para service worker
+        source: "/sw.js",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, must-revalidate",
+          },
+        ],
+      },
     ];
   },
 
@@ -143,4 +218,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withBundleAnalyzer(withNextIntl(nextConfig));
+export default withPWA(withBundleAnalyzer(withNextIntl(nextConfig)));

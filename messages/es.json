@@ -157,5 +157,24 @@
   },
   "sidebar": {
     "currentPlan": "Plan actual"
+  },
+  "pwa": {
+    "install": {
+      "title": "Instalar NEXO",
+      "description": "Agrega NEXO a tu pantalla de inicio para la mejor experiencia",
+      "button": "Instalar",
+      "iosStep1": "Toca el botón de compartir",
+      "iosStep2": "Luego \"Agregar a pantalla de inicio\""
+    },
+    "offline": {
+      "title": "Sin conexión",
+      "titleOnline": "¡Conectado!",
+      "description": "Parece que perdiste tu conexión a internet. Por favor verifica tu conexión e intenta de nuevo.",
+      "descriptionOnline": "Reconectando a NEXO...",
+      "retry": "Reintentar",
+      "connected": "Conectado",
+      "noConnection": "Sin conexión",
+      "autoReconnect": "NEXO se reconectará automáticamente cuando tu conexión se restablezca."
+    }
   }
 }
