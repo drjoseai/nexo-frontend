@@ -110,21 +110,15 @@ export function SubscriptionContent() {
     try {
       // Determinar la URL base del API
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.trynexo.ai';
-      
-      // Obtener token de autenticación
-      const token = localStorage.getItem('access_token');
-      
-      if (!token) {
-        throw new Error('No estás autenticado. Por favor, inicia sesión.');
-      }
 
       // Llamar al backend para crear checkout session
+      // Las cookies httpOnly se envían automáticamente con credentials: 'include'
       const response = await fetch(`${apiBaseUrl}/api/v1/stripe/create-checkout-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
+        credentials: 'include', // Esto envía las cookies httpOnly automáticamente
         body: JSON.stringify({
           plan: planId,
           success_url: `${window.location.origin}/dashboard/subscription?success=true`,
@@ -134,6 +128,12 @@ export function SubscriptionContent() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        
+        // Manejar error de autenticación específicamente
+        if (response.status === 401) {
+          throw new Error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+        }
+        
         throw new Error(errorData.detail || 'Error al crear la sesión de pago');
       }
 
