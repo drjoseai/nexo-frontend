@@ -63,7 +63,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
           analytics.identify(user.id, {
             email: user.email,
             plan: user.plan,
-            language: user.language,
+            language: user.preferred_language,
             display_name: user.display_name,
           });
           analytics.track(AnalyticsEvents.USER_LOGGED_IN, {
@@ -103,7 +103,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
 
           // Track registration event (user will be identified after auto-login)
           analytics.track(AnalyticsEvents.USER_REGISTERED, {
-            language: data.language || 'es',
+            language: data.preferred_language || 'es',
           });
 
           toast.dismiss(toastId);

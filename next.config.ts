@@ -186,6 +186,12 @@ const nextConfig: NextConfig = {
 
   // Webpack customizations
   webpack: (config, { isServer }) => {
+    // Exclude mixpanel-browser from server bundle (SSR fix)
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push('mixpanel-browser');
+    }
+    
     // Optimización de chunks
     if (!isServer) {
       config.optimization.splitChunks = {

@@ -7,31 +7,38 @@
  * @module lib/services/analytics
  */
 
-import mixpanel from 'mixpanel-browser';
-
 const MIXPANEL_TOKEN = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 // Initialize only once
 let isInitialized = false;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let mixpanelInstance: any = null;
+
+// Check if we're in the browser
+const isBrowser = typeof window !== 'undefined';
 
 export const analytics = {
   /**
    * Initialize Mixpanel - call once on app load
    */
-  init: () => {
-    if (isInitialized || !MIXPANEL_TOKEN) {
-      if (!MIXPANEL_TOKEN) {
+  init: async () => {
+    if (!isBrowser || isInitialized || !MIXPANEL_TOKEN) {
+      if (!MIXPANEL_TOKEN && isBrowser) {
         console.warn('[Analytics] MIXPANEL_TOKEN not configured');
       }
       return;
     }
     
+    // Dynamic import to avoid SSR issues
+    const mixpanel = (await import('mixpanel-browser')).default;
+    mixpanelInstance = mixpanel;
+    
     mixpanel.init(MIXPANEL_TOKEN, {
       debug: !IS_PRODUCTION,
-      track_pageviews: true,
+      track_pageview: true,
       persistence: 'localStorage',
-      ignore_dnt: false, // Respect Do Not Track
+      ignore_dnt: false,
     });
     
     isInitialized = true;
@@ -42,12 +49,12 @@ export const analytics = {
    * Identify user after login/register
    */
   identify: (userId: string, properties?: Record<string, unknown>) => {
-    if (!isInitialized) return;
+    if (!isBrowser || !isInitialized || !mixpanelInstance) return;
     
-    mixpanel.identify(userId);
+    mixpanelInstance.identify(userId);
     
     if (properties) {
-      mixpanel.people.set(properties);
+      mixpanelInstance.people.set(properties);
     }
   },
 
@@ -55,17 +62,17 @@ export const analytics = {
    * Reset user identity on logout
    */
   reset: () => {
-    if (!isInitialized) return;
-    mixpanel.reset();
+    if (!isBrowser || !isInitialized || !mixpanelInstance) return;
+    mixpanelInstance.reset();
   },
 
   /**
    * Track an event
    */
   track: (event: string, properties?: Record<string, unknown>) => {
-    if (!isInitialized) return;
+    if (!isBrowser || !isInitialized || !mixpanelInstance) return;
     
-    mixpanel.track(event, {
+    mixpanelInstance.track(event, {
       ...properties,
       timestamp: new Date().toISOString(),
     });
@@ -75,16 +82,16 @@ export const analytics = {
    * Set user properties
    */
   setUserProperties: (properties: Record<string, unknown>) => {
-    if (!isInitialized) return;
-    mixpanel.people.set(properties);
+    if (!isBrowser || !isInitialized || !mixpanelInstance) return;
+    mixpanelInstance.people.set(properties);
   },
 
   /**
    * Increment a numeric user property
    */
   increment: (property: string, value: number = 1) => {
-    if (!isInitialized) return;
-    mixpanel.people.increment(property, value);
+    if (!isBrowser || !isInitialized || !mixpanelInstance) return;
+    mixpanelInstance.people.increment(property, value);
   },
 };
 
@@ -116,4 +123,3 @@ export const AnalyticsEvents = {
 } as const;
 
 export type AnalyticsEvent = typeof AnalyticsEvents[keyof typeof AnalyticsEvents];
-

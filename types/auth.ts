@@ -47,6 +47,9 @@ export interface User {
   
   /** Optional timestamp when the trial period ends */
   trial_ends_at: string | null;
+  
+  /** Optional timestamp when the subscription ends */
+  subscription_ends_at?: string | null;
 }
 
 /**
