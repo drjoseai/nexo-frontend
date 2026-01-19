@@ -4,6 +4,7 @@
 
 import { create } from "zustand";
 import { chatApi } from "@/lib/api/chat";
+import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
 import type {
   Message,
   AvatarId,
@@ -147,6 +148,15 @@ export const useChatStore = create<ChatState>((set, get) => ({
         isSending: false,
         messagesRemaining: response.messages_remaining ?? state.messagesRemaining,
       }));
+
+      // Track message sent event
+      analytics.track(AnalyticsEvents.MESSAGE_SENT, {
+        avatar_id: avatarId,
+        relationship_type: relationshipType,
+        model_used: response.model_used,
+        sentiment_detected: response.sentiment_detected,
+      });
+      analytics.increment('total_messages_sent');
 
       return true;
     } catch (error: unknown) {

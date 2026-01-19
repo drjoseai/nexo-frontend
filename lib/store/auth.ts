@@ -12,6 +12,7 @@ import type { AuthStore, LoginRequest, RegisterRequest } from '@/types/auth';
 import * as authApi from '@/lib/api/auth';
 import { tokenManager } from '@/lib/services/token-manager';
 import { toast } from '@/lib/services/toast-service';
+import { analytics, AnalyticsEvents } from '@/lib/services/analytics';
 
 /**
  * Initial authentication state
@@ -58,6 +59,17 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
             error: null,
           });
 
+          // Track login event and identify user
+          analytics.identify(user.id, {
+            email: user.email,
+            plan: user.plan,
+            language: user.language,
+            display_name: user.display_name,
+          });
+          analytics.track(AnalyticsEvents.USER_LOGGED_IN, {
+            plan: user.plan,
+          });
+
           toast.dismiss(toastId);
           toast.success(`¡Bienvenido, ${user.display_name || user.email}!`);
         } catch (error: unknown) {
@@ -88,6 +100,11 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
           set({ isLoading: true, error: null });
 
           await authApi.register(data);
+
+          // Track registration event (user will be identified after auto-login)
+          analytics.track(AnalyticsEvents.USER_REGISTERED, {
+            language: data.language || 'es',
+          });
 
           toast.dismiss(toastId);
           toast.success('¡Cuenta creada exitosamente!');
@@ -124,6 +141,10 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
        */
       logout: async () => {
         try {
+          // Track logout event before resetting analytics
+          analytics.track(AnalyticsEvents.USER_LOGGED_OUT);
+          analytics.reset();
+
           // Call backend logout endpoint to clear httpOnly cookies
           await authApi.logout();
           

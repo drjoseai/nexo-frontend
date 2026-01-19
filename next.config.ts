@@ -147,8 +147,8 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: https:",
               // Fuentes: self + Google Fonts
               "font-src 'self' https://fonts.gstatic.com",
-              // Conexiones API: self + backend + WebSocket dev
-              "connect-src 'self' https://api.nexo.ai https://api.trynexo.ai https://nexo-v2-core.onrender.com http://localhost:8000 ws://localhost:3000 wss://localhost:3000",
+              // Conexiones API: self + backend + WebSocket dev + Mixpanel analytics
+              "connect-src 'self' https://api.nexo.ai https://api.trynexo.ai https://nexo-v2-core.onrender.com http://localhost:8000 ws://localhost:3000 wss://localhost:3000 https://api-js.mixpanel.com https://api.mixpanel.com https://*.mixpanel.com",
               // No permitir frames externos
               "frame-ancestors 'none'",
               // Form actions solo al mismo origen

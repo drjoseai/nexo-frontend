@@ -6,6 +6,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { PWAInstallPrompt } from "@/components/pwa/install-prompt";
+import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 
 const montserrat = Montserrat({
   variable: "--font-sans",
@@ -138,12 +139,14 @@ export default async function RootLayout({
         className={`${montserrat.variable} ${geistMono.variable} font-sans antialiased`}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-        <Toaster position="top-right" richColors />
-        <PWAInstallPrompt />
-      </NextIntlClientProvider>
+          <AnalyticsProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+            <Toaster position="top-right" richColors />
+            <PWAInstallPrompt />
+          </AnalyticsProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

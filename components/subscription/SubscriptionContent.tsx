@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { Check, X, Sparkles, Crown, Zap, Star, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
 
 type PlanId = "free" | "plus" | "premium";
 
@@ -88,6 +89,10 @@ export function SubscriptionContent() {
         type: 'success',
         text: '¡Pago completado exitosamente! Tu plan ha sido actualizado.',
       });
+      // Track checkout completed
+      analytics.track(AnalyticsEvents.CHECKOUT_COMPLETED, {
+        plan: user?.plan,
+      });
       // Limpiar URL params después de mostrar mensaje
       window.history.replaceState({}, '', '/dashboard/subscription');
     } else if (canceled === 'true') {
@@ -106,6 +111,12 @@ export function SubscriptionContent() {
 
     setIsLoading(planId);
     setStatusMessage(null); // Limpiar mensajes anteriores
+
+    // Track checkout started
+    analytics.track(AnalyticsEvents.CHECKOUT_STARTED, {
+      plan: planId,
+      price: PLANS[planId].price,
+    });
 
     try {
       // Determinar la URL base del API
