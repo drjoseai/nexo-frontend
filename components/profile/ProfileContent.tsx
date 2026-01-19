@@ -180,9 +180,14 @@ export function ProfileContent() {
                     {(user.plan || "free").toUpperCase()}
                   </Badge>
                 </div>
-                {user.trial_ends_at && (
+                {user.plan === "trial" && user.trial_ends_at && (
                   <p className="text-sm text-muted-foreground">
                     Trial termina: {formatDate(user.trial_ends_at)}
+                  </p>
+                )}
+                {(user.plan === "plus" || user.plan === "premium") && user.subscription_ends_at && (
+                  <p className="text-sm text-muted-foreground">
+                    Próxima renovación: {formatDate(user.subscription_ends_at)}
                   </p>
                 )}
               </div>
