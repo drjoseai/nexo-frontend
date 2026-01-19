@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 import withPWAInit from "@ducanh2912/next-pwa";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
@@ -148,7 +149,7 @@ const nextConfig: NextConfig = {
               // Fuentes: self + Google Fonts
               "font-src 'self' https://fonts.gstatic.com",
               // Conexiones API: self + backend + WebSocket dev + Mixpanel analytics
-              "connect-src 'self' https://api.nexo.ai https://api.trynexo.ai https://nexo-v2-core.onrender.com http://localhost:8000 ws://localhost:3000 wss://localhost:3000 https://api-js.mixpanel.com https://api.mixpanel.com https://*.mixpanel.com",
+              "connect-src 'self' https://api.nexo.ai https://api.trynexo.ai https://nexo-v2-core.onrender.com http://localhost:8000 ws://localhost:3000 wss://localhost:3000 https://api-js.mixpanel.com https://api.mixpanel.com https://*.mixpanel.com https://*.ingest.sentry.io https://*.sentry.io",
               // No permitir frames externos
               "frame-ancestors 'none'",
               // Form actions solo al mismo origen
@@ -224,4 +225,22 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withPWA(withBundleAnalyzer(withNextIntl(nextConfig)));
+const sentryConfig = {
+  // Suppress source map upload logs
+  silent: true,
+  
+  // Don't upload source maps in development
+  disableServerWebpackPlugin: process.env.NODE_ENV !== "production",
+  disableClientWebpackPlugin: process.env.NODE_ENV !== "production",
+  
+  // Hide source maps from client
+  hideSourceMaps: true,
+  
+  // Disable telemetry
+  telemetry: false,
+};
+
+export default withSentryConfig(
+  withPWA(withBundleAnalyzer(withNextIntl(nextConfig))),
+  sentryConfig
+);
