@@ -1,57 +1,41 @@
-# PWA Icons for NEXO
+# NEXO PWA Icons
 
-## Required Icons
+This directory contains all PWA icons for NEXO.
 
-Generate these icons from a 1024x1024 source image with the NEXO logo.
+## Icon Generation
 
-### Standard PWA Icons
-| Filename | Size | Purpose |
-|----------|------|---------|
-| icon-16x16.png | 16x16 | Favicon |
-| icon-32x32.png | 32x32 | Favicon |
-| icon-72x72.png | 72x72 | PWA |
-| icon-96x96.png | 96x96 | PWA |
-| icon-128x128.png | 128x128 | PWA |
-| icon-144x144.png | 144x144 | PWA |
-| icon-152x152.png | 152x152 | PWA |
-| icon-192x192.png | 192x192 | PWA (required) |
-| icon-384x384.png | 384x384 | PWA |
-| icon-512x512.png | 512x512 | PWA (required) |
+Icons are generated using the script at `scripts/generate-pwa-icons.js`.
 
-### Apple Touch Icon
-| Filename | Size | Purpose |
-|----------|------|---------|
-| apple-touch-icon.png | 180x180 | iOS home screen |
-
-### Avatar Shortcuts
-| Filename | Size | Purpose |
-|----------|------|---------|
-| shortcut-lia.png | 96x96 | Quick action for Lía |
-| shortcut-mia.png | 96x96 | Quick action for Mía |
-| shortcut-allan.png | 96x96 | Quick action for Allan |
-
-### Favicon
-| Filename | Sizes | Purpose |
-|----------|-------|---------|
-| favicon.ico | 16, 32, 48 | Browser tab icon |
-
-## Generation Tools
-
-Use one of these tools to generate all sizes from a single source image:
-
-1. **Real Favicon Generator**: https://realfavicongenerator.net/
-2. **PWA Builder**: https://www.pwabuilder.com/imageGenerator
-3. **NPM Package**: `npx pwa-asset-generator`
-
-## Design Guidelines
-
-- **Background**: Transparent or #0a0a0a (dark)
-- **Primary Color**: #7c3aed (violet)
-- **Safe Zone**: Keep logo within 80% of icon area for maskable icons
-- **Format**: PNG with transparency
-
-## Quick Generate Command
+### To regenerate icons:
 ```bash
-npx pwa-asset-generator ./source-logo.png ./public/icons --background "#0a0a0a" --padding "10%"
+npm run generate:pwa
 ```
 
+### Icon Types
+
+| Type | Purpose | Sizes |
+|------|---------|-------|
+| Standard | General use (any) | 72, 96, 128, 144, 152, 192, 384, 512 |
+| Maskable | Android adaptive icons | 192, 512 |
+| Apple Touch | iOS home screen | 180 |
+| Shortcuts | Avatar quick access | 96 |
+
+### File Naming Convention
+
+- `icon-{size}x{size}.png` - Standard icons
+- `icon-{size}x{size}-maskable.png` - Maskable icons
+- `shortcut-{avatar}.png` - Avatar shortcut icons
+- `apple-touch-icon.png` - iOS icon
+
+## Brand Colors
+
+- Primary: #7c3aed (Purple)
+- Background: #0a0a0a (Dark)
+- Lía: #ec4899 (Pink)
+- Mía: #f97316 (Orange)
+- Allan: #3b82f6 (Blue)
+
+## Legacy SVG Files
+
+SVG files are kept for reference but PNG is used for PWA compatibility.
+SVG files can be safely deleted after confirming PNG icons work correctly.
