@@ -25,6 +25,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Bell, Moon, Globe, Trash2, Save, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export function SettingsContent() {
   const { logout } = useAuthStore();
@@ -47,9 +48,35 @@ export function SettingsContent() {
 
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsDeleting(false);
-    logout();
+    
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/account`, {
+        method: 'DELETE',
+        credentials: 'include', // Importante: enviar cookies httpOnly
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.status === 204) {
+        // Éxito - cuenta eliminada
+        // El backend ya eliminó las cookies, solo hacer logout local
+        logout();
+      } else if (response.status === 401) {
+        // Token inválido o expirado
+        toast.error('Tu sesión ha expirado. Por favor inicia sesión de nuevo.');
+        logout();
+      } else {
+        // Otro error
+        const errorData = await response.json().catch(() => ({}));
+        toast.error(errorData.detail || 'Error al eliminar cuenta. Por favor intenta de nuevo.');
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      toast.error('Error de conexión. Por favor verifica tu internet e intenta de nuevo.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
