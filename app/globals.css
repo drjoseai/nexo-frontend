@@ -281,3 +281,47 @@
 .delay-300 { animation-delay: 300ms; }
 .delay-400 { animation-delay: 400ms; }
 .delay-500 { animation-delay: 500ms; }
+
+/* ============================================
+   Avatar Animations - Chat Sidebar
+   ============================================ */
+
+/* Avatar breathing effect */
+@keyframes avatar-breathing {
+  0%, 100% { transform: scale(1.0) translateY(0px); }
+  50% { transform: scale(1.02) translateY(-8px); }
+}
+
+/* Avatar glow effects - per avatar color */
+@keyframes avatar-glow-purple {
+  0%, 100% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.4); }
+  50% { box-shadow: 0 0 40px rgba(124, 58, 237, 0.8); }
+}
+
+@keyframes avatar-glow-amber {
+  0%, 100% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
+  50% { box-shadow: 0 0 40px rgba(245, 158, 11, 0.8); }
+}
+
+@keyframes avatar-glow-cyan {
+  0%, 100% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.4); }
+  50% { box-shadow: 0 0 40px rgba(6, 182, 212, 0.8); }
+}
+
+/* Combined breathing + float animation */
+.avatar-animated {
+  animation: avatar-breathing 5s ease-in-out infinite;
+}
+
+/* Glow animations per avatar */
+.avatar-glow-lia {
+  animation: avatar-glow-purple 3s ease-in-out infinite;
+}
+
+.avatar-glow-mia {
+  animation: avatar-glow-amber 3s ease-in-out infinite;
+}
+
+.avatar-glow-allan {
+  animation: avatar-glow-cyan 3s ease-in-out infinite;
+}

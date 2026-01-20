@@ -179,33 +179,38 @@ describe("ChatInterface", () => {
     it("renders avatar name for Lía", () => {
       render(<ChatInterface avatarId="lia" />);
       
-      expect(screen.getByText("Lía")).toBeInTheDocument();
+      const elements = screen.getAllByText("Lía");
+      expect(elements.length).toBeGreaterThanOrEqual(1);
     });
 
     it("renders avatar name for Mía", () => {
       render(<ChatInterface avatarId="mia" />);
       
-      expect(screen.getByText("Mía")).toBeInTheDocument();
+      const elements = screen.getAllByText("Mía");
+      expect(elements.length).toBeGreaterThanOrEqual(1);
     });
 
     it("renders avatar name for Allan", () => {
       render(<ChatInterface avatarId="allan" />);
       
-      expect(screen.getByText("Allan")).toBeInTheDocument();
+      const elements = screen.getAllByText("Allan");
+      expect(elements.length).toBeGreaterThanOrEqual(1);
     });
 
     it("shows 'En línea' status when not sending", () => {
       mockStoreState.isSending = false;
       render(<ChatInterface avatarId="lia" />);
       
-      expect(screen.getByText("En línea")).toBeInTheDocument();
+      const onlineElements = screen.getAllByText("En línea");
+      expect(onlineElements.length).toBeGreaterThanOrEqual(1);
     });
 
     it("shows 'Escribiendo...' status when sending", () => {
       mockStoreState.isSending = true;
       render(<ChatInterface avatarId="lia" />);
       
-      expect(screen.getByText("Escribiendo...")).toBeInTheDocument();
+      const typingElements = screen.getAllByText(/Escribiendo.../);
+      expect(typingElements.length).toBeGreaterThanOrEqual(1);
     });
 
     it("shows messages remaining when available", () => {
@@ -412,22 +417,25 @@ describe("ChatInterface", () => {
     it("applies purple color class for Lía", () => {
       render(<ChatInterface avatarId="lia" />);
       
-      const avatarName = screen.getByText("Lía");
-      expect(avatarName).toHaveClass("text-purple-400");
+      const avatarNames = screen.getAllByText("Lía");
+      const hasCorrectClass = avatarNames.some(el => el.classList.contains("text-purple-400"));
+      expect(hasCorrectClass).toBe(true);
     });
 
     it("applies amber color class for Mía", () => {
       render(<ChatInterface avatarId="mia" />);
       
-      const avatarName = screen.getByText("Mía");
-      expect(avatarName).toHaveClass("text-amber-400");
+      const avatarNames = screen.getAllByText("Mía");
+      const hasCorrectClass = avatarNames.some(el => el.classList.contains("text-amber-400"));
+      expect(hasCorrectClass).toBe(true);
     });
 
     it("applies cyan color class for Allan", () => {
       render(<ChatInterface avatarId="allan" />);
       
-      const avatarName = screen.getByText("Allan");
-      expect(avatarName).toHaveClass("text-cyan-400");
+      const avatarNames = screen.getAllByText("Allan");
+      const hasCorrectClass = avatarNames.some(el => el.classList.contains("text-cyan-400"));
+      expect(hasCorrectClass).toBe(true);
     });
   });
 });
