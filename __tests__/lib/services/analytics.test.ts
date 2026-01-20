@@ -47,7 +47,11 @@ describe('Analytics Service', () => {
 
     it('should initialize mixpanel when token is set', async () => {
       process.env.NEXT_PUBLIC_MIXPANEL_TOKEN = 'test-token';
-      process.env.NODE_ENV = 'production';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'production',
+        writable: true,
+        configurable: true,
+      });
       
       jest.resetModules();
       const { analytics } = await import('@/lib/services/analytics');
