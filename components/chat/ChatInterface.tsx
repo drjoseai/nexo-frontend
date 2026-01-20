@@ -163,13 +163,18 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
             {/* Avatar circle */}
             <div
               className={cn(
-                "flex h-10 w-10 items-center justify-center rounded-full",
-                "bg-gradient-to-br from-white/10 to-white/5",
-                "border border-white/20 text-lg font-semibold",
-                avatarColorClass
+                "relative h-10 w-10 rounded-full overflow-hidden",
+                "border-2",
+                avatarId === "lia" ? "border-purple-400" : 
+                avatarId === "mia" ? "border-amber-400" : "border-cyan-400"
               )}
             >
-              {avatar?.name?.charAt(0) || "?"}
+              <Image
+                src={`/avatars/${avatarId}.webp`}
+                alt={avatar?.name || "Avatar"}
+                fill
+                className="object-cover object-top"
+              />
             </div>
 
             {/* Nombre y estado */}
@@ -204,6 +209,33 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         </header>
 
         {/* ============================================ */}
+        {/* AVATAR SECTION - Solo visible en móvil */}
+        {/* ============================================ */}
+        <div className="flex lg:hidden flex-col items-center py-4 border-b border-white/10 bg-gradient-to-b from-black/20 to-transparent">
+          <div
+            className={cn(
+              "relative w-24 h-24 rounded-full overflow-hidden",
+              "avatar-animated",
+              `avatar-glow-${avatarId}`
+            )}
+          >
+            <Image
+              src={`/avatars/${avatarId}.webp`}
+              alt={avatar?.name || "Avatar"}
+              fill
+              className="object-cover object-top"
+              priority
+            />
+          </div>
+          <p className={cn("mt-3 font-semibold text-lg", avatarColorClass)}>
+            {avatar?.name}
+          </p>
+          <p className="text-xs text-white/50 mt-1">
+            {isSending ? "Escribiendo..." : "En línea"}
+          </p>
+        </div>
+
+        {/* ============================================ */}
         {/* MESSAGES AREA */}
         {/* ============================================ */}
         <div className="flex-1 overflow-y-auto p-4">
@@ -217,9 +249,10 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
           {/* Empty state */}
           {!isLoading && messages.length === 0 && (
             <div className="flex h-full flex-col items-center justify-center text-center">
+              {/* Avatar solo en desktop (en móvil ya está arriba) */}
               <div
                 className={cn(
-                  "mb-4 flex h-16 w-16 items-center justify-center rounded-full",
+                  "mb-4 hidden lg:flex h-16 w-16 items-center justify-center rounded-full",
                   "bg-gradient-to-br from-white/10 to-white/5",
                   "border border-white/20 text-2xl font-bold",
                   avatarColorClass
