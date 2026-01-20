@@ -17,6 +17,10 @@ const eslintConfig = defineConfig([
     "jest.setup.js",
     "postcss.config.js",
     "tailwind.config.js",
+    // Scripts (CommonJS utilities)
+    "scripts/**",
+    // Generated files in public
+    "public/*.js",
     // Coverage and reports
     "coverage/**",
     "playwright-report/**",
