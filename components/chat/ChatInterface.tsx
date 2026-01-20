@@ -209,31 +209,33 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         </header>
 
         {/* ============================================ */}
-        {/* AVATAR SECTION - Solo visible en móvil */}
+        {/* AVATAR SECTION - Solo visible en móvil cuando chat está vacío */}
         {/* ============================================ */}
-        <div className="flex lg:hidden flex-col items-center py-4 border-b border-white/10 bg-gradient-to-b from-black/20 to-transparent">
-          <div
-            className={cn(
-              "relative w-24 h-24 rounded-full overflow-hidden",
-              "avatar-animated",
-              `avatar-glow-${avatarId}`
-            )}
-          >
-            <Image
-              src={`/avatars/${avatarId}.webp`}
-              alt={avatar?.name || "Avatar"}
-              fill
-              className="object-cover object-top"
-              priority
-            />
+        {!isLoading && messages.length === 0 && (
+          <div className="flex lg:hidden flex-col items-center py-4 border-b border-white/10 bg-gradient-to-b from-black/20 to-transparent">
+            <div
+              className={cn(
+                "relative w-24 h-24 rounded-full overflow-hidden",
+                "avatar-animated",
+                `avatar-glow-${avatarId}`
+              )}
+            >
+              <Image
+                src={`/avatars/${avatarId}.webp`}
+                alt={avatar?.name || "Avatar"}
+                fill
+                className="object-cover object-top"
+                priority
+              />
+            </div>
+            <p className={cn("mt-3 font-semibold text-lg", avatarColorClass)}>
+              {avatar?.name}
+            </p>
+            <p className="text-xs text-white/50 mt-1">
+              {isSending ? "Escribiendo..." : "En línea"}
+            </p>
           </div>
-          <p className={cn("mt-3 font-semibold text-lg", avatarColorClass)}>
-            {avatar?.name}
-          </p>
-          <p className="text-xs text-white/50 mt-1">
-            {isSending ? "Escribiendo..." : "En línea"}
-          </p>
-        </div>
+        )}
 
         {/* ============================================ */}
         {/* MESSAGES AREA */}

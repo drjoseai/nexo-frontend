@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { useAuthStore } from "@/lib/store/auth";
 import { PWAInstallPrompt } from "@/components/pwa/install-prompt";
+import { cn } from "@/lib/utils";
 
 export default function DashboardLayout({
   children,
@@ -12,7 +13,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { isAuthenticated, isLoading, loadUser } = useAuthStore();
+  
+  const isInChat = pathname?.startsWith("/dashboard/chat");
 
   // Load user data on mount
   useEffect(() => {
@@ -45,12 +49,22 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Sidebar */}
-      <Sidebar />
+      {/* Sidebar - Oculto en móvil cuando estamos en chat */}
+      <div className={cn(
+        isInChat ? "hidden lg:block" : "block"
+      )}>
+        <Sidebar />
+      </div>
 
-      {/* Main content */}
-      <main className="pl-64">
-        <div className="container py-8">{children}</div>
+      {/* Main content - Sin padding en móvil cuando estamos en chat */}
+      <main className={cn(
+        isInChat ? "pl-0 lg:pl-64" : "pl-64"
+      )}>
+        <div className={cn(
+          isInChat ? "h-screen" : "container py-8"
+        )}>
+          {children}
+        </div>
       </main>
       <PWAInstallPrompt />
     </div>
