@@ -68,13 +68,16 @@ export async function getChatMessages(
   const history = await getChatHistory(avatarId, limit);
   
   // Transformar historial del backend a formato de UI
-  return history.history.map((msg) => ({
-    id: msg.id,
-    role: msg.role,
-    content: msg.content,
-    timestamp: new Date(msg.timestamp),
-    status: "sent" as const,
-  }));
+  // Ordenar por timestamp ascendente (mensajes antiguos primero, recientes al final)
+  return history.history
+    .map((msg) => ({
+      id: msg.id,
+      role: msg.role,
+      content: msg.content,
+      timestamp: new Date(msg.timestamp),
+      status: "sent" as const,
+    }))
+    .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 }
 
 // ============================================
