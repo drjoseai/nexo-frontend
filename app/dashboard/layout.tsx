@@ -20,11 +20,6 @@ export default function DashboardLayout({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isInChat = pathname?.startsWith("/dashboard/chat");
 
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
-
   // Load user data on mount
   useEffect(() => {
     loadUser();
