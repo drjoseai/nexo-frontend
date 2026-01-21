@@ -11,6 +11,7 @@ import {
   Settings,
   LogOut,
   Sparkles,
+  X,
 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/auth";
 import { Button } from "@/components/ui/button";
@@ -46,7 +47,13 @@ const navItems: NavItem[] = [
   },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+  isMobile?: boolean;
+}
+
+export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarProps) {
   const pathname = usePathname();
   const locale = useLocale() as Locale;
   const router = useRouter();
@@ -57,15 +64,8 @@ export function Sidebar() {
 
   const handleLogout = async () => {
     try {
-      // Call logout to clear state and cookies
       await logout();
-      
-      // Hybrid navigation approach for maximum reliability
-      // Try Next.js router first
       router.replace('/login');
-      
-      // Fallback: If router doesn't navigate within 300ms, force navigation with window.location
-      // This handles edge cases where React unmounts before router completes
       setTimeout(() => {
         if (window.location.pathname !== '/login') {
           console.warn('[Logout] Router navigation incomplete, using window.location fallback');
@@ -74,11 +74,135 @@ export function Sidebar() {
       }, 300);
     } catch (error) {
       console.error('[Logout] Error during logout:', error);
-      // On error, force navigation immediately
       window.location.href = '/login';
     }
   };
 
+  const handleNavClick = () => {
+    // Close drawer on mobile when clicking a link
+    if (isMobile && onClose) {
+      onClose();
+    }
+  };
+
+  // Mobile drawer mode
+  if (isMobile) {
+    return (
+      <>
+        {/* Overlay */}
+        <div
+          className={cn(
+            "fixed inset-0 z-40 bg-black/50 transition-opacity lg:hidden",
+            isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          )}
+          onClick={onClose}
+          aria-hidden="true"
+        />
+        
+        {/* Drawer */}
+        <aside
+          className={cn(
+            "fixed left-0 top-0 z-50 h-screen w-64 border-r border-border bg-sidebar transition-transform duration-300 ease-in-out lg:hidden",
+            isOpen ? "translate-x-0" : "-translate-x-full"
+          )}
+        >
+          <div className="flex h-full flex-col">
+            {/* Header with close button */}
+            <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-6">
+              <Link href="/dashboard" className="flex items-center gap-2" onClick={handleNavClick}>
+                <Sparkles className="h-6 w-6 text-primary" />
+                <span className="text-xl font-bold text-gradient">NEXO</span>
+              </Link>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                aria-label="Close menu"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex-1 space-y-1 px-3 py-4">
+              {navItems.map((item) => {
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== "/dashboard" && pathname.startsWith(item.href));
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={handleNavClick}
+                    className={cn(
+                      "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                      isActive
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+                    )}
+                  >
+                    {item.icon}
+                    {t(item.labelKey)}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* User section */}
+            <div className="border-t border-sidebar-border p-4">
+              {/* Plan badge */}
+              <div className="mb-3 flex items-center justify-between rounded-lg bg-sidebar-accent/50 px-3 py-2">
+                <span className="text-xs text-muted-foreground">
+                  {tSidebar("currentPlan")}
+                </span>
+                <span className="rounded-full bg-primary/20 px-2 py-0.5 text-xs font-semibold capitalize text-primary">
+                  {user?.plan || "free"}
+                </span>
+              </div>
+
+              {/* User info */}
+              <div className="mb-3 flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/20 text-primary">
+                  <User className="h-4 w-4" />
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <p className="truncate text-sm font-medium">
+                    {user?.display_name || user?.email?.split("@")[0] || "Usuario"}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {user?.email}
+                  </p>
+                </div>
+              </div>
+
+              {/* Language selector */}
+              <div className="mb-3">
+                <LanguageSelector
+                  currentLocale={locale}
+                  variant="ghost"
+                  showLabel={true}
+                  className="w-full justify-start"
+                />
+              </div>
+
+              {/* Logout button */}
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2 text-muted-foreground hover:text-destructive"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4" />
+                {tAuth("logout")}
+              </Button>
+            </div>
+          </div>
+        </aside>
+      </>
+    );
+  }
+
+  // Desktop sidebar (unchanged behavior)
   return (
     <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-border bg-sidebar">
       <div className="flex h-full flex-col">

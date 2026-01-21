@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { MobileHeader } from "@/components/layout/MobileHeader";
 import { useAuthStore } from "@/lib/store/auth";
 import { PWAInstallPrompt } from "@/components/pwa/install-prompt";
 import { cn } from "@/lib/utils";
@@ -16,7 +17,13 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const { isAuthenticated, isLoading, loadUser } = useAuthStore();
   
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isInChat = pathname?.startsWith("/dashboard/chat");
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
   // Load user data on mount
   useEffect(() => {
@@ -49,16 +56,36 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Sidebar - Oculto en móvil cuando estamos en chat */}
+      {/* Mobile Header - Hidden in chat (chat has its own header) and on desktop */}
+      {!isInChat && (
+        <MobileHeader onMenuClick={() => setIsMobileMenuOpen(true)} />
+      )}
+
+      {/* Mobile Drawer Sidebar */}
+      <div className="lg:hidden">
+        <Sidebar
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
+          isMobile={true}
+        />
+      </div>
+
+      {/* Desktop Sidebar - Hidden in chat on mobile (chat handles its own layout) */}
       <div className={cn(
-        isInChat ? "hidden lg:block" : "block"
+        "hidden lg:block",
+        isInChat && "hidden lg:block" // Always show on desktop
       )}>
         <Sidebar />
       </div>
 
-      {/* Main content - Sin padding en móvil cuando estamos en chat */}
+      {/* Main content */}
       <main className={cn(
-        isInChat ? "pl-0 lg:pl-64" : "pl-64"
+        // Desktop: always pad for sidebar
+        "lg:pl-64",
+        // Mobile: pad top for header (except in chat which has own header)
+        !isInChat && "pt-14 lg:pt-0",
+        // Mobile chat: no padding (full screen)
+        isInChat && "pl-0"
       )}>
         <div className={cn(
           isInChat ? "h-screen" : "container py-8"
@@ -66,8 +93,8 @@ export default function DashboardLayout({
           {children}
         </div>
       </main>
+      
       <PWAInstallPrompt />
     </div>
   );
 }
-
