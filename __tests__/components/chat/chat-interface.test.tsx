@@ -73,6 +73,30 @@ jest.mock("@/components/chat/MessageBubble", () => ({
   ),
 }));
 
+// Mock DeleteHistoryButton
+jest.mock("@/components/chat/DeleteHistoryButton", () => ({
+  DeleteHistoryButton: ({ onDelete, disabled }: {
+    avatarName: string;
+    onDelete: () => Promise<void>;
+    disabled?: boolean;
+  }) => (
+    <button
+      data-testid="delete-history-button"
+      onClick={() => onDelete()}
+      disabled={disabled}
+    >
+      Delete History
+    </button>
+  ),
+}));
+
+// Mock useMessageSound hook
+jest.mock("@/lib/hooks/useMessageSound", () => ({
+  useMessageSound: () => ({
+    playMessageSound: jest.fn(),
+  }),
+}));
+
 // Mock store state
 const mockStoreState = {
   messages: [] as Message[],
@@ -84,6 +108,7 @@ const mockStoreState = {
   loadHistory: jest.fn(),
   clearMessages: jest.fn(),
   clearError: jest.fn(),
+  deleteHistory: jest.fn(),
 };
 
 // Mock useChatStore
@@ -153,6 +178,7 @@ function resetMockStore() {
   mockStoreState.loadHistory.mockClear();
   mockStoreState.clearMessages.mockClear();
   mockStoreState.clearError.mockClear();
+  mockStoreState.deleteHistory.mockClear();
   mockLocalStorage.clear();
 }
 

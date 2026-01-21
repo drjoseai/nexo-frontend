@@ -26,6 +26,7 @@ interface ChatState {
   // Acciones
   sendMessage: (content: string, avatarId: string, relationshipType?: string) => Promise<boolean>;
   loadHistory: (avatarId: string, limit?: number) => Promise<void>;
+  deleteHistory: (avatarId: AvatarId) => Promise<void>;
   setCurrentAvatar: (avatarId: AvatarId) => void;
   clearMessages: () => void;
   clearError: () => void;
@@ -222,6 +223,23 @@ export const useChatStore = create<ChatState>((set, get) => ({
    */
   clearError: () => {
     set({ error: null });
+  },
+
+  /**
+   * Borra el historial de chat permanentemente del servidor
+   */
+  deleteHistory: async (avatarId: AvatarId) => {
+    try {
+      // Llamar al API para borrar historial en el backend
+      await chatApi.deleteHistory(avatarId);
+
+      // Limpiar mensajes locales
+      set({ messages: [], error: null });
+    } catch (error) {
+      console.error("[Chat] Error deleting history:", error);
+      set({ error: "Error al borrar el historial" });
+      throw error;
+    }
   },
 }));
 

@@ -13,6 +13,8 @@ import { useAuthStore } from "@/lib/store/auth";
 import { ChatInput } from "./ChatInput";
 import { MessageBubble } from "./MessageBubble";
 import { RelationshipTypeSelector } from "./RelationshipTypeSelector";
+import { DeleteHistoryButton } from "./DeleteHistoryButton";
+import { useMessageSound } from "@/lib/hooks/useMessageSound";
 import { cn } from "@/lib/utils";
 import { toast } from "@/lib/services/toast-service";
 import type { AvatarId, RelationshipType } from "@/types/chat";
@@ -60,7 +62,11 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     loadHistory,
     clearMessages,
     clearError,
+    deleteHistory,
   } = useChatStore();
+
+  // Sound hook
+  const { playMessageSound } = useMessageSound();
 
   // Auth store para obtener plan del usuario
   const user = useAuthStore((state) => state.user);
@@ -76,6 +82,21 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Reproducir sonido cuando llega mensaje del avatar
+  const prevMessagesLengthRef = useRef(messages.length);
+
+  useEffect(() => {
+    // Solo si hay más mensajes que antes
+    if (messages.length > prevMessagesLengthRef.current) {
+      const lastMessage = messages[messages.length - 1];
+      // Solo reproducir sonido para mensajes del avatar (no del usuario)
+      if (lastMessage && lastMessage.role === "assistant") {
+        playMessageSound();
+      }
+    }
+    prevMessagesLengthRef.current = messages.length;
+  }, [messages, playMessageSound]);
 
   // Guardar relationship type en localStorage cuando cambie
   useEffect(() => {
@@ -104,6 +125,12 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   // Handler para enviar mensaje
   const handleSendMessage = async (content: string) => {
     await sendMessage(content, avatarId, relationshipType);
+  };
+
+  // Handler para borrar historial
+  const handleDeleteHistory = async () => {
+    await deleteHistory(avatarId);
+    toast.success("Historial borrado correctamente");
   };
 
   // Avatar colors para el header
@@ -188,8 +215,17 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
             </div>
           </div>
 
-          {/* Relationship Type Selector */}
-          <div className="ml-auto flex items-center gap-3">
+          {/* Delete History Button & Relationship Type Selector */}
+          <div className="ml-auto flex items-center gap-2">
+            {/* Delete History Button - solo visible si hay mensajes */}
+            {messages.length > 0 && (
+              <DeleteHistoryButton
+                avatarName={avatar?.name || "Avatar"}
+                onDelete={handleDeleteHistory}
+                disabled={isSending || isLoading}
+              />
+            )}
+
             <RelationshipTypeSelector
               value={relationshipType}
               onChange={handleRelationshipTypeChange}

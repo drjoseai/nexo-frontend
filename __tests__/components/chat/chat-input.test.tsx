@@ -15,6 +15,22 @@ jest.mock("lucide-react", () => ({
   Send: () => <svg data-testid="send-icon" />,
 }));
 
+// Mock EmojiPickerButton
+jest.mock("@/components/chat/EmojiPickerButton", () => ({
+  EmojiPickerButton: ({ onEmojiSelect, disabled }: {
+    onEmojiSelect: (emoji: string) => void;
+    disabled?: boolean;
+  }) => (
+    <button
+      data-testid="emoji-picker-button"
+      onClick={() => onEmojiSelect("😀")}
+      disabled={disabled}
+    >
+      Emoji
+    </button>
+  ),
+}));
+
 // ============================================
 // TEST SUITE
 // ============================================

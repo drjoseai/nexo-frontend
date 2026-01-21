@@ -6,6 +6,7 @@
 import { useState, useRef, useEffect, KeyboardEvent } from "react";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EmojiPickerButton } from "./EmojiPickerButton";
 import { cn } from "@/lib/utils";
 
 // ============================================
@@ -70,6 +71,12 @@ export function ChatInput({
     }
   };
 
+  // Handler para insertar emoji
+  const handleEmojiSelect = (emoji: string) => {
+    setMessage((prev) => prev + emoji);
+    textareaRef.current?.focus();
+  };
+
   const charactersRemaining = maxLength - message.length;
   const isNearLimit = charactersRemaining < 100;
 
@@ -91,6 +98,12 @@ export function ChatInput({
             "focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
             "min-h-[24px] max-h-[150px]"
           )}
+        />
+
+        {/* Botón de emojis */}
+        <EmojiPickerButton
+          onEmojiSelect={handleEmojiSelect}
+          disabled={disabled}
         />
 
         {/* Botón enviar */}

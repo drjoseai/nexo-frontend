@@ -80,6 +80,14 @@ export async function getChatMessages(
     .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 }
 
+/**
+ * Borra el historial de conversación con un avatar
+ * Endpoint: DELETE /chat/history/{avatar_id}
+ */
+export async function deleteHistory(avatarId: string): Promise<void> {
+  await apiClient.delete(`/chat/history/${avatarId}`);
+}
+
 // ============================================
 // CHAT API OBJECT (alternativa para imports)
 // ============================================
@@ -88,6 +96,7 @@ export const chatApi = {
   sendMessage,
   getChatHistory,
   getChatMessages,
+  deleteHistory,
 };
 
 export default chatApi;
