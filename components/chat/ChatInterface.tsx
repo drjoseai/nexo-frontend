@@ -14,7 +14,6 @@ import { ChatInput } from "./ChatInput";
 import { MessageBubble } from "./MessageBubble";
 import { RelationshipTypeSelector } from "./RelationshipTypeSelector";
 import { DeleteHistoryButton } from "./DeleteHistoryButton";
-import { useMessageSound } from "@/lib/hooks/useMessageSound";
 import { cn } from "@/lib/utils";
 import { toast } from "@/lib/services/toast-service";
 import type { AvatarId, RelationshipType } from "@/types/chat";
@@ -65,9 +64,6 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     deleteHistory,
   } = useChatStore();
 
-  // Sound hook
-  const { playMessageSound } = useMessageSound();
-
   // Auth store para obtener plan del usuario
   const user = useAuthStore((state) => state.user);
   const userPlan = user?.plan || "free";
@@ -82,21 +78,6 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
-  // Reproducir sonido cuando llega mensaje del avatar
-  const prevMessagesLengthRef = useRef(messages.length);
-
-  useEffect(() => {
-    // Solo si hay más mensajes que antes
-    if (messages.length > prevMessagesLengthRef.current) {
-      const lastMessage = messages[messages.length - 1];
-      // Solo reproducir sonido para mensajes del avatar (no del usuario)
-      if (lastMessage && lastMessage.role === "assistant") {
-        playMessageSound();
-      }
-    }
-    prevMessagesLengthRef.current = messages.length;
-  }, [messages, playMessageSound]);
 
   // Guardar relationship type en localStorage cuando cambie
   useEffect(() => {

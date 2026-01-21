@@ -90,13 +90,6 @@ jest.mock("@/components/chat/DeleteHistoryButton", () => ({
   ),
 }));
 
-// Mock useMessageSound hook
-jest.mock("@/lib/hooks/useMessageSound", () => ({
-  useMessageSound: () => ({
-    playMessageSound: jest.fn(),
-  }),
-}));
-
 // Mock store state
 const mockStoreState = {
   messages: [] as Message[],
