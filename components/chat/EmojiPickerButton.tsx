@@ -6,8 +6,9 @@
 import { useState, useRef, useEffect } from "react";
 import { Smile } from "lucide-react";
 import dynamic from "next/dynamic";
-import { Button } from "@/components/ui/button";
+import { Theme } from "emoji-picker-react";
 import type { EmojiClickData } from "emoji-picker-react";
+import { Button } from "@/components/ui/button";
 
 // Dynamic import para evitar SSR issues
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), {
@@ -72,7 +73,7 @@ export function EmojiPickerButton({
         <div className="absolute bottom-12 right-0 z-50">
           <EmojiPicker
             onEmojiClick={handleEmojiClick}
-            theme="dark"
+            theme={Theme.DARK}
             width={320}
             height={400}
             searchPlaceholder="Buscar emoji..."
