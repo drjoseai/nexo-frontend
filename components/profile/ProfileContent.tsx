@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { useAuthStore } from "@/lib/store/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,10 @@ export function ProfileContent() {
     displayName: user?.display_name || user?.email?.split("@")[0] || "",
   });
   const [showAgeModal, setShowAgeModal] = useState(false);
+
+  const t = useTranslations("profile");
+  const tCommon = useTranslations("common");
+  const locale = useLocale();
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -42,8 +47,8 @@ export function ProfileContent() {
   };
 
   const formatDate = (dateString?: string) => {
-    if (!dateString) return "No disponible";
-    return new Date(dateString).toLocaleDateString("es-ES", {
+    if (!dateString) return t("notAvailable");
+    return new Date(dateString).toLocaleDateString(locale === "es" ? "es-ES" : "en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -61,9 +66,9 @@ export function ProfileContent() {
   return (
     <div className="container max-w-4xl py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Mi Perfil</h1>
+        <h1 className="text-3xl font-bold">{t("title")}</h1>
         <p className="text-muted-foreground">
-          Administra tu información personal y preferencias
+          {t("subtitle")}
         </p>
       </div>
 
@@ -75,10 +80,10 @@ export function ProfileContent() {
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <User className="h-5 w-5 text-purple-400" />
-                  Información Personal
+                  {t("personalInfo")}
                 </CardTitle>
                 <CardDescription>
-                  Tu información básica de perfil
+                  {t("personalInfoDescription")}
                 </CardDescription>
               </div>
               {!isEditing ? (
@@ -87,7 +92,7 @@ export function ProfileContent() {
                   size="sm"
                   onClick={() => setIsEditing(true)}
                 >
-                  Editar
+                  {t("edit")}
                 </Button>
               ) : (
                 <div className="flex gap-2">
@@ -96,7 +101,7 @@ export function ProfileContent() {
                     size="sm"
                     onClick={() => setIsEditing(false)}
                   >
-                    Cancelar
+                    {tCommon("cancel")}
                   </Button>
                   <Button
                     size="sm"
@@ -109,7 +114,7 @@ export function ProfileContent() {
                     ) : (
                       <Save className="h-4 w-4" />
                     )}
-                    <span className="ml-2">Guardar</span>
+                    <span className="ml-2">{t("save")}</span>
                   </Button>
                 </div>
               )}
@@ -132,7 +137,7 @@ export function ProfileContent() {
             {/* Form fields */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="displayName">Nombre para mostrar</Label>
+                <Label htmlFor="displayName">{t("displayName")}</Label>
                 {isEditing ? (
                   <Input
                     id="displayName"
@@ -140,17 +145,17 @@ export function ProfileContent() {
                     onChange={(e) =>
                       setFormData({ ...formData, displayName: e.target.value })
                     }
-                    placeholder="Tu nombre"
+                    placeholder={t("displayNamePlaceholder")}
                   />
                 ) : (
                   <p className="flex h-10 items-center text-sm">
-                    {user.display_name || "No establecido"}
+                    {user.display_name || t("notSet")}
                   </p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Correo electrónico</Label>
+                <Label htmlFor="email">{t("email")}</Label>
                 <div className="flex h-10 items-center gap-2 text-sm">
                   <Mail className="h-4 w-4 text-muted-foreground" />
                   {user.email}
@@ -165,29 +170,29 @@ export function ProfileContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-purple-400" />
-              Suscripción
+              {t("subscription")}
             </CardTitle>
             <CardDescription>
-              Tu plan actual y beneficios
+              {t("subscriptionDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <div className="flex items-center gap-3">
-                  <span className="text-lg font-semibold">Plan actual:</span>
+                  <span className="text-lg font-semibold">{t("currentPlan")}</span>
                   <Badge className={cn("text-sm", getPlanBadgeColor(user.plan || "free"))}>
                     {(user.plan || "free").toUpperCase()}
                   </Badge>
                 </div>
                 {user.plan === "trial" && user.trial_ends_at && (
                   <p className="text-sm text-muted-foreground">
-                    Trial termina: {formatDate(user.trial_ends_at)}
+                    {t("trialEnds")} {formatDate(user.trial_ends_at)}
                   </p>
                 )}
                 {(user.plan === "plus" || user.plan === "premium") && user.subscription_ends_at && (
                   <p className="text-sm text-muted-foreground">
-                    Próxima renovación: {formatDate(user.subscription_ends_at)}
+                    {t("nextRenewal")} {formatDate(user.subscription_ends_at)}
                   </p>
                 )}
               </div>
@@ -196,7 +201,7 @@ export function ProfileContent() {
                 className="border-purple-500/30 hover:bg-purple-500/10"
                 onClick={() => window.location.href = "/dashboard/subscription"}
               >
-                Ver planes
+                {t("viewPlans")}
               </Button>
             </div>
           </CardContent>
@@ -207,26 +212,26 @@ export function ProfileContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-purple-400" />
-              Información de Cuenta
+              {t("accountInfo")}
             </CardTitle>
             <CardDescription>
-              Detalles de tu cuenta
+              {t("accountInfoDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <p className="text-sm text-muted-foreground">Cuenta creada</p>
+                <p className="text-sm text-muted-foreground">{t("accountCreated")}</p>
                 <p className="font-medium">{formatDate(user.created_at)}</p>
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Verificación de edad</p>
+                  <p className="text-sm text-muted-foreground">{t("ageVerification")}</p>
                   <p className="font-medium">
                     {user.age_verified ? (
-                      <span className="text-green-400">Verificado (18+)</span>
+                      <span className="text-green-400">{t("verified18")}</span>
                     ) : (
-                      <span className="text-muted-foreground">No verificado</span>
+                      <span className="text-muted-foreground">{t("notVerified")}</span>
                     )}
                   </p>
                 </div>
@@ -236,7 +241,7 @@ export function ProfileContent() {
                     onClick={() => setShowAgeModal(true)}
                     className="bg-purple-600 hover:bg-purple-700"
                   >
-                    Verificar edad 18+
+                    {t("verifyAge")}
                   </Button>
                 )}
               </div>
@@ -253,7 +258,7 @@ export function ProfileContent() {
           // Reload user data
           const { loadUser } = useAuthStore.getState();
           await loadUser();
-          toast.success("Edad verificada exitosamente");
+          toast.success(t("ageVerifiedSuccess"));
         }}
       />
     </div>
