@@ -76,21 +76,31 @@
   "avatars": {
     "lia": {
       "name": "Lía",
-      "role": "Empathic Companion",
+      "age": "22",
+      "role": "Empathic and Reflective AI",
       "description": "Warm, intuitive, and always ready to listen"
     },
     "mia": {
       "name": "Mía",
-      "role": "Adventurer",
+      "age": "25",
+      "role": "Energetic and Adventurous AI",
       "description": "Energetic, fun, and full of curiosity"
     },
     "allan": {
       "name": "Allan",
-      "role": "Wise Mentor",
+      "age": "30",
+      "role": "Reflective and Wise AI",
       "description": "Thoughtful, deep, and insightful"
     },
     "chooseAvatar": "Choose your companion",
-    "currentAvatar": "Current avatar"
+    "currentAvatar": "Current avatar",
+    "planPlusRequired": "Plus Plan required"
+  },
+  "relationshipTypes": {
+    "assistant": "Assistant",
+    "friend": "Friend",
+    "confidant": "Confidant",
+    "romantic": "Romantic"
   },
   "subscription": {
     "free": "Free",

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Lock, MessageCircle, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { AvatarId, RelationshipType, PlanType } from "@/types/avatar";
-import { AVATARS, RELATIONSHIP_LEVELS, isAvatarAvailableForPlan } from "@/types/avatar";
+import { AVATARS, isAvatarAvailableForPlan } from "@/types/avatar";
 
 interface AvatarCardProps {
   avatarId: AvatarId;
@@ -50,10 +51,6 @@ function getAvatarStyles(avatarId: AvatarId) {
   return styles[avatarId];
 }
 
-function getRelationshipDisplay(type: RelationshipType) {
-  const level = RELATIONSHIP_LEVELS.find((l) => l.type === type);
-  return level || RELATIONSHIP_LEVELS[0];
-}
 
 function AvatarImage({ 
   avatarId, 
@@ -84,9 +81,9 @@ export function AvatarCard({
   isLocked: forceLockedState,
   className,
 }: AvatarCardProps) {
+  const t = useTranslations();
   const avatar = AVATARS[avatarId];
   const styles = getAvatarStyles(avatarId);
-  const relationshipInfo = getRelationshipDisplay(currentRelationship);
   const isLocked = forceLockedState ?? !isAvatarAvailableForPlan(avatarId, userPlan);
 
   const cardContent = (
@@ -115,7 +112,7 @@ export function AvatarCard({
             <div className="flex flex-col items-center gap-2 text-center">
               <Lock className="h-8 w-8 text-muted-foreground" />
               <span className="text-sm font-medium text-muted-foreground">
-                Plan Plus requerido
+                {t("avatars.planPlusRequired")}
               </span>
             </div>
           </div>
@@ -138,12 +135,12 @@ export function AvatarCard({
         </div>
 
         <p className="mb-3 text-sm text-muted-foreground line-clamp-2">
-          {avatar.role}
+          {t(`avatars.${avatarId}.role`)}
         </p>
 
         <div className="mt-auto flex items-center justify-between">
           <Badge variant="outline" className="gap-1">
-            {relationshipInfo.name}
+            {t(`relationshipTypes.${currentRelationship}`)}
           </Badge>
 
           {messageCount > 0 && (

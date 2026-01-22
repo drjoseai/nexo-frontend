@@ -76,21 +76,31 @@
   "avatars": {
     "lia": {
       "name": "Lía",
-      "role": "Compañera Empática",
+      "age": "22",
+      "role": "IA Empática y Reflexiva",
       "description": "Cálida, intuitiva y siempre dispuesta a escuchar"
     },
     "mia": {
       "name": "Mía",
-      "role": "Aventurera",
+      "age": "25",
+      "role": "IA Energética y Aventurera",
       "description": "Energética, divertida y llena de curiosidad"
     },
     "allan": {
       "name": "Allan",
-      "role": "Mentor Sabio",
+      "age": "30",
+      "role": "IA Reflexiva y Sabia",
       "description": "Reflexivo, profundo y perspicaz"
     },
     "chooseAvatar": "Elige tu compañero",
-    "currentAvatar": "Avatar actual"
+    "currentAvatar": "Avatar actual",
+    "planPlusRequired": "Plan Plus requerido"
+  },
+  "relationshipTypes": {
+    "assistant": "Asistente",
+    "friend": "Amigo",
+    "confidant": "Confidente",
+    "romantic": "Romántico"
   },
   "subscription": {
     "free": "Gratis",
