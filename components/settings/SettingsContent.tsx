@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
+import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/lib/store/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,6 +32,8 @@ import { toast } from "sonner";
 export function SettingsContent() {
   const { logout } = useAuthStore();
   const { theme, setTheme } = useTheme();
+  const t = useTranslations("settings");
+  const tCommon = useTranslations("common");
   const [mounted, setMounted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -88,9 +91,9 @@ export function SettingsContent() {
   return (
     <div className="container max-w-4xl py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Configuración</h1>
+        <h1 className="text-3xl font-bold">{t("title")}</h1>
         <p className="text-muted-foreground">
-          Personaliza tu experiencia en NEXO
+          {t("subtitle")}
         </p>
       </div>
 
@@ -99,18 +102,18 @@ export function SettingsContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Bell className="h-5 w-5 text-purple-400" />
-              Notificaciones
+              {t("notifications")}
             </CardTitle>
             <CardDescription>
-              Configura cómo quieres recibir notificaciones
+              {t("notificationsDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="email-notifications">Notificaciones por email</Label>
+                <Label htmlFor="email-notifications">{t("emailNotifications")}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Recibe actualizaciones importantes por correo
+                  {t("emailNotificationsDescription")}
                 </p>
               </div>
               <Switch
@@ -124,9 +127,9 @@ export function SettingsContent() {
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="push-notifications">Notificaciones push</Label>
+                <Label htmlFor="push-notifications">{t("pushNotifications")}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Recibe notificaciones en tu navegador
+                  {t("pushNotificationsDescription")}
                 </p>
               </div>
               <Switch
@@ -140,9 +143,9 @@ export function SettingsContent() {
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="marketing-emails">Emails de marketing</Label>
+                <Label htmlFor="marketing-emails">{t("marketingEmails")}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Recibe ofertas especiales y novedades
+                  {t("marketingEmailsDescription")}
                 </p>
               </div>
               <Switch
@@ -160,18 +163,18 @@ export function SettingsContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Moon className="h-5 w-5 text-purple-400" />
-              Apariencia
+              {t("appearance")}
             </CardTitle>
             <CardDescription>
-              Personaliza el aspecto de la aplicación
+              {t("appearanceDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Tema</Label>
+                <Label>{t("theme")}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Selecciona el tema de la interfaz
+                  {t("themeDescription")}
                 </p>
               </div>
               <Select
@@ -182,8 +185,8 @@ export function SettingsContent() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="dark">Oscuro</SelectItem>
-                  <SelectItem value="light">Claro</SelectItem>
+                  <SelectItem value="dark">{t("darkMode")}</SelectItem>
+                  <SelectItem value="light">{t("lightMode")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -194,18 +197,18 @@ export function SettingsContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Globe className="h-5 w-5 text-purple-400" />
-              Idioma
+              {t("language")}
             </CardTitle>
             <CardDescription>
-              Selecciona el idioma de la aplicación
+              {t("languageDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Idioma preferido</Label>
+                <Label>{t("preferredLanguage")}</Label>
                 <p className="text-sm text-muted-foreground">
-                  El idioma en que se muestra NEXO
+                  {t("languageDescription")}
                 </p>
               </div>
               <Select
@@ -237,7 +240,7 @@ export function SettingsContent() {
             ) : (
               <Save className="h-4 w-4 mr-2" />
             )}
-            Guardar cambios
+            {t("saveChanges")}
           </Button>
         </div>
 
@@ -245,42 +248,41 @@ export function SettingsContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-400">
               <Trash2 className="h-5 w-5" />
-              Zona de Peligro
+              {t("dangerZone")}
             </CardTitle>
             <CardDescription>
-              Acciones irreversibles para tu cuenta
+              {t("dangerZoneDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <p className="font-medium">Eliminar cuenta</p>
+                <p className="font-medium">{t("deleteAccount")}</p>
                 <p className="text-sm text-muted-foreground">
-                  Elimina permanentemente tu cuenta y todos tus datos
+                  {t("deleteAccountDescription")}
                 </p>
               </div>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive">
-                    Eliminar cuenta
+                    {t("deleteAccount")}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                    <AlertDialogTitle>{t("deleteAccountConfirmTitle")}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Esta acción no se puede deshacer. Se eliminarán permanentemente
-                      tu cuenta y todos los datos asociados, incluyendo:
+                      {t("deleteAccountConfirmDescription")}
                       <ul className="mt-2 list-disc list-inside space-y-1">
-                        <li>Tu perfil y preferencias</li>
-                        <li>Todas tus conversaciones</li>
-                        <li>Tu suscripción activa</li>
-                        <li>Relaciones con avatares</li>
+                        <li>{t("deleteAccountItem1")}</li>
+                        <li>{t("deleteAccountItem2")}</li>
+                        <li>{t("deleteAccountItem3")}</li>
+                        <li>{t("deleteAccountItem4")}</li>
                       </ul>
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleDeleteAccount}
                       className="bg-red-600 hover:bg-red-700"
@@ -289,7 +291,7 @@ export function SettingsContent() {
                       {isDeleting ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : null}
-                      Sí, eliminar mi cuenta
+                      {t("deleteAccountConfirm")}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -301,4 +303,3 @@ export function SettingsContent() {
     </div>
   );
 }
-
