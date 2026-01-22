@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import { useAuthStore } from "@/lib/store/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,6 +30,8 @@ import { toast } from "sonner";
 
 export function SettingsContent() {
   const { logout } = useAuthStore();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   
@@ -36,9 +39,12 @@ export function SettingsContent() {
     emailNotifications: true,
     pushNotifications: false,
     marketingEmails: false,
-    theme: "dark",
     language: "es",
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -169,10 +175,8 @@ export function SettingsContent() {
                 </p>
               </div>
               <Select
-                value={settings.theme}
-                onValueChange={(value) =>
-                  setSettings({ ...settings, theme: value })
-                }
+                value={mounted ? theme : "dark"}
+                onValueChange={(value) => setTheme(value)}
               >
                 <SelectTrigger className="w-40">
                   <SelectValue />
@@ -180,7 +184,6 @@ export function SettingsContent() {
                 <SelectContent>
                   <SelectItem value="dark">Oscuro</SelectItem>
                   <SelectItem value="light">Claro</SelectItem>
-                  <SelectItem value="system">Sistema</SelectItem>
                 </SelectContent>
               </Select>
             </div>
