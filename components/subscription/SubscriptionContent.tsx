@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from 'next/navigation';
+import { useTranslations, useLocale } from "next-intl";
 import { useAuthStore } from "@/lib/store/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,55 +20,6 @@ interface PlanFeature {
   premium: boolean | string;
 }
 
-const FEATURES: PlanFeature[] = [
-  { name: "Mensajes por día", free: "5", plus: "100", premium: "Ilimitados" },
-  { name: "Acceso a Lía", free: true, plus: true, premium: true },
-  { name: "Acceso a Mía", free: false, plus: true, premium: true },
-  { name: "Acceso a Allan", free: false, plus: true, premium: true },
-  { name: "Relación: Assistant", free: true, plus: true, premium: true },
-  { name: "Relación: Friend", free: false, plus: true, premium: true },
-  { name: "Relación: Romantic (18+)", free: false, plus: false, premium: true },
-  { name: "Memoria de conversaciones", free: "7 días", plus: "30 días", premium: "Ilimitada" },
-  { name: "Respuestas prioritarias", free: false, plus: true, premium: true },
-  { name: "Soporte prioritario", free: false, plus: false, premium: true },
-];
-
-const PLANS: Record<PlanId, {
-  name: string;
-  price: string;
-  period: string;
-  description: string;
-  icon: React.ReactNode;
-  gradient: string;
-  popular?: boolean;
-}> = {
-  free: {
-    name: "Free",
-    price: "$0",
-    period: "para siempre",
-    description: "Perfecto para conocer NEXO",
-    icon: <Zap className="h-6 w-6" />,
-    gradient: "from-slate-500 to-slate-600",
-  },
-  plus: {
-    name: "Plus",
-    price: "$9.99",
-    period: "/mes",
-    description: "Desbloquea todos los avatares",
-    icon: <Sparkles className="h-6 w-6" />,
-    gradient: "from-purple-500 to-pink-500",
-    popular: true,
-  },
-  premium: {
-    name: "Premium",
-    price: "$14.99",
-    period: "/mes",
-    description: "La experiencia completa de NEXO",
-    icon: <Crown className="h-6 w-6" />,
-    gradient: "from-amber-500 to-orange-500",
-  },
-};
-
 export function SubscriptionContent() {
   const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState<PlanId | null>(null);
@@ -76,9 +28,71 @@ export function SubscriptionContent() {
     type: 'success' | 'error' | 'canceled';
     text: string;
   } | null>(null);
+  const t = useTranslations("subscriptionPage");
+  const locale = useLocale();
   
   const currentPlan = user?.plan === "trial" ? "free" : (user?.plan as PlanId) || "free";
   const isTrialActive = user?.plan === "trial";
+
+  // Plans configuration with translations
+  const plans: Record<PlanId, {
+    name: string;
+    price: string;
+    period: string;
+    description: string;
+    icon: React.ReactNode;
+    gradient: string;
+    popular?: boolean;
+  }> = {
+    free: {
+      name: "Free",
+      price: "$0",
+      period: t("forever"),
+      description: t("freePlanDescription"),
+      icon: <Zap className="h-6 w-6" />,
+      gradient: "from-slate-500 to-slate-600",
+    },
+    plus: {
+      name: "Plus",
+      price: "$9.99",
+      period: t("perMonth"),
+      description: t("plusPlanDescription"),
+      icon: <Sparkles className="h-6 w-6" />,
+      gradient: "from-purple-500 to-pink-500",
+      popular: true,
+    },
+    premium: {
+      name: "Premium",
+      price: "$14.99",
+      period: t("perMonth"),
+      description: t("premiumPlanDescription"),
+      icon: <Crown className="h-6 w-6" />,
+      gradient: "from-amber-500 to-orange-500",
+    },
+  };
+
+  // Features configuration with translations
+  const features: PlanFeature[] = [
+    { name: t("messagesPerDay"), free: "5", plus: "100", premium: t("unlimited") },
+    { name: t("accessToLia"), free: true, plus: true, premium: true },
+    { name: t("accessToMia"), free: false, plus: true, premium: true },
+    { name: t("accessToAllan"), free: false, plus: true, premium: true },
+    { name: t("relationAssistant"), free: true, plus: true, premium: true },
+    { name: t("relationFriend"), free: false, plus: true, premium: true },
+    { name: t("relationRomantic"), free: false, plus: false, premium: true },
+    { name: t("conversationMemory"), free: `7 ${t("days")}`, plus: `30 ${t("days")}`, premium: t("unlimited") },
+    { name: t("priorityResponses"), free: false, plus: true, premium: true },
+    { name: t("prioritySupport"), free: false, plus: false, premium: true },
+  ];
+
+  // Helper function for button text
+  const getButtonText = (planId: PlanId, isCurrentPlanBtn: boolean, isTrialActiveBtn: boolean) => {
+    if (isCurrentPlanBtn && !isTrialActiveBtn) return t("currentPlan");
+    if (planId === "free") return t("chooseFree");
+    if (isTrialActiveBtn) return `${t("upgradeTo")} ${plans[planId].name}`;
+    if (planId === "plus") return t("choosePlus");
+    return t("choosePremium"); // premium es el único caso restante
+  };
 
   useEffect(() => {
     const success = searchParams.get('success');
@@ -87,7 +101,7 @@ export function SubscriptionContent() {
     if (success === 'true') {
       setStatusMessage({
         type: 'success',
-        text: '¡Pago completado exitosamente! Tu plan ha sido actualizado.',
+        text: t("paymentSuccess"),
       });
       // Track checkout completed
       analytics.track(AnalyticsEvents.CHECKOUT_COMPLETED, {
@@ -98,11 +112,11 @@ export function SubscriptionContent() {
     } else if (canceled === 'true') {
       setStatusMessage({
         type: 'canceled',
-        text: 'El proceso de pago fue cancelado. Puedes intentar de nuevo cuando quieras.',
+        text: t("paymentCanceled"),
       });
       window.history.replaceState({}, '', '/dashboard/subscription');
     }
-  }, [searchParams]);
+  }, [searchParams, t]);
 
   const handleSelectPlan = async (planId: PlanId) => {
     // No hacer nada si es el plan actual (y no está en trial) o si es free
@@ -115,7 +129,7 @@ export function SubscriptionContent() {
     // Track checkout started
     analytics.track(AnalyticsEvents.CHECKOUT_STARTED, {
       plan: planId,
-      price: PLANS[planId].price,
+      price: plans[planId].price,
     });
 
     try {
@@ -183,14 +197,14 @@ export function SubscriptionContent() {
   return (
     <div className="container max-w-6xl py-8">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold">Planes y Precios</h1>
+        <h1 className="text-3xl font-bold">{t("title")}</h1>
         <p className="mt-2 text-muted-foreground">
-          Elige el plan perfecto para tu experiencia con NEXO
+          {t("subtitle")}
         </p>
         {isTrialActive && user?.trial_ends_at && (
           <Badge className="mt-4 bg-blue-500/20 text-blue-400 border-blue-500/30">
             <Star className="h-3 w-3 mr-1" />
-            Trial activo hasta {new Date(user.trial_ends_at).toLocaleDateString("es-ES")}
+            {t("trialActive")} {new Date(user.trial_ends_at).toLocaleDateString(locale === "es" ? "es-ES" : "en-US")}
           </Badge>
         )}
       </div>
@@ -235,7 +249,7 @@ export function SubscriptionContent() {
 
       {/* Plan Cards */}
       <div className="mb-12 grid gap-6 md:grid-cols-3">
-        {(Object.entries(PLANS) as [PlanId, typeof PLANS[PlanId]][]).map(([planId, plan]) => {
+        {(Object.entries(plans) as [PlanId, typeof plans[PlanId]][]).map(([planId, plan]) => {
           const isCurrentPlan = currentPlan === planId && !isTrialActive;
           const isTrialOnFree = isTrialActive && planId === "free";
           const isPopular = plan.popular;
@@ -253,7 +267,7 @@ export function SubscriptionContent() {
               {isPopular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                   <Badge className="bg-purple-500 text-white">
-                    Más Popular
+                    {t("mostPopular")}
                   </Badge>
                 </div>
               )}
@@ -261,7 +275,7 @@ export function SubscriptionContent() {
               {(isCurrentPlan || isTrialOnFree) && (
                 <div className="absolute -top-3 right-4">
                   <Badge className="bg-green-500 text-white">
-                    {isTrialOnFree ? "Trial Activo" : "Plan Actual"}
+                    {isTrialOnFree ? t("trialActiveBadge") : t("currentPlan")}
                   </Badge>
                 </div>
               )}
@@ -284,7 +298,7 @@ export function SubscriptionContent() {
                 </div>
 
                 <ul className="space-y-3 text-left text-sm">
-                  {FEATURES.slice(0, 6).map((feature) => (
+                  {features.slice(0, 6).map((feature) => (
                     <li key={feature.name} className="flex items-center gap-2">
                       {renderFeatureValue(feature[planId])}
                       <span className="text-muted-foreground">{feature.name}</span>
@@ -306,14 +320,8 @@ export function SubscriptionContent() {
                 >
                   {isLoading === planId ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : isCurrentPlan && !isTrialActive ? (
-                    "Plan Actual"
-                  ) : planId === "free" ? (
-                    "Plan Gratuito"
-                  ) : isTrialActive ? (
-                    `Actualizar a ${plan.name}`
                   ) : (
-                    `Elegir ${plan.name}`
+                    getButtonText(planId, isCurrentPlan, isTrialActive)
                   )}
                 </Button>
               </CardFooter>
@@ -325,9 +333,9 @@ export function SubscriptionContent() {
       {/* Feature Comparison Table */}
       <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle>Comparación de Características</CardTitle>
+          <CardTitle>{t("featureComparison")}</CardTitle>
           <CardDescription>
-            Todas las características disponibles en cada plan
+            {t("featureComparisonDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -335,14 +343,14 @@ export function SubscriptionContent() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border/50">
-                  <th className="pb-4 text-left font-medium">Característica</th>
+                  <th className="pb-4 text-left font-medium">{t("feature")}</th>
                   <th className="pb-4 text-center font-medium">Free</th>
                   <th className="pb-4 text-center font-medium text-purple-400">Plus</th>
                   <th className="pb-4 text-center font-medium text-amber-400">Premium</th>
                 </tr>
               </thead>
               <tbody>
-                {FEATURES.map((feature) => (
+                {features.map((feature) => (
                   <tr key={feature.name} className="border-b border-border/30">
                     <td className="py-4 text-sm text-muted-foreground">
                       {feature.name}
