@@ -5,6 +5,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/components/providers/auth-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import { PWAInstallPrompt } from "@/components/pwa/install-prompt";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 
@@ -30,7 +31,7 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: light)", color: "#7c3aed" },
     { media: "(prefers-color-scheme: dark)", color: "#7c3aed" },
   ],
-  colorScheme: "dark",
+  colorScheme: "dark light",
 };
 
 // PWA Metadata Configuration
@@ -136,19 +137,26 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className="dark">
+    <html lang={locale} suppressHydrationWarning>
       <body
         className={`${montserrat.variable} ${geistMono.variable} font-sans antialiased`}
       >
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <AnalyticsProvider>
-            <AuthProvider>
-              {children}
-            </AuthProvider>
-            <Toaster position="top-right" richColors />
-            <PWAInstallPrompt />
-          </AnalyticsProvider>
-        </NextIntlClientProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <AnalyticsProvider>
+              <AuthProvider>
+                {children}
+              </AuthProvider>
+              <Toaster position="top-right" richColors />
+              <PWAInstallPrompt />
+            </AnalyticsProvider>
+          </NextIntlClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
