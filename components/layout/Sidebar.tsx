@@ -12,6 +12,7 @@ import {
   LogOut,
   Sparkles,
   X,
+  HelpCircle,
 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/auth";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ import { Locale } from "@/i18n/config";
 
 interface NavItem {
   href: string;
-  labelKey: "avatars" | "profile" | "subscription" | "settings";
+  labelKey: "avatars" | "profile" | "subscription" | "settings" | "help";
   icon: React.ReactNode;
 }
 
@@ -44,6 +45,11 @@ const navItems: NavItem[] = [
     href: "/dashboard/settings",
     labelKey: "settings",
     icon: <Settings className="h-5 w-5" />,
+  },
+  {
+    href: "/dashboard/help",
+    labelKey: "help",
+    icon: <HelpCircle className="h-5 w-5" />,
   },
 ];
 

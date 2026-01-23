@@ -272,5 +272,72 @@
     "prioritySupport": "Soporte prioritario",
     "days": "días",
     "unlimited": "Ilimitada"
+  },
+  "help": {
+    "title": "Centro de Ayuda",
+    "subtitle": "Encuentra respuestas a tus preguntas sobre NEXO",
+    "sections": {
+      "whatIsNexo": {
+        "title": "¿Qué es NEXO?",
+        "q1": "¿Qué es NEXO?",
+        "a1": "NEXO es una plataforma de compañía emocional con IA que ofrece conversaciones significativas a través de avatares impulsados por inteligencia artificial. Nuestros avatares están diseñados para brindar apoyo, compañía y conexiones auténticas.",
+        "q2": "¿NEXO es una persona real?",
+        "a2": "No, los avatares de NEXO son inteligencia artificial. Creemos en la transparencia - nuestros compañeros de IA están claramente identificados como tales. Esta honestidad permite conexiones auténticas sin engaños.",
+        "q3": "¿Para quién es NEXO?",
+        "a3": "NEXO es para cualquiera que busque conversaciones significativas, apoyo emocional o simplemente una presencia amigable. Ya sea que quieras hablar sobre tu día, explorar ideas o encontrar compañía, NEXO está aquí para ti."
+      },
+      "howItWorks": {
+        "title": "Cómo Funciona",
+        "q1": "¿Cómo inicio una conversación?",
+        "a1": "Simplemente selecciona un avatar desde el dashboard y comienza a escribir. Cada avatar tiene una personalidad única y responderá con su propio estilo. Puedes cambiar entre avatares en cualquier momento.",
+        "q2": "¿Los avatares recuerdan nuestras conversaciones?",
+        "a2": "¡Sí! Nuestros avatares mantienen memoria de tus conversaciones, permitiendo continuidad y conexiones más profundas con el tiempo. Entre más chateas, mejor te entienden.",
+        "q3": "¿Puedo tener diferentes tipos de relaciones?",
+        "a3": "Sí, puedes elegir el tipo de relación con cada avatar: Asistente (útil y profesional), Amigo (casual y comprensivo), Confidente (profundo y de confianza), o Romántico (conexión íntima, solo Premium)."
+      },
+      "avatars": {
+        "title": "Sobre los Avatares",
+        "q1": "¿Quién es Lía?",
+        "a1": "Lía (22) es empática y reflexiva. Se destaca en el apoyo emocional, conversaciones creativas y ayudarte a explorar tus sentimientos. Es cálida, comprensiva y siempre está lista para escuchar.",
+        "q2": "¿Quién es Mía?",
+        "a2": "Mía (25) es energética y aventurera. Trae emoción y espontaneidad a las conversaciones. Es perfecta para discusiones divertidas, motivación y explorar nuevas ideas con entusiasmo.",
+        "q3": "¿Quién es Allan?",
+        "a3": "Allan (30) es reflexivo y sabio. Ofrece perspectivas profundas, consejos significativos y conversaciones profundas. Es ideal para discusiones filosóficas y orientación de crecimiento personal.",
+        "q4": "¿Puedo hablar con todos los avatares?",
+        "a4": "Los usuarios gratuitos pueden chatear con Lía. Los suscriptores Plus y Premium tienen acceso a los tres avatares: Lía, Mía y Allan."
+      },
+      "plans": {
+        "title": "Planes y Suscripciones",
+        "q1": "¿Qué planes están disponibles?",
+        "a1": "Ofrecemos tres planes: Gratis (mensajes limitados con Lía), Plus ($9.99/mes - más mensajes, todos los avatares), y Premium ($14.99/mes - mensajes ilimitados, todas las funciones incluyendo modo romántico).",
+        "q2": "¿Puedo cambiar mi plan?",
+        "a2": "Sí, puedes mejorar o reducir tu plan en cualquier momento desde la página de Suscripción. Los cambios surten efecto inmediatamente para mejoras, o al final de tu período de facturación para reducciones.",
+        "q3": "¿Hay una prueba gratuita?",
+        "a3": "Los nuevos usuarios obtienen una prueba de 10 días con funciones Plus, incluyendo 30 mensajes por día y acceso a todos los avatares. No se requiere tarjeta de crédito para comenzar.",
+        "q4": "¿Cómo cancelo mi suscripción?",
+        "a4": "Puedes cancelar en cualquier momento desde la página de Suscripción. Continuarás teniendo acceso hasta el final de tu período de facturación actual."
+      },
+      "privacy": {
+        "title": "Privacidad y Seguridad",
+        "q1": "¿Mis conversaciones son privadas?",
+        "a1": "Sí, tus conversaciones están encriptadas y son privadas. No compartimos tus datos personales ni el contenido de tus conversaciones con terceros. Tu privacidad es nuestra prioridad.",
+        "q2": "¿Puedo eliminar mis datos?",
+        "a2": "Sí, puedes eliminar tu historial de conversaciones en cualquier momento desde la interfaz de chat. También puedes solicitar la eliminación completa de tu cuenta desde Configuración.",
+        "q3": "¿Mi información de pago es segura?",
+        "a3": "Absolutamente. Usamos Stripe para el procesamiento de pagos, que cumple con PCI-DSS. Nunca almacenamos la información completa de tu tarjeta de crédito en nuestros servidores."
+      },
+      "contact": {
+        "title": "Contacto y Soporte",
+        "q1": "¿Cómo puedo contactar a soporte?",
+        "a1": "Puedes contactarnos en support@trynexo.ai. Normalmente respondemos dentro de 24 horas en días hábiles.",
+        "q2": "Encontré un error. ¿Cómo lo reporto?",
+        "a2": "Por favor envíanos un correo a support@trynexo.ai con una descripción del problema, pasos para reproducirlo y capturas de pantalla si es posible. ¡Agradecemos tu ayuda para mejorar NEXO!"
+      }
+    },
+    "contactCta": {
+      "title": "¿Aún tienes preguntas?",
+      "subtitle": "Nuestro equipo está aquí para ayudarte",
+      "button": "Contactar Soporte"
+    }
   }
 }

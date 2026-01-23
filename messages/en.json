@@ -272,5 +272,72 @@
     "prioritySupport": "Priority support",
     "days": "days",
     "unlimited": "Unlimited"
+  },
+  "help": {
+    "title": "Help Center",
+    "subtitle": "Find answers to your questions about NEXO",
+    "sections": {
+      "whatIsNexo": {
+        "title": "What is NEXO?",
+        "q1": "What is NEXO?",
+        "a1": "NEXO is an emotional AI companion platform that offers meaningful conversations through AI-powered avatars. Our avatars are designed to provide support, companionship, and authentic connections.",
+        "q2": "Is NEXO a real person?",
+        "a2": "No, NEXO avatars are artificial intelligence. We believe in transparency - our AI companions are clearly identified as such. This honesty allows for authentic connections without deception.",
+        "q3": "Who is NEXO for?",
+        "a3": "NEXO is for anyone seeking meaningful conversations, emotional support, or simply a friendly presence. Whether you want to talk about your day, explore ideas, or find companionship, NEXO is here for you."
+      },
+      "howItWorks": {
+        "title": "How It Works",
+        "q1": "How do I start a conversation?",
+        "a1": "Simply select an avatar from the dashboard and start typing. Each avatar has a unique personality and will respond in their own style. You can switch between avatars anytime.",
+        "q2": "Do the avatars remember our conversations?",
+        "a2": "Yes! Our avatars maintain memory of your conversations, allowing for continuity and deeper connections over time. The more you chat, the better they understand you.",
+        "q3": "Can I have different types of relationships?",
+        "a3": "Yes, you can choose the type of relationship with each avatar: Assistant (helpful and professional), Friend (casual and supportive), Confidant (deep and trusting), or Romantic (intimate connection, Premium only)."
+      },
+      "avatars": {
+        "title": "About the Avatars",
+        "q1": "Who is Lía?",
+        "a1": "Lía (22) is empathetic and reflective. She excels at emotional support, creative conversations, and helping you explore your feelings. She's warm, understanding, and always ready to listen.",
+        "q2": "Who is Mía?",
+        "a2": "Mía (25) is energetic and adventurous. She brings excitement and spontaneity to conversations. She's perfect for fun discussions, motivation, and exploring new ideas with enthusiasm.",
+        "q3": "Who is Allan?",
+        "a3": "Allan (30) is reflective and wise. He offers thoughtful perspectives, meaningful advice, and deep conversations. He's ideal for philosophical discussions and personal growth guidance.",
+        "q4": "Can I talk to all avatars?",
+        "a4": "Free users can chat with Lía. Plus and Premium subscribers have access to all three avatars: Lía, Mía, and Allan."
+      },
+      "plans": {
+        "title": "Plans & Subscriptions",
+        "q1": "What plans are available?",
+        "a1": "We offer three plans: Free (limited messages with Lía), Plus ($9.99/month - more messages, all avatars), and Premium ($14.99/month - unlimited messages, all features including romantic mode).",
+        "q2": "Can I change my plan?",
+        "a2": "Yes, you can upgrade or downgrade your plan anytime from the Subscription page. Changes take effect immediately for upgrades, or at the end of your billing period for downgrades.",
+        "q3": "Is there a free trial?",
+        "a3": "New users get a 10-day trial with Plus features, including 30 messages per day and access to all avatars. No credit card required to start.",
+        "q4": "How do I cancel my subscription?",
+        "a4": "You can cancel anytime from the Subscription page. You'll continue to have access until the end of your current billing period."
+      },
+      "privacy": {
+        "title": "Privacy & Security",
+        "q1": "Are my conversations private?",
+        "a1": "Yes, your conversations are encrypted and private. We do not share your personal data or conversation content with third parties. Your privacy is our priority.",
+        "q2": "Can I delete my data?",
+        "a2": "Yes, you can delete your conversation history anytime from the chat interface. You can also request complete account deletion from Settings.",
+        "q3": "Is my payment information secure?",
+        "a3": "Absolutely. We use Stripe for payment processing, which is PCI-DSS compliant. We never store your full credit card information on our servers."
+      },
+      "contact": {
+        "title": "Contact & Support",
+        "q1": "How can I contact support?",
+        "a1": "You can reach us at support@trynexo.ai. We typically respond within 24 hours on business days.",
+        "q2": "I found a bug. How do I report it?",
+        "a2": "Please email us at support@trynexo.ai with a description of the issue, steps to reproduce it, and screenshots if possible. We appreciate your help improving NEXO!"
+      }
+    },
+    "contactCta": {
+      "title": "Still have questions?",
+      "subtitle": "Our team is here to help you",
+      "button": "Contact Support"
+    }
   }
 }
