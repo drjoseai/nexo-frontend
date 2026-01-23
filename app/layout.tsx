@@ -6,7 +6,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { PWAInstallPrompt } from "@/components/pwa/install-prompt";
+import { PWAInstallPrompt, PWAUpdateNotification } from "@/components/pwa";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 
 const montserrat = Montserrat({
@@ -148,6 +148,7 @@ export default async function RootLayout({
               </AuthProvider>
               <Toaster position="top-right" richColors />
               <PWAInstallPrompt />
+              <PWAUpdateNotification />
             </AnalyticsProvider>
           </NextIntlClientProvider>
         </ThemeProvider>

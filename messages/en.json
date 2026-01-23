@@ -209,7 +209,11 @@
       "connected": "Connected",
       "noConnection": "No connection",
       "autoReconnect": "NEXO will automatically reconnect when your connection is restored."
-    }
+    },
+    "updateAvailable": "Update Available",
+    "updateDescription": "A new version of NEXO is available. Update now for the best experience.",
+    "updateNow": "Update Now",
+    "later": "Later"
   },
   "profile": {
     "title": "My Profile",
