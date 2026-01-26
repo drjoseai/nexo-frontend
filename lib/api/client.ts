@@ -135,7 +135,7 @@ const createApiClient = (): AxiosInstance => {
         try {
           console.log('[API Client] Access token expired, attempting refresh...');
           
-          await instance.post('/api/v1/auth/refresh', {}, {
+          await instance.post('/api/v1/auth/refresh', undefined, {
             withCredentials: true,
           });
           

@@ -261,7 +261,7 @@ describe('apiClient', () => {
 
       expect(mockAxiosInstance.post).toHaveBeenCalledWith(
         '/api/v1/auth/refresh',
-        {},
+        undefined,
         { withCredentials: true }
       );
       expect(result).toEqual(retryResponse);
@@ -625,7 +625,7 @@ describe('apiClient', () => {
       
       expect(mockAxiosInstance.post).toHaveBeenCalledWith(
         '/api/v1/auth/refresh',
-        {},
+        undefined,
         { withCredentials: true }
       );
       expect(result).toEqual(retryResponse);
