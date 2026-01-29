@@ -322,14 +322,25 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         {/* ERROR BANNER */}
         {/* ============================================ */}
         {error && (
-          <div className="border-t border-red-500/20 bg-red-500/10 px-4 py-2">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-red-400">{error}</p>
+          <div className="border-t border-red-500/20 bg-red-500/10 px-4 py-3">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex-1">
+                <p className="text-sm text-red-400">{error}</p>
+                {/* Mostrar botón de upgrade si es error de límite */}
+                {(error.includes("límite") || error.includes("limit")) && (
+                  <Link 
+                    href="/dashboard/subscription" 
+                    className="inline-block mt-2 text-xs text-purple-400 hover:text-purple-300 underline"
+                  >
+                    Actualizar a Premium para mensajes ilimitados →
+                  </Link>
+                )}
+              </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={clearError}
-                className="text-red-400 hover:text-red-300"
+                className="text-red-400 hover:text-red-300 shrink-0"
               >
                 Cerrar
               </Button>

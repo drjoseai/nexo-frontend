@@ -250,9 +250,13 @@ describe('useChatStore', () => {
     });
 
     it('debe detectar error de rate limit', async () => {
-      (chatApi.sendMessage as jest.Mock).mockRejectedValue(
-        new Error('429 Too Many Requests')
-      );
+      // Mock del error estructurado que el interceptor de axios retorna
+      const rateLimitError = {
+        status: 429,
+        code: 'daily_limit_exceeded',
+        message: 'Has alcanzado tu límite diario de mensajes',
+      };
+      (chatApi.sendMessage as jest.Mock).mockRejectedValue(rateLimitError);
 
       const { result } = renderHook(() => useChatStore());
 
@@ -261,6 +265,7 @@ describe('useChatStore', () => {
       });
 
       expect(result.current.error).toContain('límite diario');
+      expect(result.current.messagesRemaining).toBe(0);
     });
   });
 

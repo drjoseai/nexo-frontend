@@ -168,19 +168,53 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
       // Manejar diferentes tipos de error
       let errorMessage = "Error al enviar mensaje";
+      let limitInfo = null;
 
-      if (error instanceof Error) {
-        // Verificar si es error de rate limit (429)
-        if (error.message.includes("429") || error.message.includes("limit")) {
-          errorMessage = "Has alcanzado tu límite diario de mensajes";
-        } else {
-          errorMessage = error.message;
+      // Verificar si es objeto de error estructurado (del interceptor)
+      if (error && typeof error === 'object') {
+        const err = error as Record<string, unknown>;
+        
+        // Error 429 - Límite diario alcanzado
+        if (err.status === 429 || err.code === 'daily_limit_exceeded') {
+          limitInfo = err.limit_info as Record<string, unknown> | null;
+          
+          if (limitInfo?.resets_at_formatted) {
+            errorMessage = `Has alcanzado tu límite de ${limitInfo.limit || 'mensajes'} mensajes diarios. Tu cuota se reinicia a las ${limitInfo.resets_at_formatted}.`;
+          } else if (limitInfo?.resets_at) {
+            // Formatear la hora si solo tenemos ISO string
+            const resetTime = new Date(limitInfo.resets_at as string);
+            const timeStr = resetTime.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
+            errorMessage = `Has alcanzado tu límite de ${limitInfo.limit || 'mensajes'} mensajes diarios. Tu cuota se reinicia a las ${timeStr}.`;
+          } else {
+            errorMessage = (err.message as string) || "Has alcanzado tu límite diario de mensajes";
+          }
+          
+          // Actualizar mensajes restantes a 0
+          set({ messagesRemaining: 0 });
         }
+        // Otros errores con mensaje
+        else if (err.message && typeof err.message === 'string') {
+          errorMessage = err.message;
+        }
+        // Error de respuesta del backend (success: false)
+        else if (err.error && typeof err.error === 'string') {
+          errorMessage = err.error;
+        }
+      }
+      // Error estándar de JavaScript
+      else if (error instanceof Error) {
+        errorMessage = error.message;
       }
 
       set({
         isSending: false,
         error: errorMessage,
+      });
+
+      // Track error event
+      analytics.track(AnalyticsEvents.ERROR_OCCURRED, {
+        error_type: limitInfo ? 'daily_limit_exceeded' : 'send_message_error',
+        error_message: errorMessage,
       });
 
       return false;

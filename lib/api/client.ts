@@ -169,6 +169,19 @@ const createApiClient = (): AxiosInstance => {
         }
       }
 
+      // Manejar error 429 (Rate Limit / Daily Limit)
+      if (error.response?.status === 429) {
+        const responseData = error.response.data as Record<string, unknown> | undefined;
+        const detail = (responseData?.detail || responseData) as Record<string, unknown> | undefined;
+        return Promise.reject({
+          status: 429,
+          code: 'daily_limit_exceeded',
+          message: detail?.message || 'Has alcanzado tu límite diario de mensajes',
+          limit_info: detail?.limit_info || null,
+          upgrade_url: detail?.upgrade_url || '/dashboard/subscription',
+        });
+      }
+
       const errorMessage = error.response?.data || {
         message: error.message || 'An unexpected error occurred',
         status: error.response?.status,
