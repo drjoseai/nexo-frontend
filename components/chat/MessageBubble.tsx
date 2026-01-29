@@ -142,7 +142,7 @@ export const MessageBubble = memo(function MessageBubble({
                   // Avatar - Dark mode
                   avatarColors.bgDark,
                   avatarColors.glowDark,
-                  "dark:text-white/90",
+                  "dark:text-gray-900",
                 ],
             // Estado de error
             message.status === "error" && "opacity-70"
