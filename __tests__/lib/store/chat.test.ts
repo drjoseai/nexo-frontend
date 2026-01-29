@@ -267,6 +267,90 @@ describe('useChatStore', () => {
       expect(result.current.error).toContain('límite diario');
       expect(result.current.messagesRemaining).toBe(0);
     });
+
+    it('debe mostrar hora de reset cuando limit_info tiene resets_at_formatted', async () => {
+      const mockError = {
+        status: 429,
+        code: 'daily_limit_exceeded',
+        message: 'Límite alcanzado',
+        limit_info: {
+          limit: 100,
+          resets_at_formatted: '08:00'
+        }
+      };
+
+      (chatApi.sendMessage as jest.Mock).mockRejectedValue(mockError);
+
+      const { result } = renderHook(() => useChatStore());
+
+      await act(async () => {
+        await result.current.sendMessage('test', mockAvatarId);
+      });
+
+      expect(result.current.error).toContain('08:00');
+      expect(result.current.error).toContain('100');
+      expect(result.current.messagesRemaining).toBe(0);
+    });
+
+    it('debe formatear resets_at cuando no hay resets_at_formatted', async () => {
+      const mockError = {
+        status: 429,
+        code: 'daily_limit_exceeded',
+        message: 'Límite alcanzado',
+        limit_info: {
+          limit: 100,
+          resets_at: '2026-01-30T08:00:00Z'
+        }
+      };
+
+      (chatApi.sendMessage as jest.Mock).mockRejectedValue(mockError);
+
+      const { result } = renderHook(() => useChatStore());
+
+      await act(async () => {
+        await result.current.sendMessage('test', mockAvatarId);
+      });
+
+      expect(result.current.error).toContain('límite');
+      expect(result.current.error).toContain('100');
+      expect(result.current.messagesRemaining).toBe(0);
+    });
+
+    it('debe usar mensaje default cuando no hay limit_info', async () => {
+      const mockError = {
+        status: 429,
+        code: 'daily_limit_exceeded',
+        message: 'Has alcanzado tu límite diario de mensajes',
+        limit_info: null
+      };
+
+      (chatApi.sendMessage as jest.Mock).mockRejectedValue(mockError);
+
+      const { result } = renderHook(() => useChatStore());
+
+      await act(async () => {
+        await result.current.sendMessage('test', mockAvatarId);
+      });
+
+      expect(result.current.error).toBe('Has alcanzado tu límite diario de mensajes');
+      expect(result.current.messagesRemaining).toBe(0);
+    });
+
+    it('debe manejar error con propiedad error en vez de message', async () => {
+      const mockError = {
+        error: 'Error específico del servidor',
+      };
+
+      (chatApi.sendMessage as jest.Mock).mockRejectedValue(mockError);
+
+      const { result } = renderHook(() => useChatStore());
+
+      await act(async () => {
+        await result.current.sendMessage('test', mockAvatarId);
+      });
+
+      expect(result.current.error).toBe('Error específico del servidor');
+    });
   });
 
   // ------------------------------------------

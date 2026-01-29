@@ -590,6 +590,116 @@ describe('apiClient', () => {
   });
 
   // ============================================
+  // 429 Rate Limit Error Tests
+  // ============================================
+
+  describe('response interceptor - 429 rate limit handling', () => {
+    it('debe transformar error 429 con detail completo', async () => {
+      const error: AxiosError & { config: InternalAxiosRequestConfig } = {
+        isAxiosError: true,
+        response: {
+          status: 429,
+          data: {
+            detail: {
+              message: 'Has alcanzado tu límite de 100 mensajes',
+              limit_info: { limit: 100, resets_at: '2026-01-30T08:00:00Z' },
+              upgrade_url: '/dashboard/subscription'
+            }
+          },
+          statusText: 'Too Many Requests',
+          headers: {},
+          config: {} as InternalAxiosRequestConfig,
+        },
+        config: {
+          url: '/api/v1/chat/send',
+          headers: {},
+        } as InternalAxiosRequestConfig,
+        message: 'Request failed with status 429',
+        name: 'AxiosError',
+        toJSON: () => ({}),
+      };
+
+      try {
+        await capturedResponseErrorInterceptor(error);
+        fail('Should have thrown an error');
+      } catch (err: unknown) {
+        const rateLimitError = err as Record<string, unknown>;
+        expect(rateLimitError.status).toBe(429);
+        expect(rateLimitError.code).toBe('daily_limit_exceeded');
+        expect(rateLimitError.message).toBe('Has alcanzado tu límite de 100 mensajes');
+        expect(rateLimitError.limit_info).toEqual({ limit: 100, resets_at: '2026-01-30T08:00:00Z' });
+        expect(rateLimitError.upgrade_url).toBe('/dashboard/subscription');
+      }
+    });
+
+    it('debe manejar error 429 sin detail (usa defaults)', async () => {
+      const error: AxiosError & { config: InternalAxiosRequestConfig } = {
+        isAxiosError: true,
+        response: {
+          status: 429,
+          data: {},
+          statusText: 'Too Many Requests',
+          headers: {},
+          config: {} as InternalAxiosRequestConfig,
+        },
+        config: {
+          url: '/api/v1/chat/send',
+          headers: {},
+        } as InternalAxiosRequestConfig,
+        message: 'Request failed with status 429',
+        name: 'AxiosError',
+        toJSON: () => ({}),
+      };
+
+      try {
+        await capturedResponseErrorInterceptor(error);
+        fail('Should have thrown an error');
+      } catch (err: unknown) {
+        const rateLimitError = err as Record<string, unknown>;
+        expect(rateLimitError.status).toBe(429);
+        expect(rateLimitError.code).toBe('daily_limit_exceeded');
+        expect(rateLimitError.message).toBe('Has alcanzado tu límite diario de mensajes');
+        expect(rateLimitError.limit_info).toBeNull();
+        expect(rateLimitError.upgrade_url).toBe('/dashboard/subscription');
+      }
+    });
+
+    it('debe extraer detail de response.data directamente si no hay wrapper', async () => {
+      const error: AxiosError & { config: InternalAxiosRequestConfig } = {
+        isAxiosError: true,
+        response: {
+          status: 429,
+          data: {
+            message: 'Límite excedido directamente',
+            limit_info: { limit: 50 },
+          },
+          statusText: 'Too Many Requests',
+          headers: {},
+          config: {} as InternalAxiosRequestConfig,
+        },
+        config: {
+          url: '/api/v1/chat/send',
+          headers: {},
+        } as InternalAxiosRequestConfig,
+        message: 'Request failed with status 429',
+        name: 'AxiosError',
+        toJSON: () => ({}),
+      };
+
+      try {
+        await capturedResponseErrorInterceptor(error);
+        fail('Should have thrown an error');
+      } catch (err: unknown) {
+        const rateLimitError = err as Record<string, unknown>;
+        expect(rateLimitError.status).toBe(429);
+        expect(rateLimitError.code).toBe('daily_limit_exceeded');
+        expect(rateLimitError.message).toBe('Límite excedido directamente');
+        expect(rateLimitError.limit_info).toEqual({ limit: 50 });
+      }
+    });
+  });
+
+  // ============================================
   // Additional branch coverage tests
   // ============================================
 
