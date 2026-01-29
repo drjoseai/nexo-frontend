@@ -12,18 +12,29 @@ import type { Message, AvatarId } from "@/types/chat";
 // AVATAR COLORS
 // ============================================
 
-const AVATAR_COLORS: Record<AvatarId, { gradient: string; glow: string }> = {
+const AVATAR_COLORS: Record<AvatarId, { 
+  bgLight: string;
+  bgDark: string;
+  glowLight: string;
+  glowDark: string;
+}> = {
   lia: {
-    gradient: "from-purple-500/20 to-purple-600/10",
-    glow: "shadow-purple-500/20",
+    bgLight: "bg-purple-100 border-purple-200",
+    bgDark: "dark:bg-gradient-to-br dark:from-purple-500/20 dark:to-purple-600/10 dark:border-white/10",
+    glowLight: "shadow-purple-200/50",
+    glowDark: "dark:shadow-purple-500/20",
   },
   mia: {
-    gradient: "from-amber-500/20 to-orange-600/10",
-    glow: "shadow-amber-500/20",
+    bgLight: "bg-amber-100 border-amber-200",
+    bgDark: "dark:bg-gradient-to-br dark:from-amber-500/20 dark:to-orange-600/10 dark:border-white/10",
+    glowLight: "shadow-amber-200/50",
+    glowDark: "dark:shadow-amber-500/20",
   },
   allan: {
-    gradient: "from-cyan-500/20 to-teal-600/10",
-    glow: "shadow-cyan-500/20",
+    bgLight: "bg-cyan-100 border-cyan-200",
+    bgDark: "dark:bg-gradient-to-br dark:from-cyan-500/20 dark:to-teal-600/10 dark:border-white/10",
+    glowLight: "shadow-cyan-200/50",
+    glowDark: "dark:shadow-cyan-500/20",
   },
 };
 
@@ -45,11 +56,11 @@ interface MessageBubbleProps {
 function StatusIcon({ status }: { status: Message["status"] }) {
   switch (status) {
     case "sending":
-      return <Clock className="h-3 w-3 animate-pulse text-white/40" />;
+      return <Clock className="h-3 w-3 animate-pulse text-muted-foreground" />;
     case "sent":
-      return <Check className="h-3 w-3 text-white/40" />;
+      return <Check className="h-3 w-3 text-muted-foreground" />;
     case "error":
-      return <AlertCircle className="h-3 w-3 text-red-400" />;
+      return <AlertCircle className="h-3 w-3 text-red-500 dark:text-red-400" />;
     default:
       return null;
   }
@@ -91,9 +102,14 @@ export const MessageBubble = memo(function MessageBubble({
         <div
           className={cn(
             "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
-            "bg-gradient-to-br text-xs font-semibold text-white",
-            avatarColors.gradient,
-            "border border-white/10"
+            "text-xs font-semibold",
+            // Light mode
+            "bg-purple-100 text-purple-700 border border-purple-200",
+            // Dark mode
+            "dark:bg-gradient-to-br dark:text-white dark:border-white/10",
+            avatarId === "lia" && "dark:from-purple-500/30 dark:to-purple-600/20",
+            avatarId === "mia" && "bg-amber-100 text-amber-700 border-amber-200 dark:from-amber-500/30 dark:to-orange-600/20",
+            avatarId === "allan" && "bg-cyan-100 text-cyan-700 border-cyan-200 dark:from-cyan-500/30 dark:to-teal-600/20"
           )}
         >
           {avatarName.charAt(0).toUpperCase()}
@@ -113,18 +129,20 @@ export const MessageBubble = memo(function MessageBubble({
             "rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
             isUser
               ? [
-                  // Estilo usuario
-                  "bg-primary text-white",
+                  // Usuario - Light mode
+                  "bg-primary text-primary-foreground",
                   "rounded-br-md",
                 ]
               : [
-                  // Estilo avatar
-                  "bg-gradient-to-br border border-white/10",
-                  avatarColors.gradient,
-                  "text-white/90",
-                  "rounded-bl-md",
-                  "shadow-lg",
-                  avatarColors.glow,
+                  // Avatar - Light mode
+                  "border rounded-bl-md shadow-lg",
+                  avatarColors.bgLight,
+                  avatarColors.glowLight,
+                  "text-gray-800",
+                  // Avatar - Dark mode
+                  avatarColors.bgDark,
+                  avatarColors.glowDark,
+                  "dark:text-white/90",
                 ],
             // Estado de error
             message.status === "error" && "opacity-70"
@@ -137,7 +155,8 @@ export const MessageBubble = memo(function MessageBubble({
         {/* Metadata: timestamp y status */}
         <div
           className={cn(
-            "flex items-center gap-2 text-xs text-white/40",
+            "flex items-center gap-2 text-xs",
+            "text-muted-foreground", // Usa variable CSS que respeta el tema
             isUser ? "flex-row-reverse" : "flex-row"
           )}
         >
@@ -151,7 +170,7 @@ export const MessageBubble = memo(function MessageBubble({
 
           {/* Error message */}
           {message.status === "error" && (
-            <span className="text-red-400">Error al enviar</span>
+            <span className="text-red-500 dark:text-red-400">Error al enviar</span>
           )}
         </div>
       </div>
