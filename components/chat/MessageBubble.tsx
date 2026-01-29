@@ -20,19 +20,19 @@ const AVATAR_COLORS: Record<AvatarId, {
 }> = {
   lia: {
     bgLight: "bg-purple-100 border-purple-200",
-    bgDark: "dark:bg-gradient-to-br dark:from-purple-500/20 dark:to-purple-600/10 dark:border-white/10",
+    bgDark: "dark:bg-gradient-to-br dark:from-purple-500/40 dark:to-purple-600/25 dark:border-white/10",
     glowLight: "shadow-purple-200/50",
     glowDark: "dark:shadow-purple-500/20",
   },
   mia: {
     bgLight: "bg-amber-100 border-amber-200",
-    bgDark: "dark:bg-gradient-to-br dark:from-amber-500/20 dark:to-orange-600/10 dark:border-white/10",
+    bgDark: "dark:bg-gradient-to-br dark:from-amber-500/40 dark:to-orange-600/25 dark:border-white/10",
     glowLight: "shadow-amber-200/50",
     glowDark: "dark:shadow-amber-500/20",
   },
   allan: {
     bgLight: "bg-cyan-100 border-cyan-200",
-    bgDark: "dark:bg-gradient-to-br dark:from-cyan-500/20 dark:to-teal-600/10 dark:border-white/10",
+    bgDark: "dark:bg-gradient-to-br dark:from-cyan-500/40 dark:to-teal-600/25 dark:border-white/10",
     glowLight: "shadow-cyan-200/50",
     glowDark: "dark:shadow-cyan-500/20",
   },
