@@ -148,15 +148,15 @@ describe("MessageBubble", () => {
   // AVATAR COLORS
   // ==========================================
   describe("Avatar Colors", () => {
-    it("applies Lía colors (purple) for lia avatar", () => {
+    it("applies Lía colors (indigo) for lia avatar", () => {
       const message = createMessage({ role: "assistant" });
       render(
         <MessageBubble message={message} avatarId="lia" avatarName="Lía" />
       );
       
-      // Verificar que tiene clases de gradiente purple
+      // Verificar que tiene clases de gradiente indigo
       const avatarIndicator = screen.getByText("L").closest("div");
-      expect(avatarIndicator?.className).toContain("purple");
+      expect(avatarIndicator?.className).toContain("indigo");
     });
 
     it("applies Mía colors (amber) for mia avatar", () => {
@@ -186,7 +186,7 @@ describe("MessageBubble", () => {
       );
       
       const avatarIndicator = screen.getByText("T").closest("div");
-      expect(avatarIndicator?.className).toContain("purple");
+      expect(avatarIndicator?.className).toContain("indigo");
     });
   });
 

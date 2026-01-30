@@ -19,10 +19,10 @@ const AVATAR_COLORS: Record<AvatarId, {
   glowDark: string;
 }> = {
   lia: {
-    bgLight: "bg-purple-100 border-purple-200",
-    bgDark: "dark:bg-gradient-to-br dark:from-purple-500/55 dark:to-purple-600/40 dark:border-white/10",
-    glowLight: "shadow-purple-200/50",
-    glowDark: "dark:shadow-purple-500/20",
+    bgLight: "bg-indigo-100 border-indigo-200",
+    bgDark: "dark:bg-gradient-to-br dark:from-indigo-500/55 dark:to-indigo-600/40 dark:border-white/10",
+    glowLight: "shadow-indigo-200/50",
+    glowDark: "dark:shadow-indigo-500/20",
   },
   mia: {
     bgLight: "bg-amber-100 border-amber-200",
@@ -104,10 +104,10 @@ export const MessageBubble = memo(function MessageBubble({
             "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
             "text-xs font-semibold",
             // Light mode
-            "bg-purple-100 text-purple-700 border border-purple-200",
+            "bg-indigo-100 text-indigo-700 border border-indigo-200",
             // Dark mode
             "dark:bg-gradient-to-br dark:text-white dark:border-white/10",
-            avatarId === "lia" && "dark:from-purple-500/30 dark:to-purple-600/20",
+            avatarId === "lia" && "dark:from-indigo-500/30 dark:to-indigo-600/20",
             avatarId === "mia" && "bg-amber-100 text-amber-700 border-amber-200 dark:from-amber-500/30 dark:to-orange-600/20",
             avatarId === "allan" && "bg-cyan-100 text-cyan-700 border-cyan-200 dark:from-cyan-500/30 dark:to-teal-600/20"
           )}
