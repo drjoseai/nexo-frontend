@@ -60,7 +60,7 @@ const processQueue = (error: AxiosError | null = null): void => {
 const createApiClient = (): AxiosInstance => {
   const instance = axios.create({
     baseURL: getBaseURL(),
-    timeout: 30000,
+    timeout: 60000,
     headers: {
       'Content-Type': 'application/json',
     },
