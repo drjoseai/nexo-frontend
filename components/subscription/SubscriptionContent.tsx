@@ -54,7 +54,7 @@ export function SubscriptionContent() {
     },
     plus: {
       name: "Plus",
-      price: "$9.99",
+      price: "$12.99",
       period: t("perMonth"),
       description: t("plusPlanDescription"),
       icon: <Sparkles className="h-6 w-6" />,
@@ -63,7 +63,7 @@ export function SubscriptionContent() {
     },
     premium: {
       name: "Premium",
-      price: "$14.99",
+      price: "$19.99",
       period: t("perMonth"),
       description: t("premiumPlanDescription"),
       icon: <Crown className="h-6 w-6" />,
@@ -73,7 +73,7 @@ export function SubscriptionContent() {
 
   // Features configuration with translations
   const features: PlanFeature[] = [
-    { name: t("messagesPerDay"), free: "5", plus: "100", premium: t("unlimited") },
+    { name: t("messagesPerDay"), free: "10", plus: "70", premium: "150" },
     { name: t("accessToLia"), free: true, plus: true, premium: true },
     { name: t("accessToMia"), free: false, plus: true, premium: true },
     { name: t("accessToAllan"), free: false, plus: true, premium: true },
