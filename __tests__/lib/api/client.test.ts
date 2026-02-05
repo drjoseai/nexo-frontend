@@ -162,7 +162,7 @@ describe('apiClient', () => {
       expect(axiosCreateCalled).toBe(true);
       expect(axiosCreateConfig).toMatchObject({
         baseURL: expect.any(String),
-        timeout: 30000,
+        timeout: 60000,
         headers: {
           'Content-Type': 'application/json',
         },
