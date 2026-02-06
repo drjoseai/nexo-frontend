@@ -142,7 +142,7 @@ export default function RegisterPage() {
         description: t("registerSuccessDescription"),
       });
       
-      router.push("/dashboard");
+      router.push("/onboarding");
     } catch (error: unknown) {
       // Error handling
       const errorMessage =

@@ -50,6 +50,9 @@ export interface User {
   
   /** Optional timestamp when the subscription ends */
   subscription_ends_at?: string | null;
+  
+  /** Whether the user has completed the onboarding profile */
+  onboarding_completed: boolean;
 }
 
 /**

@@ -425,7 +425,7 @@ describe('RegisterPage', () => {
       });
     });
 
-    it('navigates to dashboard on successful registration', async () => {
+    it('navigates to onboarding on successful registration', async () => {
       mockRegister.mockResolvedValue({});
       render(<RegisterPage />);
       
@@ -449,7 +449,7 @@ describe('RegisterPage', () => {
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith('/dashboard');
+        expect(mockPush).toHaveBeenCalledWith('/onboarding');
       });
     });
 

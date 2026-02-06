@@ -46,6 +46,7 @@ const mockUser = {
   trial_ends_at: null,
   tos_accepted: true,
   date_of_birth: '1990-05-15',
+  onboarding_completed: false,
 };
 
 const mockCredentials = {

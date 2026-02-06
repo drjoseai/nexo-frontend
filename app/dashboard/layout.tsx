@@ -15,7 +15,7 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, isLoading, loadUser } = useAuthStore();
+  const { isAuthenticated, isLoading, loadUser, user } = useAuthStore();
   
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isInChat = pathname?.startsWith("/dashboard/chat");
@@ -32,6 +32,13 @@ export default function DashboardLayout({
     }
   }, [isAuthenticated, isLoading, router]);
 
+  // Redirect to onboarding if not completed
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && user && !user.onboarding_completed) {
+      router.push("/onboarding");
+    }
+  }, [isAuthenticated, isLoading, user, router]);
+
   // Show loading state
   if (isLoading) {
     return (
@@ -47,6 +54,15 @@ export default function DashboardLayout({
   // Don't render dashboard content if not authenticated
   if (!isAuthenticated) {
     return null;
+  }
+
+  // Don't render dashboard if onboarding not completed
+  if (isAuthenticated && user && !user.onboarding_completed) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
   }
 
   return (

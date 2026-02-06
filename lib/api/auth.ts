@@ -40,6 +40,7 @@ interface BackendUserResponse {
   date_of_birth: string | null;
   trial_ends_at: string | null;
   created_at: string;
+  onboarding_completed: boolean;
 }
 
 // ============================================
@@ -61,6 +62,7 @@ function transformUser(backendUser: BackendUserResponse): User {
     preferred_language: (backendUser.language || 'es') as User['preferred_language'],
     created_at: backendUser.created_at,
     trial_ends_at: backendUser.trial_ends_at,
+    onboarding_completed: backendUser.onboarding_completed ?? false,
   };
 }
 

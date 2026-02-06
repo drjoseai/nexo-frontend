@@ -65,6 +65,7 @@ describe('Auth API', () => {
         preferred_language: 'es',
         created_at: '2024-01-01T00:00:00Z',
         trial_ends_at: null,
+        onboarding_completed: false,
       });
     });
 
@@ -174,6 +175,7 @@ describe('Auth API', () => {
           preferred_language: 'en',
           created_at: '2024-01-01T00:00:00Z',
           trial_ends_at: '2025-01-01T00:00:00Z',
+          onboarding_completed: false,
         },
         message: 'Registration successful',
       });
@@ -269,6 +271,7 @@ describe('Auth API', () => {
         preferred_language: 'es',
         created_at: '2024-01-01T00:00:00Z',
         trial_ends_at: null,
+        onboarding_completed: false,
       });
     });
 
