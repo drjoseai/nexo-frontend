@@ -17,6 +17,13 @@ jest.mock("lucide-react", () => ({
   AlertCircle: () => <svg data-testid="icon-alert" />,
 }));
 
+// Mock MessageAttachment
+jest.mock("@/components/chat/MessageAttachment", () => ({
+  MessageAttachment: ({ attachmentFilename }: { attachmentFilename: string }) => (
+    <div data-testid="message-attachment">{attachmentFilename}</div>
+  ),
+}));
+
 // ============================================
 // HELPER FUNCTIONS
 // ============================================

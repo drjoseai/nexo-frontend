@@ -6,6 +6,7 @@
 import { memo } from "react";
 import { Check, Clock, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MessageAttachment } from "./MessageAttachment";
 import type { Message, AvatarId } from "@/types/chat";
 
 // ============================================
@@ -126,7 +127,11 @@ export const MessageBubble = memo(function MessageBubble({
         {/* Burbuja del mensaje */}
         <div
           className={cn(
-            "rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
+            "rounded-2xl text-sm leading-relaxed overflow-hidden",
+            // Padding: reducido arriba si hay attachment de imagen
+            message.attachment_url && message.attachment_type === "image"
+              ? "px-4 pb-2.5 pt-1"
+              : "px-4 py-2.5",
             isUser
               ? [
                   // Usuario - Light mode
@@ -148,8 +153,20 @@ export const MessageBubble = memo(function MessageBubble({
             message.status === "error" && "opacity-70"
           )}
         >
-          {/* Contenido del mensaje */}
-          <p className="whitespace-pre-wrap break-words">{message.content}</p>
+          {/* Attachment (si existe) */}
+          {message.attachment_url && message.attachment_type && (
+            <MessageAttachment
+              attachmentUrl={message.attachment_url}
+              attachmentType={message.attachment_type}
+              attachmentFilename={message.attachment_filename || "archivo"}
+              storagePath={message.attachment_storage_path}
+            />
+          )}
+
+          {/* Contenido del mensaje (solo si tiene texto) */}
+          {message.content && (
+            <p className="whitespace-pre-wrap break-words">{message.content}</p>
+          )}
         </div>
 
         {/* Metadata: timestamp y status */}

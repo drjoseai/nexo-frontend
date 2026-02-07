@@ -12,10 +12,12 @@ import { useChatStore } from "@/lib/store/chat";
 import { useAuthStore } from "@/lib/store/auth";
 import { ChatInput } from "./ChatInput";
 import { MessageBubble } from "./MessageBubble";
+import { FilePreview } from "./FilePreview";
 import { RelationshipTypeSelector } from "./RelationshipTypeSelector";
 import { DeleteHistoryButton } from "./DeleteHistoryButton";
 import { cn } from "@/lib/utils";
 import { toast } from "@/lib/services/toast-service";
+import { validateFile } from "@/lib/api/files";
 import type { AvatarId, RelationshipType } from "@/types/chat";
 import { AVATARS } from "@/types/avatar";
 
@@ -34,6 +36,7 @@ interface ChatInterfaceProps {
 export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const avatar = AVATARS[avatarId];
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
 
   // Local storage key para relationship type
   const STORAGE_KEY = `nexo_relationship_${avatarId}`;
@@ -62,6 +65,9 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     clearMessages,
     clearError,
     deleteHistory,
+    uploadLimits,
+    fileUploading,
+    fetchUploadLimits,
   } = useChatStore();
 
   // Auth store para obtener plan del usuario
@@ -73,6 +79,11 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     clearMessages();
     loadHistory(avatarId);
   }, [avatarId, loadHistory, clearMessages]);
+
+  // Fetch upload limits al montar
+  useEffect(() => {
+    fetchUploadLimits();
+  }, [fetchUploadLimits]);
 
   // Auto-scroll al último mensaje
   useEffect(() => {
@@ -103,9 +114,21 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     // TODO: Aquí se podría abrir un modal de upgrade o redirigir a /dashboard/subscription
   };
 
+  // Handler para selección de archivo
+  const handleFileSelected = (file: File) => {
+    const validation = validateFile(file);
+    if (!validation.valid) {
+      toast.error(validation.error || "Archivo no válido");
+      return;
+    }
+    setPendingFile(file);
+  };
+
   // Handler para enviar mensaje
   const handleSendMessage = async (content: string) => {
-    await sendMessage(content, avatarId, relationshipType);
+    const fileToSend = pendingFile;
+    setPendingFile(null); // Limpiar inmediatamente para UX
+    await sendMessage(content, avatarId, relationshipType, fileToSend);
   };
 
   // Handler para borrar historial
@@ -352,10 +375,23 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         {/* INPUT AREA */}
         {/* ============================================ */}
         <div className="border-t border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+          {/* File Preview (si hay archivo pendiente) */}
+          {pendingFile && (
+            <FilePreview
+              file={pendingFile}
+              onRemove={() => setPendingFile(null)}
+            />
+          )}
+
+          {/* Chat Input */}
           <ChatInput
             onSend={handleSendMessage}
             disabled={isSending || isLoading}
             placeholder={`Escribe a ${avatar?.name || "tu avatar"}...`}
+            onFileSelected={handleFileSelected}
+            fileUploading={fileUploading}
+            uploadRemaining={uploadLimits?.remaining}
+            hasPendingFile={!!pendingFile}
           />
         </div>
       </div>

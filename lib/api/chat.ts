@@ -22,13 +22,27 @@ export async function sendMessage(
   avatarId: string,
   content: string,
   relationshipType?: string,
-  language?: string
+  language?: string,
+  attachmentData?: {
+    attachment_url: string;
+    attachment_type: "image" | "text";
+    attachment_filename: string;
+    attachment_storage_path: string;
+    extracted_text?: string;
+  }
 ): Promise<ChatMessageResponse> {
   const request: ChatMessageRequest = {
     avatar_id: avatarId,
     content: content.trim(),
     relationship_type: relationshipType as ChatMessageRequest["relationship_type"],
     language: language as "es" | "en",
+    ...(attachmentData && {
+      attachment_url: attachmentData.attachment_url,
+      attachment_type: attachmentData.attachment_type,
+      attachment_filename: attachmentData.attachment_filename,
+      attachment_storage_path: attachmentData.attachment_storage_path,
+      extracted_text: attachmentData.extracted_text,
+    }),
   };
 
   const response = await apiClient.post<ChatMessageResponse>(
@@ -76,6 +90,10 @@ export async function getChatMessages(
       content: msg.content,
       timestamp: new Date(msg.timestamp),
       status: "sent" as const,
+      attachment_url: msg.attachment_url,
+      attachment_type: msg.attachment_type,
+      attachment_filename: msg.attachment_filename,
+      attachment_storage_path: msg.attachment_storage_path,
     }))
     .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 }

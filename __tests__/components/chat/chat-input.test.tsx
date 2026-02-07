@@ -31,6 +31,15 @@ jest.mock("@/components/chat/EmojiPickerButton", () => ({
   ),
 }));
 
+// Mock FileAttachmentButton
+jest.mock("@/components/chat/FileAttachmentButton", () => ({
+  FileAttachmentButton: ({ disabled }: { disabled?: boolean }) => (
+    <button data-testid="file-attachment-button" disabled={disabled}>
+      Attach
+    </button>
+  ),
+}));
+
 // ============================================
 // TEST SUITE
 // ============================================

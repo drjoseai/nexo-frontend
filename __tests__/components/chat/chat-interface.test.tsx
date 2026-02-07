@@ -44,6 +44,10 @@ jest.mock("@/components/chat/ChatInput", () => ({
     onSend: (msg: string) => void; 
     disabled?: boolean; 
     placeholder?: string;
+    onFileSelected?: (file: File) => void;
+    fileUploading?: boolean;
+    uploadRemaining?: number;
+    hasPendingFile?: boolean;
   }) => (
     <div data-testid="chat-input">
       <input
@@ -102,6 +106,9 @@ const mockStoreState = {
   clearMessages: jest.fn(),
   clearError: jest.fn(),
   deleteHistory: jest.fn(),
+  uploadLimits: null as { remaining: number } | null,
+  fileUploading: false,
+  fetchUploadLimits: jest.fn(),
 };
 
 // Mock useChatStore
@@ -122,6 +129,16 @@ jest.mock("@/lib/services/toast-service", () => ({
     success: jest.fn(),
     error: jest.fn(),
   },
+}));
+
+// Mock FilePreview
+jest.mock("@/components/chat/FilePreview", () => ({
+  FilePreview: () => <div data-testid="file-preview">File Preview</div>,
+}));
+
+// Mock file API
+jest.mock("@/lib/api/files", () => ({
+  validateFile: jest.fn(() => ({ valid: true, fileType: "image" })),
 }));
 
 // ============================================
@@ -172,6 +189,9 @@ function resetMockStore() {
   mockStoreState.clearMessages.mockClear();
   mockStoreState.clearError.mockClear();
   mockStoreState.deleteHistory.mockClear();
+  mockStoreState.fetchUploadLimits.mockClear();
+  mockStoreState.uploadLimits = null;
+  mockStoreState.fileUploading = false;
   mockLocalStorage.clear();
 }
 
@@ -424,7 +444,7 @@ describe("ChatInterface", () => {
       fireEvent.change(input, { target: { value: "SEND_TEST" } });
       
       await waitFor(() => {
-        expect(mockStoreState.sendMessage).toHaveBeenCalledWith("Test message", "lia", "assistant");
+        expect(mockStoreState.sendMessage).toHaveBeenCalledWith("Test message", "lia", "assistant", null);
       });
     });
   });

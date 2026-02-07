@@ -11,6 +11,11 @@ export interface ChatMessageRequest {
   content: string;
   relationship_type?: RelationshipType;
   language?: "es" | "en";
+  attachment_url?: string;
+  attachment_type?: "image" | "text";
+  attachment_filename?: string;
+  attachment_storage_path?: string;
+  extracted_text?: string;
 }
 
 // ============================================
@@ -32,6 +37,9 @@ export interface ChatMessageResponse {
   success: boolean;
   error?: string;
   is_romantic?: boolean;
+  attachment_url?: string;
+  attachment_type?: "image" | "text";
+  attachment_filename?: string;
 }
 
 export interface ChatHistoryResponse {
@@ -46,6 +54,10 @@ export interface HistoryMessage {
   content: string;
   timestamp: string;
   conversation_id: string;
+  attachment_url?: string;
+  attachment_type?: "image" | "text";
+  attachment_filename?: string;
+  attachment_storage_path?: string;
 }
 
 // ============================================
@@ -59,6 +71,10 @@ export interface Message {
   timestamp: Date;
   status: MessageStatus;
   metadata?: MessageMetadata;
+  attachment_url?: string;
+  attachment_type?: "image" | "text";
+  attachment_filename?: string;
+  attachment_storage_path?: string;
 }
 
 export interface MessageMetadata {
@@ -137,6 +153,10 @@ export function historyToMessages(history: HistoryMessage[]): Message[] {
     content: msg.content,
     timestamp: new Date(msg.timestamp),
     status: "sent" as MessageStatus,
+    attachment_url: msg.attachment_url,
+    attachment_type: msg.attachment_type,
+    attachment_filename: msg.attachment_filename,
+    attachment_storage_path: msg.attachment_storage_path,
   }));
 }
 

@@ -4,6 +4,8 @@
 
 import { create } from "zustand";
 import { chatApi } from "@/lib/api/chat";
+import { fileApi } from "@/lib/api/files";
+import type { UploadLimitsResponse } from "@/lib/api/files";
 import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
 import type {
   Message,
@@ -22,9 +24,11 @@ interface ChatState {
   error: string | null;
   currentAvatarId: AvatarId | null;
   messagesRemaining: number | null;
+  uploadLimits: UploadLimitsResponse | null;
+  fileUploading: boolean;
   
   // Acciones
-  sendMessage: (content: string, avatarId: string, relationshipType?: string) => Promise<boolean>;
+  sendMessage: (content: string, avatarId: string, relationshipType?: string, pendingFile?: File | null) => Promise<boolean>;
   loadHistory: (avatarId: string, limit?: number) => Promise<void>;
   deleteHistory: (avatarId: AvatarId) => Promise<void>;
   setCurrentAvatar: (avatarId: AvatarId) => void;
@@ -32,6 +36,7 @@ interface ChatState {
   clearError: () => void;
   addOptimisticMessage: (content: string) => string;
   updateMessageStatus: (messageId: string, status: Message["status"]) => void;
+  fetchUploadLimits: () => Promise<void>;
 }
 
 // ============================================
@@ -54,6 +59,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
   error: null,
   currentAvatarId: null,
   messagesRemaining: null,
+  uploadLimits: null,
+  fileUploading: false,
 
   // ============================================
   // ACCIONES
@@ -102,18 +109,48 @@ export const useChatStore = create<ChatState>((set, get) => ({
    * Envía un mensaje al avatar
    * Usa optimistic update para UX fluida
    */
-  sendMessage: async (content: string, avatarId: string, relationshipType?: string): Promise<boolean> => {
+  sendMessage: async (content: string, avatarId: string, relationshipType?: string, pendingFile?: File | null): Promise<boolean> => {
     const trimmedContent = content.trim();
-    if (!trimmedContent) return false;
+    
+    // Permitir envío si hay contenido O hay archivo adjunto
+    if (!trimmedContent && !pendingFile) return false;
 
     // Optimistic update: agregar mensaje del usuario inmediatamente
-    const userMessageId = get().addOptimisticMessage(trimmedContent);
+    const userMessageId = get().addOptimisticMessage(trimmedContent || "📎");
 
     set({ isSending: true, error: null });
 
     try {
-      // Llamar al API con relationship_type
-      const response = await chatApi.sendMessage(avatarId, trimmedContent, relationshipType);
+      let attachmentData: {
+        attachment_url: string;
+        attachment_type: "image" | "text";
+        attachment_filename: string;
+        attachment_storage_path: string;
+      } | undefined = undefined;
+
+      // Si hay archivo pendiente, subirlo primero
+      if (pendingFile) {
+        set({ fileUploading: true });
+        try {
+          const uploadResponse = await fileApi.uploadFile(pendingFile, avatarId);
+          attachmentData = {
+            attachment_url: uploadResponse.file_url,
+            attachment_type: uploadResponse.file_type as "image" | "text",
+            attachment_filename: uploadResponse.filename,
+            attachment_storage_path: uploadResponse.storage_path,
+          };
+        } catch (uploadError) {
+          console.error("File upload failed:", uploadError);
+          get().updateMessageStatus(userMessageId, "error");
+          set({ isSending: false, fileUploading: false, error: "Error al subir el archivo. Intenta de nuevo." });
+          return false;
+        } finally {
+          set({ fileUploading: false });
+        }
+      }
+
+      // Llamar al API de chat con attachment data
+      const response = await chatApi.sendMessage(avatarId, trimmedContent, relationshipType, undefined, attachmentData);
 
       if (!response.success) {
         // Manejar error del backend
@@ -125,8 +162,27 @@ export const useChatStore = create<ChatState>((set, get) => ({
         return false;
       }
 
-      // Marcar mensaje del usuario como enviado
-      get().updateMessageStatus(userMessageId, "sent");
+      // Actualizar mensaje del usuario con attachment info si existe
+      if (attachmentData) {
+        set((state) => ({
+          messages: state.messages.map((msg) =>
+            msg.id === userMessageId
+              ? {
+                  ...msg,
+                  status: "sent" as const,
+                  content: trimmedContent || "",
+                  attachment_url: attachmentData!.attachment_url,
+                  attachment_type: attachmentData!.attachment_type,
+                  attachment_filename: attachmentData!.attachment_filename,
+                  attachment_storage_path: attachmentData!.attachment_storage_path,
+                }
+              : msg
+          ),
+        }));
+      } else {
+        // Marcar mensaje del usuario como enviado
+        get().updateMessageStatus(userMessageId, "sent");
+      }
 
       // Agregar respuesta del avatar
       const avatarMessage: Message = {
@@ -150,12 +206,26 @@ export const useChatStore = create<ChatState>((set, get) => ({
         messagesRemaining: response.messages_remaining ?? state.messagesRemaining,
       }));
 
+      // Decrementar upload limits localmente
+      if (attachmentData) {
+        set((state) => ({
+          uploadLimits: state.uploadLimits
+            ? {
+                ...state.uploadLimits,
+                used_today: state.uploadLimits.used_today + 1,
+                remaining: Math.max(0, state.uploadLimits.remaining - 1),
+              }
+            : null,
+        }));
+      }
+
       // Track message sent event
       analytics.track(AnalyticsEvents.MESSAGE_SENT, {
         avatar_id: avatarId,
         relationship_type: relationshipType,
         model_used: response.model_used,
         sentiment_detected: response.sentiment_detected,
+        has_attachment: !!attachmentData,
       });
       analytics.increment('total_messages_sent');
 
@@ -218,6 +288,18 @@ export const useChatStore = create<ChatState>((set, get) => ({
       });
 
       return false;
+    }
+  },
+
+  /**
+   * Obtiene los límites de upload del usuario actual
+   */
+  fetchUploadLimits: async () => {
+    try {
+      const limits = await fileApi.getUploadLimits();
+      set({ uploadLimits: limits });
+    } catch (error) {
+      console.error("Error fetching upload limits:", error);
     }
   },
 
@@ -286,6 +368,8 @@ export const selectIsLoading = (state: ChatState) => state.isLoading;
 export const selectIsSending = (state: ChatState) => state.isSending;
 export const selectError = (state: ChatState) => state.error;
 export const selectMessagesRemaining = (state: ChatState) => state.messagesRemaining;
+export const selectUploadLimits = (state: ChatState) => state.uploadLimits;
+export const selectFileUploading = (state: ChatState) => state.fileUploading;
 
 export default useChatStore;
 

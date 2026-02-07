@@ -71,7 +71,29 @@
     "startConversation": "Start a conversation",
     "selectAvatar": "Select an avatar to begin",
     "dailyLimitReached": "You've reached your daily message limit",
-    "upgradeForMore": "Upgrade your plan for more messages"
+    "upgradeForMore": "Upgrade your plan for more messages",
+    "fileUpload": {
+      "attach": "Attach file",
+      "uploading": "Uploading...",
+      "noQuota": "Daily limit reached",
+      "notAvailable": "Available on Plus and Premium",
+      "remaining": "{count} files remaining today",
+      "preview": {
+        "remove": "Remove file"
+      },
+      "lightbox": {
+        "close": "Close",
+        "label": "Image view"
+      },
+      "errors": {
+        "invalidType": "Unsupported file type. Use images (JPG, PNG, WebP, GIF) or text (TXT, PDF)",
+        "imageTooLarge": "Image cannot exceed 5MB",
+        "textTooLarge": "Text file cannot exceed 10KB",
+        "uploadFailed": "Failed to upload file. Try again",
+        "limitReached": "You've reached your daily file limit",
+        "loadFailed": "Could not load image"
+      }
+    }
   },
   "avatars": {
     "lia": {
