@@ -126,6 +126,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         attachment_type: "image" | "text";
         attachment_filename: string;
         attachment_storage_path: string;
+        extracted_text?: string;
       } | undefined = undefined;
 
       // Si hay archivo pendiente, subirlo primero
@@ -134,10 +135,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
         try {
           const uploadResponse = await fileApi.uploadFile(pendingFile, avatarId);
           attachmentData = {
-            attachment_url: uploadResponse.file_url,
-            attachment_type: uploadResponse.file_type as "image" | "text",
+            attachment_url: uploadResponse.signed_url,
+            attachment_type: uploadResponse.file_category as "image" | "text",
             attachment_filename: uploadResponse.filename,
             attachment_storage_path: uploadResponse.storage_path,
+            extracted_text: uploadResponse.extracted_text,
           };
         } catch (uploadError) {
           console.error("File upload failed:", uploadError);
@@ -212,7 +214,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
           uploadLimits: state.uploadLimits
             ? {
                 ...state.uploadLimits,
-                used_today: state.uploadLimits.used_today + 1,
+                used: state.uploadLimits.used + 1,
                 remaining: Math.max(0, state.uploadLimits.remaining - 1),
               }
             : null,

@@ -67,7 +67,7 @@ export function MessageAttachment({
       setHasTriedRefresh(true);
       try {
         const result = await fileApi.refreshFileUrl(storagePath);
-        setRefreshedUrl(result.file_url);
+        setRefreshedUrl(result.signed_url);
         setImageError(false);
         return;
       } catch {

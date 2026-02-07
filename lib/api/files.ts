@@ -9,26 +9,27 @@ import { apiClient } from "./client";
 // ============================================
 
 export interface FileUploadResponse {
-  file_url: string;
+  success: boolean;
+  signed_url: string;
   filename: string;
   storage_path: string;
-  file_type: "image" | "text";
-  file_size: number;
-  mime_type: string;
+  file_category: "image" | "text";
+  content_type: string;
+  size_bytes: number;
+  extracted_text?: string;
+  uploads_remaining: number;
 }
 
 export interface UploadLimitsResponse {
-  plan: string;
-  daily_limit: number;
-  used_today: number;
+  allowed: boolean;
+  used: number;
+  limit: number;
   remaining: number;
-  allowed_types: string[];
-  max_image_size_mb: number;
-  max_text_size_mb: number;
+  plan: string;
 }
 
 export interface RefreshUrlResponse {
-  file_url: string;
+  signed_url: string;
   expires_in: number;
 }
 
