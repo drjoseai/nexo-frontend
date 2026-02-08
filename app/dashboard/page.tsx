@@ -91,7 +91,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Plan upgrade banner for free users */}
-      {(userPlan === "free" || userPlan === "trial") && (
+      {userPlan === "free" && (
         <div className="flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/10 p-4">
           <Sparkles className="h-5 w-5 text-primary" />
           <div className="flex-1">

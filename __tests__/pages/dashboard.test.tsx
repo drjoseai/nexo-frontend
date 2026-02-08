@@ -149,12 +149,12 @@ describe('DashboardPage', () => {
       });
     });
 
-    it('shows upgrade banner for trial plan users', async () => {
+    it('does not show upgrade banner for trial plan users', async () => {
       mockUser = { display_name: 'Trial User', plan: 'trial' };
       render(<DashboardPage />);
       
       await waitFor(() => {
-        expect(screen.getByText('Desbloquea todos los avatares')).toBeInTheDocument();
+        expect(screen.queryByText('Desbloquea todos los avatares')).not.toBeInTheDocument();
       });
     });
 
