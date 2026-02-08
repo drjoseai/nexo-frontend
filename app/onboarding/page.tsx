@@ -77,6 +77,41 @@ interface OnboardingData {
 
 const TOTAL_STEPS = 4;
 
+const ONBOARDING_STORAGE_KEY = "nexo_onboarding_progress";
+
+// ============================================
+// SessionStorage Helpers
+// ============================================
+
+function loadProgress(): { step: number; data: OnboardingData } | null {
+  try {
+    if (typeof window === "undefined") return null;
+    const saved = sessionStorage.getItem(ONBOARDING_STORAGE_KEY);
+    if (!saved) return null;
+    return JSON.parse(saved);
+  } catch {
+    return null;
+  }
+}
+
+function saveProgress(step: number, data: OnboardingData): void {
+  try {
+    if (typeof window === "undefined") return;
+    sessionStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify({ step, data }));
+  } catch {
+    // Silently fail — not critical
+  }
+}
+
+function clearProgress(): void {
+  try {
+    if (typeof window === "undefined") return;
+    sessionStorage.removeItem(ONBOARDING_STORAGE_KEY);
+  } catch {
+    // Silently fail
+  }
+}
+
 // ============================================
 // Main Component
 // ============================================
@@ -123,6 +158,20 @@ export default function OnboardingPage() {
     }
   }, [user, router]);
 
+  // Restore saved progress from sessionStorage
+  useEffect(() => {
+    const saved = loadProgress();
+    if (saved) {
+      setData(saved.data);
+      setCurrentStep(saved.step);
+    }
+  }, []);
+
+  // Persist progress to sessionStorage
+  useEffect(() => {
+    saveProgress(currentStep, data);
+  }, [currentStep, data]);
+
   // Shorthand for current language
   const lang = data.preferred_language;
 
@@ -147,7 +196,7 @@ export default function OnboardingPage() {
   const canProceed = (): boolean => {
     switch (currentStep) {
       case 1:
-        return data.name.trim().length >= 1;
+        return data.name.trim().length >= 2;
       case 2:
         return true; // All optional
       case 3:
@@ -172,8 +221,8 @@ export default function OnboardingPage() {
   };
 
   const handleSubmit = async () => {
-    if (!data.name.trim()) {
-      toast.error(lang === "es" ? "Por favor ingresa tu nombre" : "Please enter your name");
+    if (data.name.trim().length < 2) {
+      toast.error(lang === "es" ? "Tu nombre debe tener al menos 2 caracteres" : "Your name must be at least 2 characters");
       return;
     }
 
@@ -199,6 +248,7 @@ export default function OnboardingPage() {
         lang === "es" ? "¡Perfil guardado! Tus avatares ya te conocen 🎉" : "Profile saved! Your avatars know you now 🎉"
       );
       
+      clearProgress();
       router.push("/dashboard");
     } catch (error) {
       console.error("Onboarding save error:", error);
@@ -222,10 +272,12 @@ export default function OnboardingPage() {
       await saveOnboardingProfile(profile);
       await loadUser();
       
+      clearProgress();
       router.push("/dashboard");
     } catch (error) {
       // If skip fails, just go to dashboard anyway
       console.error("Skip onboarding error:", error);
+      clearProgress();
       router.push("/dashboard");
     } finally {
       setIsSubmitting(false);
@@ -309,6 +361,11 @@ export default function OnboardingPage() {
                   autoFocus
                   className="text-lg"
                 />
+                {data.name.trim().length === 1 && (
+                  <p className="text-xs text-amber-500">
+                    {lang === "es" ? "Mínimo 2 caracteres" : "Minimum 2 characters"}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">

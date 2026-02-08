@@ -70,6 +70,7 @@ jest.mock('@/lib/store/auth', () => ({
 describe('OnboardingPage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    sessionStorage.clear();
     mockIsLoading = false;
     mockIsAuthenticated = true;
     mockUser = {
@@ -176,6 +177,38 @@ describe('OnboardingPage', () => {
 
       const nextButton = screen.getByRole('button', { name: /Siguiente/ });
       expect(nextButton).toBeDisabled();
+    });
+
+    it('Next button is disabled when name has only 1 character', () => {
+      mockUser = { ...mockUser!, display_name: '' };
+      render(<OnboardingPage />);
+
+      const nameInput = screen.getByLabelText('Tu nombre');
+      fireEvent.change(nameInput, { target: { value: 'A' } });
+
+      const nextButton = screen.getByRole('button', { name: /Siguiente/ });
+      expect(nextButton).toBeDisabled();
+    });
+
+    it('Next button is enabled when name has 2+ characters', () => {
+      mockUser = { ...mockUser!, display_name: '' };
+      render(<OnboardingPage />);
+
+      const nameInput = screen.getByLabelText('Tu nombre');
+      fireEvent.change(nameInput, { target: { value: 'Al' } });
+
+      const nextButton = screen.getByRole('button', { name: /Siguiente/ });
+      expect(nextButton).toBeEnabled();
+    });
+
+    it('shows minimum characters hint when name has exactly 1 character', () => {
+      mockUser = { ...mockUser!, display_name: '' };
+      render(<OnboardingPage />);
+
+      const nameInput = screen.getByLabelText('Tu nombre');
+      fireEvent.change(nameInput, { target: { value: 'A' } });
+
+      expect(screen.getByText('Mínimo 2 caracteres')).toBeInTheDocument();
     });
 
     it('Next button is enabled when name has value', () => {
@@ -453,6 +486,70 @@ describe('OnboardingPage', () => {
 
       await waitFor(() => {
         expect(mockPush).toHaveBeenCalledWith('/dashboard');
+      });
+    });
+  });
+
+  // ============================================
+  // PROGRESS PERSISTENCE (sessionStorage)
+  // ============================================
+
+  describe('Progress Persistence (sessionStorage)', () => {
+    it('saves progress to sessionStorage when navigating steps', () => {
+      render(<OnboardingPage />);
+
+      // Go to step 2
+      fireEvent.click(screen.getByRole('button', { name: /Siguiente/ }));
+
+      const saved = JSON.parse(sessionStorage.getItem('nexo_onboarding_progress') || '{}');
+      expect(saved.step).toBe(2);
+      expect(saved.data.name).toBe('Test User');
+    });
+
+    it('restores progress from sessionStorage on mount', () => {
+      // Pre-set sessionStorage with step 3 data
+      sessionStorage.setItem('nexo_onboarding_progress', JSON.stringify({
+        step: 3,
+        data: {
+          name: 'Restored User',
+          preferred_language: 'es',
+          location: 'Mexico',
+          profession: '',
+          age_range: '',
+          interests: ['music'],
+          communication_style: '',
+          looking_for: [],
+        },
+      }));
+
+      render(<OnboardingPage />);
+
+      // Should be on step 3
+      expect(screen.getByText('Paso 3 de 4')).toBeInTheDocument();
+      expect(screen.getByText('🎵 Música').closest('button')).toHaveClass('border-primary');
+    });
+
+    it('clears sessionStorage after successful submit', async () => {
+      render(<OnboardingPage />);
+
+      // Navigate to step 4 and submit
+      fireEvent.click(screen.getByRole('button', { name: /Siguiente/ }));
+      fireEvent.click(screen.getByRole('button', { name: /Siguiente/ }));
+      fireEvent.click(screen.getByRole('button', { name: /Siguiente/ }));
+      fireEvent.click(screen.getByRole('button', { name: /¡Empezar!/ }));
+
+      await waitFor(() => {
+        expect(sessionStorage.getItem('nexo_onboarding_progress')).toBeNull();
+      });
+    });
+
+    it('clears sessionStorage after skip', async () => {
+      render(<OnboardingPage />);
+
+      fireEvent.click(screen.getByRole('button', { name: /Omitir/ }));
+
+      await waitFor(() => {
+        expect(sessionStorage.getItem('nexo_onboarding_progress')).toBeNull();
       });
     });
   });

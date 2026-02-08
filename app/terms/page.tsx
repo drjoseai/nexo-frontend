@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import { LEGAL_LAST_UPDATED, COMPANY_INFO } from "@/lib/constants/legal";
 
 export const metadata: Metadata = {
   title: "Terms of Service | NEXO",
@@ -20,9 +21,20 @@ export default function TermsOfServicePage() {
           </Link>
         </div>
 
+        {/* Back Navigation */}
+        <div className="mb-6">
+          <Link 
+            href="/" 
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <span>←</span>
+            <span>Back to NEXO</span>
+          </Link>
+        </div>
+
         <article className="prose prose-neutral dark:prose-invert max-w-none">
           <h1>Terms of Service</h1>
-          <p className="text-muted-foreground">Last updated: January 15, 2026</p>
+          <p className="text-muted-foreground">Last updated: {LEGAL_LAST_UPDATED}</p>
 
           <section>
             <h2>1. Acceptance of Terms</h2>
@@ -174,12 +186,12 @@ export default function TermsOfServicePage() {
               If you have any questions about these Terms, please contact us at:
             </p>
             <p>
-              <strong>VENKO AI INNOVATIONS LLC</strong><br />
-              2 S Biscayne Boulevard Suite 3200 #5817<br />
-              Miami, Florida, 33131<br />
-              United States<br /><br />
-              <strong>Email:</strong> info@trynexo.ai<br />
-              <strong>Website:</strong> https://trynexo.ai
+              <strong>{COMPANY_INFO.name}</strong><br />
+              {COMPANY_INFO.address}<br />
+              {COMPANY_INFO.city}<br />
+              {COMPANY_INFO.country}<br /><br />
+              <strong>Email:</strong> {COMPANY_INFO.email}<br />
+              <strong>Website:</strong> {COMPANY_INFO.website}
             </p>
           </section>
         </article>
