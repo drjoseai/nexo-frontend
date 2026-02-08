@@ -34,7 +34,7 @@ interface ChatState {
   setCurrentAvatar: (avatarId: AvatarId) => void;
   clearMessages: () => void;
   clearError: () => void;
-  addOptimisticMessage: (content: string) => string;
+  addOptimisticMessage: (content: string, attachment?: { url: string; type: string; filename: string }) => string;
   updateMessageStatus: (messageId: string, status: Message["status"]) => void;
   fetchUploadLimits: () => Promise<void>;
 }
@@ -77,7 +77,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
    * Agrega un mensaje optimista (antes de confirmar con el servidor)
    * Retorna el ID del mensaje para actualizarlo después
    */
-  addOptimisticMessage: (content: string): string => {
+  addOptimisticMessage: (content: string, attachment?: { url: string; type: string; filename: string }): string => {
     const messageId = generateMessageId();
     const userMessage: Message = {
       id: messageId,
@@ -85,6 +85,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
       content,
       timestamp: new Date(),
       status: "sending",
+      ...(attachment && {
+        attachment_url: attachment.url,
+        attachment_type: attachment.type as "image" | "text",
+        attachment_filename: attachment.filename,
+      }),
     };
 
     set((state) => ({
@@ -115,8 +120,21 @@ export const useChatStore = create<ChatState>((set, get) => ({
     // Permitir envío si hay contenido O hay archivo adjunto
     if (!trimmedContent && !pendingFile) return false;
 
-    // Optimistic update: agregar mensaje del usuario inmediatamente
-    const userMessageId = get().addOptimisticMessage(trimmedContent || "📎");
+    // Crear preview local si hay archivo de imagen pendiente
+    let optimisticAttachment: { url: string; type: string; filename: string } | undefined;
+    if (pendingFile && pendingFile.type.startsWith("image/")) {
+      optimisticAttachment = {
+        url: URL.createObjectURL(pendingFile),
+        type: "image",
+        filename: pendingFile.name,
+      };
+    }
+
+    // Optimistic update: agregar mensaje del usuario inmediatamente (con preview si hay imagen)
+    const userMessageId = get().addOptimisticMessage(
+      trimmedContent || (pendingFile ? "" : ""),
+      optimisticAttachment
+    );
 
     set({ isSending: true, error: null });
 
@@ -143,6 +161,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
           };
         } catch (uploadError) {
           console.error("File upload failed:", uploadError);
+          // Revocar blob URL si existe
+          if (optimisticAttachment?.url) {
+            URL.revokeObjectURL(optimisticAttachment.url);
+          }
           get().updateMessageStatus(userMessageId, "error");
           set({ isSending: false, fileUploading: false, error: "Error al subir el archivo. Intenta de nuevo." });
           return false;
@@ -164,8 +186,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
         return false;
       }
 
-      // Actualizar mensaje del usuario con attachment info si existe
+      // Actualizar mensaje del usuario con attachment info real (reemplaza blob URL)
       if (attachmentData) {
+        // Revocar blob URL para liberar memoria
+        if (optimisticAttachment?.url) {
+          URL.revokeObjectURL(optimisticAttachment.url);
+        }
         set((state) => ({
           messages: state.messages.map((msg) =>
             msg.id === userMessageId

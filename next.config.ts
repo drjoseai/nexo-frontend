@@ -145,7 +145,7 @@ const nextConfig: NextConfig = {
               // Estilos: self + inline (Tailwind/CSS-in-JS)
               "style-src 'self' 'unsafe-inline'",
               // Imágenes: self + data URLs + HTTPS externo
-              "img-src 'self' data: https:",
+              "img-src 'self' data: blob: https:",
               // Fuentes: self + Google Fonts
               "font-src 'self' https://fonts.gstatic.com",
               // Conexiones API: self + backend + WebSocket dev + Mixpanel analytics
