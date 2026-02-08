@@ -77,9 +77,9 @@ export function SubscriptionContent() {
     { name: t("accessToLia"), free: true, plus: true, premium: true },
     { name: t("accessToMia"), free: false, plus: true, premium: true },
     { name: t("accessToAllan"), free: false, plus: true, premium: true },
-    { name: t("relationAssistant"), free: true, plus: true, premium: true },
     { name: t("relationFriend"), free: false, plus: true, premium: true },
     { name: t("relationRomantic"), free: false, plus: false, premium: true },
+    { name: t("relationAssistant"), free: true, plus: true, premium: true },
     { name: t("conversationMemory"), free: `7 ${t("days")}`, plus: `30 ${t("days")}`, premium: t("unlimited") },
     { name: t("priorityResponses"), free: false, plus: true, premium: true },
     { name: t("prioritySupport"), free: false, plus: false, premium: true },
@@ -260,8 +260,10 @@ export function SubscriptionContent() {
               className={cn(
                 "relative flex flex-col border-2 transition-all duration-300",
                 isPopular && "border-purple-500 shadow-lg shadow-purple-500/20",
+                planId === "premium" && !isPopular && "border-amber-500/50 shadow-lg shadow-amber-500/10",
                 (isCurrentPlan || isTrialOnFree) && "ring-2 ring-green-500",
-                !isPopular && !isCurrentPlan && !isTrialOnFree && "border-border/50"
+                !isPopular && planId === "free" && !isCurrentPlan && !isTrialOnFree && "border-slate-500/50",
+                !isPopular && planId !== "free" && planId !== "premium" && !isCurrentPlan && !isTrialOnFree && "border-border/50"
               )}
             >
               {isPopular && (
@@ -298,10 +300,15 @@ export function SubscriptionContent() {
                 </div>
 
                 <ul className="space-y-3 text-left text-sm">
-                  {features.slice(0, 6).map((feature) => (
+                  {features.slice(0, 7).map((feature) => (
                     <li key={feature.name} className="flex items-center gap-2">
                       {renderFeatureValue(feature[planId])}
-                      <span className="text-muted-foreground">{feature.name}</span>
+                      <span className={cn(
+                        "text-muted-foreground",
+                        feature.name === t("relationRomantic") && planId === "premium" && "text-amber-400 font-medium"
+                      )}>
+                        {feature.name}
+                      </span>
                     </li>
                   ))}
                 </ul>

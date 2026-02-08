@@ -386,7 +386,8 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
           {/* Chat Input */}
           <ChatInput
             onSend={handleSendMessage}
-            disabled={isSending || isLoading}
+            disabled={isLoading || fileUploading}
+            sendDisabled={isSending}
             placeholder={`Escribe a ${avatar?.name || "tu avatar"}...`}
             onFileSelected={handleFileSelected}
             fileUploading={fileUploading}

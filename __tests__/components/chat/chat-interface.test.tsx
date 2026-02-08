@@ -399,11 +399,11 @@ describe("ChatInterface", () => {
       expect(screen.getByTestId("chat-input")).toBeInTheDocument();
     });
 
-    it("disables input when isSending", () => {
+    it("keeps input enabled when isSending (user can type next message)", () => {
       mockStoreState.isSending = true;
       render(<ChatInterface avatarId="lia" />);
       
-      expect(screen.getByTestId("chat-input-field")).toBeDisabled();
+      expect(screen.getByTestId("chat-input-field")).not.toBeDisabled();
     });
 
     it("disables input when isLoading", () => {

@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 interface ChatInputProps {
   onSend: (message: string) => void;
   disabled?: boolean;
+  sendDisabled?: boolean;
   placeholder?: string;
   maxLength?: number;
   className?: string;
@@ -33,6 +34,7 @@ interface ChatInputProps {
 export function ChatInput({
   onSend,
   disabled = false,
+  sendDisabled = false,
   placeholder = "Escribe un mensaje...",
   maxLength = 2000,
   className,
@@ -62,7 +64,7 @@ export function ChatInput({
 
   const handleSend = () => {
     const trimmedMessage = message.trim();
-    if ((trimmedMessage || hasPendingFile) && !disabled) {
+    if ((trimmedMessage || hasPendingFile) && !disabled && !sendDisabled) {
       onSend(trimmedMessage);
       setMessage("");
       // Reset textarea height
@@ -128,13 +130,13 @@ export function ChatInput({
         {/* Botón enviar */}
         <Button
           onClick={handleSend}
-          disabled={disabled || (!message.trim() && !hasPendingFile)}
+          disabled={disabled || sendDisabled || (!message.trim() && !hasPendingFile)}
           size="icon"
           className={cn(
             "h-9 w-9 shrink-0 rounded-xl",
             "bg-primary hover:bg-primary/90 disabled:bg-white/10",
             "transition-all duration-200",
-            (message.trim() || hasPendingFile) && !disabled && "shadow-lg shadow-primary/25"
+            (message.trim() || hasPendingFile) && !disabled && !sendDisabled && "shadow-lg shadow-primary/25"
           )}
         >
           <Send className="h-4 w-4" />
