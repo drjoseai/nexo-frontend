@@ -225,6 +225,7 @@ export default function RegisterPage() {
               id="date_of_birth"
               data-testid="register-date-of-birth"
               type="date"
+              min="1920-01-01"
               max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
               aria-invalid={!!errors.date_of_birth}
               disabled={isLoading}

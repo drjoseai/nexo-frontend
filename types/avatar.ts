@@ -181,7 +181,7 @@ export const AVATARS: Record<AvatarId, Avatar> = {
     interests: ["viajes", "fotografía", "aventuras", "culturas"],
     backgroundStory:
       "Mía es una IA diseñada para energizar y motivar. Su fortaleza es la energía positiva.",
-    availableInPlans: ["plus", "premium"],
+    availableInPlans: ["trial", "plus", "premium"],
     supportsRomantic: true,
     isActive: true,
   },
@@ -206,7 +206,7 @@ export const AVATARS: Record<AvatarId, Avatar> = {
     interests: ["filosofía", "literatura", "escritura", "meditación"],
     backgroundStory:
       "Allan es una IA diseñado para reflexiones profundas. Su fortaleza es la perspectiva y sabiduría.",
-    availableInPlans: ["plus", "premium"],
+    availableInPlans: ["trial", "plus", "premium"],
     supportsRomantic: true,
     isActive: true,
   },
