@@ -48,6 +48,7 @@ interface MessageBubbleProps {
   avatarId?: AvatarId;
   avatarName?: string;
   showTimestamp?: boolean;
+  isStreaming?: boolean;
 }
 
 // ============================================
@@ -87,6 +88,7 @@ export const MessageBubble = memo(function MessageBubble({
   avatarId = "lia",
   avatarName = "Avatar",
   showTimestamp = true,
+  isStreaming = false,
 }: MessageBubbleProps) {
   const isUser = message.role === "user";
   const avatarColors = AVATAR_COLORS[avatarId];
@@ -165,7 +167,18 @@ export const MessageBubble = memo(function MessageBubble({
 
           {/* Contenido del mensaje (solo si tiene texto) */}
           {message.content && (
-            <p className="whitespace-pre-wrap break-words">{message.content}</p>
+            <p className="whitespace-pre-wrap break-words">
+              {message.content}
+              {isStreaming && (
+                <span className="inline-block w-0.5 h-4 bg-current opacity-60 animate-pulse ml-0.5 align-text-bottom" />
+              )}
+            </p>
+          )}
+          {/* Mostrar cursor incluso si content está vacío durante streaming (esperando primer token) */}
+          {isStreaming && !message.content && (
+            <p>
+              <span className="inline-block w-0.5 h-4 bg-current opacity-60 animate-pulse align-text-bottom" />
+            </p>
           )}
         </div>
 

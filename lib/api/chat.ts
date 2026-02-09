@@ -107,11 +107,139 @@ export async function deleteHistory(avatarId: string): Promise<void> {
 }
 
 // ============================================
+// STREAMING API (SSE)
+// ============================================
+
+/**
+ * Tipos para eventos SSE del streaming
+ */
+export interface StreamCallbacks {
+  onStart?: (data: { avatar_id: string; avatar_name: string; relationship_type: string }) => void;
+  onContent?: (text: string) => void;
+  onMetadata?: (data: { tokens: number; cost: number; model: string; duration_ms: number; cache_hit: boolean }) => void;
+  onComplete?: (data: { message_id: string; conversation_id: string }) => void;
+  onError?: (data: { message: string; error_type?: string; retry_after?: number }) => void;
+}
+
+/**
+ * Envía un mensaje al avatar usando streaming SSE
+ * Endpoint: POST /chat/message/stream
+ *
+ * Usa fetch() nativo (no Axios) porque necesitamos ReadableStream para SSE.
+ * Auth se maneja via cookies httpOnly con credentials: "include".
+ */
+export async function sendMessageStream(
+  avatarId: string,
+  content: string,
+  relationshipType?: string,
+  callbacks?: StreamCallbacks,
+  signal?: AbortSignal
+): Promise<void> {
+  const request: ChatMessageRequest = {
+    avatar_id: avatarId,
+    content: content.trim(),
+    relationship_type: relationshipType as ChatMessageRequest["relationship_type"],
+  };
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+  const response = await fetch(`${apiUrl}/chat/message/stream`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "text/event-stream",
+    },
+    body: JSON.stringify(request),
+    signal,
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const errorDetail = errorData.detail || errorData;
+    throw {
+      status: response.status,
+      message: typeof errorDetail === "string" ? errorDetail : errorDetail?.message || `Error ${response.status}`,
+      code: response.status === 429 ? "daily_limit_exceeded" : undefined,
+      limit_info: errorDetail?.limit_info || null,
+      ...errorData,
+    };
+  }
+
+  if (!response.body) {
+    throw new Error("Response body is null — streaming not supported by browser");
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+
+      // Parse SSE events: "event: type\ndata: {json}\n\n"
+      const events = buffer.split("\n\n");
+      buffer = events.pop() || "";
+
+      for (const eventStr of events) {
+        if (!eventStr.trim()) continue;
+
+        const lines = eventStr.split("\n");
+        let eventType = "";
+        let eventData = "";
+
+        for (const line of lines) {
+          if (line.startsWith("event: ")) {
+            eventType = line.slice(7).trim();
+          } else if (line.startsWith("data: ")) {
+            eventData = line.slice(6).trim();
+          }
+        }
+
+        if (!eventType || !eventData) continue;
+
+        try {
+          const parsed = JSON.parse(eventData);
+          const data = parsed.data || parsed;
+
+          switch (eventType) {
+            case "start":
+              callbacks?.onStart?.(data);
+              break;
+            case "content":
+              callbacks?.onContent?.(data.text || "");
+              break;
+            case "metadata":
+              callbacks?.onMetadata?.(data);
+              break;
+            case "complete":
+              callbacks?.onComplete?.(data);
+              break;
+            case "error":
+              callbacks?.onError?.(data);
+              break;
+          }
+        } catch (parseError) {
+          console.warn("[SSE] Failed to parse event:", eventType, eventData);
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+// ============================================
 // CHAT API OBJECT (alternativa para imports)
 // ============================================
 
 export const chatApi = {
   sendMessage,
+  sendMessageStream,
   getChatHistory,
   getChatMessages,
   deleteHistory,

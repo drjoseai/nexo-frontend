@@ -58,6 +58,8 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     messages,
     isLoading,
     isSending,
+    isStreaming,
+    streamingMessageId,
     error,
     messagesRemaining,
     sendMessage,
@@ -127,8 +129,16 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   // Handler para enviar mensaje
   const handleSendMessage = async (content: string) => {
     const fileToSend = pendingFile;
-    setPendingFile(null); // Limpiar inmediatamente para UX
-    await sendMessage(content, avatarId, relationshipType, fileToSend);
+    setPendingFile(null);
+
+    if (fileToSend) {
+      // Archivos usan endpoint síncrono (streaming no soporta attachments)
+      await sendMessage(content, avatarId, relationshipType, fileToSend);
+    } else {
+      // Mensajes de texto usan streaming SSE
+      const { sendMessageStreaming } = useChatStore.getState();
+      await sendMessageStreaming(content, avatarId, relationshipType);
+    }
   };
 
   // Handler para borrar historial
@@ -320,18 +330,19 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
                   message={message}
                   avatarId={avatarId}
                   avatarName={avatar?.name}
+                  isStreaming={isStreaming && message.id === streamingMessageId}
                 />
               ))}
 
-              {/* Typing indicator */}
-              {isSending && (
+              {/* Typing indicator - solo antes del primer token, NO durante streaming */}
+              {isSending && !isStreaming && (
                 <div className="flex items-center gap-2 text-sm text-white/50">
                   <div className="flex gap-1">
                     <span className="h-2 w-2 animate-bounce rounded-full bg-white/40 [animation-delay:-0.3s]" />
                     <span className="h-2 w-2 animate-bounce rounded-full bg-white/40 [animation-delay:-0.15s]" />
                     <span className="h-2 w-2 animate-bounce rounded-full bg-white/40" />
                   </div>
-                  <span>{avatar?.name} está escribiendo...</span>
+                  <span>{avatar?.name} está pensando...</span>
                 </div>
               )}
 

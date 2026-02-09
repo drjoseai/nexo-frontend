@@ -3,7 +3,7 @@
 // Maneja estado de mensajes, loading, errores y acciones
 
 import { create } from "zustand";
-import { chatApi } from "@/lib/api/chat";
+import { chatApi, type StreamCallbacks } from "@/lib/api/chat";
 import { fileApi } from "@/lib/api/files";
 import type { UploadLimitsResponse } from "@/lib/api/files";
 import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
@@ -26,9 +26,13 @@ interface ChatState {
   messagesRemaining: number | null;
   uploadLimits: UploadLimitsResponse | null;
   fileUploading: boolean;
+  isStreaming: boolean;
+  streamingMessageId: string | null;
   
   // Acciones
   sendMessage: (content: string, avatarId: string, relationshipType?: string, pendingFile?: File | null) => Promise<boolean>;
+  sendMessageStreaming: (content: string, avatarId: string, relationshipType?: string) => Promise<boolean>;
+  abortStream: () => void;
   loadHistory: (avatarId: string, limit?: number) => Promise<void>;
   deleteHistory: (avatarId: AvatarId) => Promise<void>;
   setCurrentAvatar: (avatarId: AvatarId) => void;
@@ -51,6 +55,9 @@ function generateMessageId(): string {
 // ZUSTAND STORE
 // ============================================
 
+// AbortController para cancelar streaming en progreso
+let currentAbortController: AbortController | null = null;
+
 export const useChatStore = create<ChatState>((set, get) => ({
   // Estado inicial
   messages: [],
@@ -61,6 +68,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
   messagesRemaining: null,
   uploadLimits: null,
   fileUploading: false,
+  isStreaming: false,
+  streamingMessageId: null,
 
   // ============================================
   // ACCIONES
@@ -385,6 +394,188 @@ export const useChatStore = create<ChatState>((set, get) => ({
       throw error;
     }
   },
+
+  /**
+   * Envía un mensaje usando streaming SSE
+   * El texto del avatar aparece progresivamente en la UI
+   * Fallback a sendMessage síncrono para archivos adjuntos
+   */
+  sendMessageStreaming: async (content: string, avatarId: string, relationshipType?: string): Promise<boolean> => {
+    const trimmedContent = content.trim();
+    if (!trimmedContent) return false;
+
+    // Optimistic update: agregar mensaje del usuario
+    const userMessageId = get().addOptimisticMessage(trimmedContent);
+
+    // Crear placeholder para respuesta del avatar
+    const avatarMessageId = generateMessageId();
+    const avatarMessage: Message = {
+      id: avatarMessageId,
+      role: "assistant",
+      content: "",
+      timestamp: new Date(),
+      status: "sending",
+    };
+
+    set((state) => ({
+      messages: [...state.messages, avatarMessage],
+      isSending: true,
+      isStreaming: true,
+      streamingMessageId: avatarMessageId,
+      error: null,
+    }));
+
+    // AbortController para cancelación
+    currentAbortController = new AbortController();
+
+    try {
+      let finalMetadata: Record<string, unknown> = {};
+
+      await chatApi.sendMessageStream(
+        avatarId,
+        trimmedContent,
+        relationshipType,
+        {
+          onStart: () => {
+            get().updateMessageStatus(userMessageId, "sent");
+          },
+
+          onContent: (text: string) => {
+            set((state) => ({
+              messages: state.messages.map((msg) =>
+                msg.id === avatarMessageId
+                  ? { ...msg, content: msg.content + text }
+                  : msg
+              ),
+            }));
+          },
+
+          onMetadata: (data) => {
+            finalMetadata = data;
+          },
+
+          onComplete: () => {
+            set((state) => ({
+              messages: state.messages.map((msg) =>
+                msg.id === avatarMessageId
+                  ? {
+                      ...msg,
+                      status: "sent" as const,
+                      metadata: {
+                        model_used: finalMetadata.model as string,
+                        tokens_used: finalMetadata.tokens as number,
+                        cost: finalMetadata.cost as number,
+                      },
+                    }
+                  : msg
+              ),
+              isSending: false,
+              isStreaming: false,
+              streamingMessageId: null,
+              messagesRemaining:
+                state.messagesRemaining !== null
+                  ? state.messagesRemaining - 1
+                  : null,
+            }));
+
+            analytics.track(AnalyticsEvents.MESSAGE_SENT, {
+              avatar_id: avatarId,
+              relationship_type: relationshipType,
+              model_used: finalMetadata.model,
+              streaming: true,
+              cache_hit: finalMetadata.cache_hit,
+            });
+            analytics.increment("total_messages_sent");
+          },
+
+          onError: (data) => {
+            set((state) => {
+              const avatarMsg = state.messages.find(
+                (m) => m.id === avatarMessageId
+              );
+              const hasContent = avatarMsg && avatarMsg.content.length > 0;
+
+              return {
+                messages: hasContent
+                  ? state.messages.map((msg) =>
+                      msg.id === avatarMessageId
+                        ? { ...msg, status: "error" as const }
+                        : msg
+                    )
+                  : state.messages.filter(
+                      (msg) => msg.id !== avatarMessageId
+                    ),
+                isSending: false,
+                isStreaming: false,
+                streamingMessageId: null,
+                error: data.message || "Error al recibir respuesta",
+              };
+            });
+
+            if (data.error_type === "rate_limit") {
+              set({ messagesRemaining: 0 });
+            }
+          },
+        } as StreamCallbacks,
+        currentAbortController.signal
+      );
+
+      return true;
+    } catch (error: unknown) {
+      console.error("Streaming error:", error);
+
+      // Si fue cancelado por el usuario, no mostrar error
+      if (error instanceof DOMException && error.name === "AbortError") {
+        set({
+          isSending: false,
+          isStreaming: false,
+          streamingMessageId: null,
+        });
+        return false;
+      }
+
+      // Error de red o servidor
+      get().updateMessageStatus(userMessageId, "error");
+
+      // Limpiar mensaje avatar vacío
+      set((state) => {
+        const avatarMsg = state.messages.find(
+          (m) => m.id === avatarMessageId
+        );
+        const hasContent = avatarMsg && avatarMsg.content.length > 0;
+
+        return {
+          messages: hasContent
+            ? state.messages
+            : state.messages.filter((msg) => msg.id !== avatarMessageId),
+          isSending: false,
+          isStreaming: false,
+          streamingMessageId: null,
+          error: "Error de conexión. Intenta de nuevo.",
+        };
+      });
+
+      analytics.track(AnalyticsEvents.ERROR_OCCURRED, {
+        error_type: "streaming_error",
+        error_message:
+          error instanceof Error ? error.message : "Unknown streaming error",
+      });
+
+      return false;
+    } finally {
+      currentAbortController = null;
+    }
+  },
+
+  /**
+   * Abortar stream en progreso
+   */
+  abortStream: () => {
+    if (currentAbortController) {
+      currentAbortController.abort();
+      currentAbortController = null;
+    }
+  },
 }));
 
 // ============================================
@@ -398,6 +589,8 @@ export const selectError = (state: ChatState) => state.error;
 export const selectMessagesRemaining = (state: ChatState) => state.messagesRemaining;
 export const selectUploadLimits = (state: ChatState) => state.uploadLimits;
 export const selectFileUploading = (state: ChatState) => state.fileUploading;
+export const selectIsStreaming = (state: ChatState) => state.isStreaming;
+export const selectStreamingMessageId = (state: ChatState) => state.streamingMessageId;
 
 export default useChatStore;
 

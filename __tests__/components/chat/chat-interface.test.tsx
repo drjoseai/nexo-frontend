@@ -99,9 +99,12 @@ const mockStoreState = {
   messages: [] as Message[],
   isLoading: false,
   isSending: false,
+  isStreaming: false,
+  streamingMessageId: null as string | null,
   error: null as string | null,
   messagesRemaining: null as number | null,
   sendMessage: jest.fn(),
+  sendMessageStreaming: jest.fn(),
   loadHistory: jest.fn(),
   clearMessages: jest.fn(),
   clearError: jest.fn(),
@@ -111,10 +114,12 @@ const mockStoreState = {
   fetchUploadLimits: jest.fn(),
 };
 
-// Mock useChatStore
-jest.mock("@/lib/store/chat", () => ({
-  useChatStore: () => mockStoreState,
-}));
+// Mock useChatStore (needs getState for streaming path)
+jest.mock("@/lib/store/chat", () => {
+  const hook = () => mockStoreState;
+  hook.getState = () => mockStoreState;
+  return { useChatStore: hook };
+});
 
 // Mock useAuthStore
 jest.mock("@/lib/store/auth", () => ({
@@ -182,9 +187,12 @@ function resetMockStore() {
   mockStoreState.messages = [];
   mockStoreState.isLoading = false;
   mockStoreState.isSending = false;
+  mockStoreState.isStreaming = false;
+  mockStoreState.streamingMessageId = null;
   mockStoreState.error = null;
   mockStoreState.messagesRemaining = null;
   mockStoreState.sendMessage.mockClear();
+  mockStoreState.sendMessageStreaming.mockClear();
   mockStoreState.loadHistory.mockClear();
   mockStoreState.clearMessages.mockClear();
   mockStoreState.clearError.mockClear();
@@ -345,12 +353,22 @@ describe("ChatInterface", () => {
       expect(messages[2]).toHaveTextContent("Third");
     });
 
-    it("shows typing indicator when isSending", () => {
+    it("shows typing indicator when isSending and not streaming", () => {
       mockStoreState.isSending = true;
+      mockStoreState.isStreaming = false;
       mockStoreState.messages = [createMessage({ id: "1" })];
       render(<ChatInterface avatarId="lia" />);
       
-      expect(screen.getByText(/está escribiendo/)).toBeInTheDocument();
+      expect(screen.getByText(/está pensando/)).toBeInTheDocument();
+    });
+
+    it("hides typing indicator during streaming", () => {
+      mockStoreState.isSending = true;
+      mockStoreState.isStreaming = true;
+      mockStoreState.messages = [createMessage({ id: "1" })];
+      render(<ChatInterface avatarId="lia" />);
+      
+      expect(screen.queryByText(/está pensando/)).not.toBeInTheDocument();
     });
   });
 
@@ -436,7 +454,7 @@ describe("ChatInterface", () => {
       expect(mockStoreState.loadHistory).toHaveBeenCalledWith("mia");
     });
 
-    it("calls sendMessage when message sent", async () => {
+    it("calls sendMessageStreaming when text message sent (no file)", async () => {
       render(<ChatInterface avatarId="lia" />);
       
       // Trigger send via mock ChatInput
@@ -444,7 +462,7 @@ describe("ChatInterface", () => {
       fireEvent.change(input, { target: { value: "SEND_TEST" } });
       
       await waitFor(() => {
-        expect(mockStoreState.sendMessage).toHaveBeenCalledWith("Test message", "lia", "assistant", null);
+        expect(mockStoreState.sendMessageStreaming).toHaveBeenCalledWith("Test message", "lia", "assistant");
       });
     });
   });
