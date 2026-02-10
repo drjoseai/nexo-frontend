@@ -212,6 +212,9 @@ export async function sendMessageStream(
               break;
             case "content":
               callbacks?.onContent?.(data.text || "");
+              // Yield al event loop para que React renderice el texto progresivamente
+              // Sin esto, React 18 batchea todos los set() y el texto aparece de golpe
+              await new Promise(resolve => requestAnimationFrame(resolve));
               break;
             case "metadata":
               callbacks?.onMetadata?.(data);
