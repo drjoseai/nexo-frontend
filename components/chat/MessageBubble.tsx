@@ -174,11 +174,13 @@ export const MessageBubble = memo(function MessageBubble({
               )}
             </p>
           )}
-          {/* Mostrar cursor incluso si content está vacío durante streaming (esperando primer token) */}
+          {/* Animación "pensando" mientras espera primer token del modelo */}
           {isStreaming && !message.content && (
-            <p>
-              <span className="inline-block w-0.5 h-4 bg-current opacity-60 animate-pulse align-text-bottom" />
-            </p>
+            <div className="flex items-center gap-1 py-1">
+              <span className="h-2 w-2 rounded-full bg-current opacity-40 animate-bounce" style={{ animationDelay: '0ms' }} />
+              <span className="h-2 w-2 rounded-full bg-current opacity-40 animate-bounce" style={{ animationDelay: '150ms' }} />
+              <span className="h-2 w-2 rounded-full bg-current opacity-40 animate-bounce" style={{ animationDelay: '300ms' }} />
+            </div>
           )}
         </div>
 
