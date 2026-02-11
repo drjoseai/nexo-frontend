@@ -419,7 +419,7 @@ describe('useChatStore', () => {
         await result.current.loadHistory(mockAvatarId, 50);
       });
 
-      expect(chatApi.getChatMessages).toHaveBeenCalledWith(mockAvatarId, 50);
+      expect(chatApi.getChatMessages).toHaveBeenCalledWith(mockAvatarId, 50, undefined);
     });
   });
 

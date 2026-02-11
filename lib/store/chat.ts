@@ -33,8 +33,8 @@ interface ChatState {
   sendMessage: (content: string, avatarId: string, relationshipType?: string, pendingFile?: File | null) => Promise<boolean>;
   sendMessageStreaming: (content: string, avatarId: string, relationshipType?: string) => Promise<boolean>;
   abortStream: () => void;
-  loadHistory: (avatarId: string, limit?: number) => Promise<void>;
-  deleteHistory: (avatarId: AvatarId) => Promise<void>;
+  loadHistory: (avatarId: string, limit?: number, relationshipType?: string) => Promise<void>;
+  deleteHistory: (avatarId: AvatarId, relationshipType?: string) => Promise<void>;
   setCurrentAvatar: (avatarId: AvatarId) => void;
   clearMessages: () => void;
   clearError: () => void;
@@ -343,11 +343,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
   /**
    * Carga el historial de conversación con un avatar
    */
-  loadHistory: async (avatarId: string, limit: number = 20) => {
+  loadHistory: async (avatarId: string, limit: number = 20, relationshipType?: string) => {
     set({ isLoading: true, error: null });
 
     try {
-      const messages = await chatApi.getChatMessages(avatarId, limit);
+      const messages = await chatApi.getChatMessages(avatarId, limit, relationshipType);
 
       set({
         messages,
@@ -381,10 +381,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
   /**
    * Borra el historial de chat permanentemente del servidor
    */
-  deleteHistory: async (avatarId: AvatarId) => {
+  deleteHistory: async (avatarId: AvatarId, relationshipType?: string) => {
     try {
       // Llamar al API para borrar historial en el backend
-      await chatApi.deleteHistory(avatarId);
+      await chatApi.deleteHistory(avatarId, relationshipType);
 
       // Limpiar mensajes locales
       set({ messages: [], error: null });

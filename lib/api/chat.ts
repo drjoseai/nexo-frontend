@@ -59,13 +59,17 @@ export async function sendMessage(
  */
 export async function getChatHistory(
   avatarId: string,
-  limit: number = 20
+  limit: number = 20,
+  relationshipType?: string
 ): Promise<ChatHistoryResponse> {
+  const params: Record<string, string | number> = { limit };
+  if (relationshipType) {
+    params.relationship_type = relationshipType;
+  }
+
   const response = await apiClient.get<ChatHistoryResponse>(
     `/chat/history/${avatarId}`,
-    {
-      params: { limit },
-    }
+    { params }
   );
 
   return response.data;
@@ -77,9 +81,10 @@ export async function getChatHistory(
  */
 export async function getChatMessages(
   avatarId: string,
-  limit: number = 20
+  limit: number = 20,
+  relationshipType?: string
 ): Promise<Message[]> {
-  const history = await getChatHistory(avatarId, limit);
+  const history = await getChatHistory(avatarId, limit, relationshipType);
   
   // Transformar historial del backend a formato de UI
   // Ordenar por timestamp ascendente (mensajes antiguos primero, recientes al final)
@@ -102,8 +107,15 @@ export async function getChatMessages(
  * Borra el historial de conversación con un avatar
  * Endpoint: DELETE /chat/history/{avatar_id}
  */
-export async function deleteHistory(avatarId: string): Promise<void> {
-  await apiClient.delete(`/chat/history/${avatarId}`);
+export async function deleteHistory(
+  avatarId: string,
+  relationshipType?: string
+): Promise<void> {
+  let url = `/chat/history/${avatarId}`;
+  if (relationshipType) {
+    url += `?relationship_type=${relationshipType}`;
+  }
+  await apiClient.delete(url);
 }
 
 // ============================================

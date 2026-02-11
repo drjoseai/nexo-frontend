@@ -451,7 +451,7 @@ describe("ChatInterface", () => {
     it("calls loadHistory with avatarId on mount", () => {
       render(<ChatInterface avatarId="mia" />);
       
-      expect(mockStoreState.loadHistory).toHaveBeenCalledWith("mia");
+      expect(mockStoreState.loadHistory).toHaveBeenCalledWith("mia", undefined, "assistant");
     });
 
     it("calls sendMessageStreaming when text message sent (no file)", async () => {

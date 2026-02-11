@@ -76,11 +76,11 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const user = useAuthStore((state) => state.user);
   const userPlan = user?.plan || "free";
 
-  // Cargar historial al montar
+  // Cargar historial al montar y al cambiar relationship type
   useEffect(() => {
     clearMessages();
-    loadHistory(avatarId);
-  }, [avatarId, loadHistory, clearMessages]);
+    loadHistory(avatarId, undefined, relationshipType);
+  }, [avatarId, relationshipType, loadHistory, clearMessages]);
 
   // Fetch upload limits al montar
   useEffect(() => {
@@ -141,9 +141,9 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     }
   };
 
-  // Handler para borrar historial
+  // Handler para borrar historial (solo del relationship type actual)
   const handleDeleteHistory = async () => {
-    await deleteHistory(avatarId);
+    await deleteHistory(avatarId, relationshipType);
     toast.success("Historial borrado correctamente");
   };
 
