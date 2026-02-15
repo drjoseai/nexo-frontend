@@ -20,7 +20,7 @@ function SettingsSkeleton() {
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <div className="h-5 w-5 bg-purple-400/30 rounded" />
+              <div className="h-5 w-5 bg-primary/30 rounded" />
               <div className="h-6 w-32 bg-muted rounded-md" />
             </div>
             <div className="h-4 w-56 bg-muted/60 rounded-md mt-1" />
@@ -42,7 +42,7 @@ function SettingsSkeleton() {
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <div className="h-5 w-5 bg-purple-400/30 rounded" />
+              <div className="h-5 w-5 bg-primary/30 rounded" />
               <div className="h-6 w-28 bg-muted rounded-md" />
             </div>
             <div className="h-4 w-48 bg-muted/60 rounded-md mt-1" />
@@ -62,7 +62,7 @@ function SettingsSkeleton() {
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <div className="h-5 w-5 bg-purple-400/30 rounded" />
+              <div className="h-5 w-5 bg-primary/30 rounded" />
               <div className="h-6 w-20 bg-muted rounded-md" />
             </div>
             <div className="h-4 w-52 bg-muted/60 rounded-md mt-1" />
@@ -80,7 +80,7 @@ function SettingsSkeleton() {
 
         {/* Save button skeleton */}
         <div className="flex justify-end">
-          <div className="h-10 w-40 bg-purple-600/30 rounded-md" />
+          <div className="h-10 w-40 bg-primary/30 rounded-md" />
         </div>
 
         {/* Danger zone skeleton */}

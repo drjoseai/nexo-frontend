@@ -101,7 +101,7 @@ export function SettingsContent() {
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Bell className="h-5 w-5 text-purple-400" />
+              <Bell className="h-5 w-5 text-primary" />
               {t("notifications")}
             </CardTitle>
             <CardDescription>
@@ -162,7 +162,7 @@ export function SettingsContent() {
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Moon className="h-5 w-5 text-purple-400" />
+              <Moon className="h-5 w-5 text-primary" />
               {t("appearance")}
             </CardTitle>
             <CardDescription>
@@ -196,7 +196,7 @@ export function SettingsContent() {
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Globe className="h-5 w-5 text-purple-400" />
+              <Globe className="h-5 w-5 text-primary" />
               {t("language")}
             </CardTitle>
             <CardDescription>
@@ -233,7 +233,7 @@ export function SettingsContent() {
           <Button
             onClick={handleSave}
             disabled={isSaving}
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-primary hover:bg-primary/80"
           >
             {isSaving ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />

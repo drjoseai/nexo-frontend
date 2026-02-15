@@ -43,12 +43,12 @@ function SubscriptionSkeleton() {
         </Card>
 
         {/* Plus Plan skeleton - Popular */}
-        <Card className="relative flex flex-col border-2 border-purple-500 shadow-lg shadow-purple-500/20">
+        <Card className="relative flex flex-col border-2 border-primary shadow-lg shadow-primary/20">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-            <div className="h-6 w-24 bg-purple-500/50 rounded-full" />
+            <div className="h-6 w-24 bg-primary/50 rounded-full" />
           </div>
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30" />
+            <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-gradient-to-br from-primary/30 to-accent/30" />
             <div className="h-7 w-16 bg-muted rounded-md mx-auto mb-2" />
             <div className="h-4 w-44 bg-muted/60 rounded-md mx-auto" />
           </CardHeader>
@@ -66,7 +66,7 @@ function SubscriptionSkeleton() {
             </div>
           </CardContent>
           <CardFooter>
-            <div className="h-10 w-full bg-purple-600/30 rounded-md" />
+            <div className="h-10 w-full bg-primary/30 rounded-md" />
           </CardFooter>
         </Card>
 
@@ -114,7 +114,7 @@ function SubscriptionSkeleton() {
                     <div className="h-5 w-12 bg-muted rounded-md mx-auto" />
                   </th>
                   <th className="pb-4 text-center">
-                    <div className="h-5 w-12 bg-purple-400/30 rounded-md mx-auto" />
+                    <div className="h-5 w-12 bg-primary/30 rounded-md mx-auto" />
                   </th>
                   <th className="pb-4 text-center">
                     <div className="h-5 w-16 bg-amber-400/30 rounded-md mx-auto" />

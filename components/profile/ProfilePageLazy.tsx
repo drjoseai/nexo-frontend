@@ -22,7 +22,7 @@ function ProfileSkeleton() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <div className="h-5 w-5 bg-purple-400/30 rounded" />
+                  <div className="h-5 w-5 bg-primary/30 rounded" />
                   <div className="h-6 w-44 bg-muted rounded-md" />
                 </div>
                 <div className="h-4 w-48 bg-muted/60 rounded-md mt-1" />
@@ -33,7 +33,7 @@ function ProfileSkeleton() {
           <CardContent className="space-y-6">
             {/* Avatar skeleton */}
             <div className="flex items-center gap-4">
-              <div className="h-20 w-20 rounded-full bg-purple-500/20 ring-2 ring-purple-500/30" />
+              <div className="h-20 w-20 rounded-full bg-primary/20 ring-2 ring-primary/30" />
               <div>
                 <div className="h-6 w-36 bg-muted rounded-md mb-2" />
                 <div className="h-4 w-48 bg-muted/60 rounded-md" />
@@ -58,7 +58,7 @@ function ProfileSkeleton() {
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <div className="h-5 w-5 bg-purple-400/30 rounded" />
+              <div className="h-5 w-5 bg-primary/30 rounded" />
               <div className="h-6 w-28 bg-muted rounded-md" />
             </div>
             <div className="h-4 w-40 bg-muted/60 rounded-md mt-1" />
@@ -68,7 +68,7 @@ function ProfileSkeleton() {
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <div className="h-6 w-24 bg-muted rounded-md" />
-                  <div className="h-6 w-20 bg-purple-500/30 rounded-full" />
+                  <div className="h-6 w-20 bg-primary/30 rounded-full" />
                 </div>
                 <div className="h-4 w-44 bg-muted/60 rounded-md" />
               </div>
@@ -81,7 +81,7 @@ function ProfileSkeleton() {
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <div className="h-5 w-5 bg-purple-400/30 rounded" />
+              <div className="h-5 w-5 bg-primary/30 rounded" />
               <div className="h-6 w-44 bg-muted rounded-md" />
             </div>
             <div className="h-4 w-36 bg-muted/60 rounded-md mt-1" />

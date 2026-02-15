@@ -38,7 +38,7 @@ export function ProfileContent() {
       case "premium":
         return "bg-gradient-to-r from-amber-500 to-orange-500 text-white";
       case "plus":
-        return "bg-gradient-to-r from-purple-500 to-pink-500 text-white";
+        return "bg-gradient-to-r from-primary to-accent text-white";
       case "trial":
         return "bg-blue-500/20 text-blue-400 border-blue-500/30";
       default:
@@ -79,7 +79,7 @@ export function ProfileContent() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  <User className="h-5 w-5 text-purple-400" />
+                  <User className="h-5 w-5 text-primary" />
                   {t("personalInfo")}
                 </CardTitle>
                 <CardDescription>
@@ -107,7 +107,7 @@ export function ProfileContent() {
                     size="sm"
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-primary hover:bg-primary/80"
                   >
                     {isSaving ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -123,8 +123,8 @@ export function ProfileContent() {
           <CardContent className="space-y-6">
             {/* Avatar placeholder */}
             <div className="flex items-center gap-4">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-purple-500/20 ring-2 ring-purple-500/30">
-                <User className="h-10 w-10 text-purple-400" />
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20 ring-2 ring-primary/30">
+                <User className="h-10 w-10 text-primary" />
               </div>
               <div>
                 <p className="text-lg font-semibold">
@@ -169,7 +169,7 @@ export function ProfileContent() {
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-purple-400" />
+              <Shield className="h-5 w-5 text-primary" />
               {t("subscription")}
             </CardTitle>
             <CardDescription>
@@ -198,7 +198,7 @@ export function ProfileContent() {
               </div>
               <Button
                 variant="outline"
-                className="border-purple-500/30 hover:bg-purple-500/10"
+                className="border-primary/30 hover:bg-primary/10"
                 onClick={() => window.location.href = "/dashboard/subscription"}
               >
                 {t("viewPlans")}
@@ -211,7 +211,7 @@ export function ProfileContent() {
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-purple-400" />
+              <Calendar className="h-5 w-5 text-primary" />
               {t("accountInfo")}
             </CardTitle>
             <CardDescription>
@@ -239,7 +239,7 @@ export function ProfileContent() {
                   <Button
                     size="sm"
                     onClick={() => setShowAgeModal(true)}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-primary hover:bg-primary/80"
                   >
                     {t("verifyAge")}
                   </Button>

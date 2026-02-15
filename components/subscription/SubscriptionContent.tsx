@@ -58,7 +58,7 @@ export function SubscriptionContent() {
       period: t("perMonth"),
       description: t("plusPlanDescription"),
       icon: <Sparkles className="h-6 w-6" />,
-      gradient: "from-purple-500 to-pink-500",
+      gradient: "from-primary to-accent",
       popular: true,
     },
     premium: {
@@ -259,7 +259,7 @@ export function SubscriptionContent() {
               key={planId}
               className={cn(
                 "relative flex flex-col border-2 transition-all duration-300",
-                isPopular && "border-purple-500 shadow-lg shadow-purple-500/20",
+                isPopular && "border-primary shadow-lg shadow-primary/20",
                 planId === "premium" && !isPopular && "border-amber-500/50 shadow-lg shadow-amber-500/10",
                 (isCurrentPlan || isTrialOnFree) && "ring-2 ring-green-500",
                 !isPopular && planId === "free" && !isCurrentPlan && !isTrialOnFree && "border-slate-500/50",
@@ -268,7 +268,7 @@ export function SubscriptionContent() {
             >
               {isPopular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-purple-500 text-white">
+                  <Badge className="bg-primary text-white">
                     {t("mostPopular")}
                   </Badge>
                 </div>
@@ -318,7 +318,7 @@ export function SubscriptionContent() {
                 <Button
                   className={cn(
                     "w-full",
-                    isPopular && "bg-purple-600 hover:bg-purple-700",
+                    isPopular && "bg-primary hover:bg-primary/80",
                     planId === "premium" && "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
                   )}
                   variant={planId === "free" ? "outline" : "default"}
@@ -352,7 +352,7 @@ export function SubscriptionContent() {
                 <tr className="border-b border-border/50">
                   <th className="pb-4 text-left font-medium">{t("feature")}</th>
                   <th className="pb-4 text-center font-medium">Free</th>
-                  <th className="pb-4 text-center font-medium text-purple-400">Plus</th>
+                  <th className="pb-4 text-center font-medium text-primary">Plus</th>
                   <th className="pb-4 text-center font-medium text-amber-400">Premium</th>
                 </tr>
               </thead>
