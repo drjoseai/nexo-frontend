@@ -149,7 +149,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
 
   // Avatar colors para el header
   const avatarColorClass = {
-    lia: "text-purple-400",
+    lia: "text-primary",
     mia: "text-amber-400",
     allan: "text-cyan-400",
   }[avatarId];
@@ -206,7 +206,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
               className={cn(
                 "relative h-10 w-10 rounded-full overflow-hidden",
                 "border-2",
-                avatarId === "lia" ? "border-purple-400" : 
+                avatarId === "lia" ? "border-primary" : 
                 avatarId === "mia" ? "border-amber-400" : "border-cyan-400"
               )}
             >
@@ -364,7 +364,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
                 {(error.includes("límite") || error.includes("limit")) && (
                   <Link 
                     href="/dashboard/subscription" 
-                    className="inline-block mt-2 text-xs text-purple-400 hover:text-purple-300 underline"
+                    className="inline-block mt-2 text-xs text-primary hover:text-primary/80 underline"
                   >
                     Actualizar a Premium para mensajes ilimitados →
                   </Link>

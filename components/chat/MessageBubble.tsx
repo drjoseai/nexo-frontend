@@ -20,22 +20,22 @@ const AVATAR_COLORS: Record<AvatarId, {
   glowDark: string;
 }> = {
   lia: {
-    bgLight: "bg-indigo-100 border-indigo-200",
-    bgDark: "dark:bg-gradient-to-br dark:from-indigo-500/55 dark:to-indigo-600/40 dark:border-white/10",
-    glowLight: "shadow-indigo-200/50",
-    glowDark: "dark:shadow-indigo-500/20",
+    bgLight: "bg-primary/10 border-primary/20",
+    bgDark: "bg-gradient-to-br from-primary/40 to-primary/25 border-white/10",
+    glowLight: "shadow-primary/20",
+    glowDark: "shadow-primary/20",
   },
   mia: {
     bgLight: "bg-amber-100 border-amber-200",
-    bgDark: "dark:bg-gradient-to-br dark:from-amber-500/65 dark:to-orange-600/50 dark:border-white/10",
+    bgDark: "bg-gradient-to-br from-amber-500/65 to-orange-600/50 border-white/10",
     glowLight: "shadow-amber-200/50",
-    glowDark: "dark:shadow-amber-500/20",
+    glowDark: "shadow-amber-500/20",
   },
   allan: {
     bgLight: "bg-cyan-100 border-cyan-200",
-    bgDark: "dark:bg-gradient-to-br dark:from-cyan-500/55 dark:to-teal-600/40 dark:border-white/10",
+    bgDark: "bg-gradient-to-br from-cyan-500/55 to-teal-600/40 border-white/10",
     glowLight: "shadow-cyan-200/50",
-    glowDark: "dark:shadow-cyan-500/20",
+    glowDark: "shadow-cyan-500/20",
   },
 };
 
@@ -106,13 +106,13 @@ export const MessageBubble = memo(function MessageBubble({
           className={cn(
             "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
             "text-xs font-semibold",
-            // Light mode
-            "bg-indigo-100 text-indigo-700 border border-indigo-200",
-            // Dark mode
-            "dark:bg-gradient-to-br dark:text-white dark:border-white/10",
-            avatarId === "lia" && "dark:from-indigo-500/30 dark:to-indigo-600/20",
-            avatarId === "mia" && "bg-amber-100 text-amber-700 border-amber-200 dark:from-amber-500/30 dark:to-orange-600/20",
-            avatarId === "allan" && "bg-cyan-100 text-cyan-700 border-cyan-200 dark:from-cyan-500/30 dark:to-teal-600/20"
+            // Base
+            "bg-primary/10 text-primary border border-primary/20",
+            // Gradient
+            "bg-gradient-to-br text-white border-white/10",
+            avatarId === "lia" && "from-primary/30 to-primary/20",
+            avatarId === "mia" && "bg-amber-100 text-amber-700 border-amber-200 from-amber-500/30 to-orange-600/20",
+            avatarId === "allan" && "bg-cyan-100 text-cyan-700 border-cyan-200 from-cyan-500/30 to-teal-600/20"
           )}
         >
           {avatarName.charAt(0).toUpperCase()}

@@ -471,11 +471,11 @@ describe("ChatInterface", () => {
   // AVATAR-SPECIFIC STYLING
   // ==========================================
   describe("Avatar-Specific Styling", () => {
-    it("applies purple color class for Lía", () => {
+    it("applies primary color class for Lía", () => {
       render(<ChatInterface avatarId="lia" />);
       
       const avatarNames = screen.getAllByText("Lía");
-      const hasCorrectClass = avatarNames.some(el => el.classList.contains("text-purple-400"));
+      const hasCorrectClass = avatarNames.some(el => el.classList.contains("text-primary"));
       expect(hasCorrectClass).toBe(true);
     });
 

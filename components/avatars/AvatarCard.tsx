@@ -27,25 +27,25 @@ function getAvatarStyles(avatarId: AvatarId) {
     textColor: string;
   }> = {
     lia: {
-      border: "border-[#7C3AED]",
-      glow: "shadow-[0_0_20px_rgba(124,58,237,0.3)]",
-      gradient: "from-[#7C3AED]/20 to-transparent",
-      bgColor: "bg-[#7C3AED]/20",
-      textColor: "text-[#7C3AED]",
+      border: "border-[var(--lia)]",
+      glow: "shadow-[0_0_20px_color-mix(in_oklch,var(--lia)_30%,transparent)]",
+      gradient: "from-[var(--lia)]/20 to-transparent",
+      bgColor: "bg-[var(--lia)]/20",
+      textColor: "text-[var(--lia)]",
     },
     mia: {
-      border: "border-[#F59E0B]",
-      glow: "shadow-[0_0_20px_rgba(245,158,11,0.3)]",
-      gradient: "from-[#F59E0B]/20 to-transparent",
-      bgColor: "bg-[#F59E0B]/20",
-      textColor: "text-[#F59E0B]",
+      border: "border-[var(--mia)]",
+      glow: "shadow-[0_0_20px_color-mix(in_oklch,var(--mia)_30%,transparent)]",
+      gradient: "from-[var(--mia)]/20 to-transparent",
+      bgColor: "bg-[var(--mia)]/20",
+      textColor: "text-[var(--mia)]",
     },
     allan: {
-      border: "border-[#06B6D4]",
-      glow: "shadow-[0_0_20px_rgba(6,182,212,0.3)]",
-      gradient: "from-[#06B6D4]/20 to-transparent",
-      bgColor: "bg-[#06B6D4]/20",
-      textColor: "text-[#06B6D4]",
+      border: "border-[var(--allan)]",
+      glow: "shadow-[0_0_20px_color-mix(in_oklch,var(--allan)_30%,transparent)]",
+      gradient: "from-[var(--allan)]/20 to-transparent",
+      bgColor: "bg-[var(--allan)]/20",
+      textColor: "text-[var(--allan)]",
     },
   };
   return styles[avatarId];
