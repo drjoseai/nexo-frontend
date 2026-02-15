@@ -5,7 +5,7 @@
 
 /* ============================================
    NEXO Design System - Tailwind CSS v4
-   Theme: Dark Navy with Purple/Pink accents
+   Theme: Warm Copper
    ============================================ */
 
 @theme inline {
@@ -59,127 +59,74 @@
   --radius-xl: calc(var(--radius) + 4px);
   
   /* Typography */
-  --font-sans: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
 /* ============================================
-   NEXO Color Palette - Dark Theme (Default)
+   NEXO Color Palette - Dark Theme (Warm Copper)
    ============================================ */
 :root {
   --radius: 0.75rem;
   
-  /* Main backgrounds - Dark Navy */
-  --background: oklch(0.141 0.025 276);           /* #1A1B3D */
-  --foreground: oklch(1 0 0);                      /* #FFFFFF */
+  /* Main backgrounds - Dark Warm Brown */
+  --background: oklch(0.08 0.015 50);              /* #110e0c - very dark brown */
+  --foreground: oklch(0.94 0.02 70);               /* #f5ebe0 - warm white */
   
-  /* Card - Slightly lighter navy */
-  --card: oklch(0.18 0.025 276);                   /* #252647 */
-  --card-foreground: oklch(1 0 0);
+  /* Card - Slightly lighter brown */
+  --card: oklch(0.12 0.02 50);                     /* #1a1410 */
+  --card-foreground: oklch(0.94 0.02 70);          /* #f5ebe0 */
   
-  /* Popover */
-  --popover: oklch(0.18 0.025 276);                /* #252647 */
-  --popover-foreground: oklch(1 0 0);
+  /* Popover - Same as card */
+  --popover: oklch(0.12 0.02 50);                  /* #1a1410 */
+  --popover-foreground: oklch(0.94 0.02 70);
   
-  /* Primary - Purple */
-  --primary: oklch(0.55 0.25 295);                 /* #7C3AED */
-  --primary-foreground: oklch(1 0 0);
+  /* Primary - Copper */
+  --primary: oklch(0.62 0.12 50);                  /* #c47a52 */
+  --primary-foreground: oklch(1 0 0);              /* white for buttons */
   
-  /* Secondary */
-  --secondary: oklch(0.22 0.025 276);              /* #2D2F52 */
-  --secondary-foreground: oklch(1 0 0);
+  /* Secondary - Surface brown */
+  --secondary: oklch(0.16 0.025 50);               /* #231c15 */
+  --secondary-foreground: oklch(0.94 0.02 70);
   
-  /* Muted - Lavender tones */
-  --muted: oklch(0.45 0.02 276);                   /* #8B8B9E */
-  --muted-foreground: oklch(0.78 0.02 276);        /* #B4B4C8 */
+  /* Muted */
+  --muted: oklch(0.40 0.02 50);                    /* dark muted brown */
+  --muted-foreground: oklch(0.56 0.03 60);         /* #8a7968 */
   
-  /* Accent - Pink */
-  --accent: oklch(0.65 0.24 340);                  /* #EC4899 */
+  /* Accent - Darker copper */
+  --accent: oklch(0.54 0.11 50);                   /* #a86840 */
   --accent-foreground: oklch(1 0 0);
   
-  /* Destructive - Red */
+  /* Destructive - Red (unchanged) */
   --destructive: oklch(0.58 0.22 25);              /* #EF4444 */
   --destructive-foreground: oklch(1 0 0);
   
   /* Borders and inputs */
-  --border: oklch(0.22 0.025 276);                 /* #2D2F52 */
-  --input: oklch(0.22 0.025 276);
-  --ring: oklch(0.55 0.25 295);                    /* Purple ring */
+  --border: oklch(0.20 0.025 50);                  /* #2e241b - warm border */
+  --input: oklch(0.20 0.025 50);
+  --ring: oklch(0.62 0.12 50);                     /* Copper ring */
   
-  /* Sidebar - Same as card for consistency */
-  --sidebar: oklch(0.16 0.025 276);                /* Slightly darker than card */
-  --sidebar-foreground: oklch(1 0 0);
-  --sidebar-primary: oklch(0.55 0.25 295);
+  /* Sidebar */
+  --sidebar: oklch(0.10 0.018 50);                 /* Between bg and card */
+  --sidebar-foreground: oklch(0.94 0.02 70);
+  --sidebar-primary: oklch(0.62 0.12 50);          /* Copper */
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.22 0.025 276);
-  --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: oklch(0.22 0.025 276);
-  --sidebar-ring: oklch(0.55 0.25 295);
+  --sidebar-accent: oklch(0.16 0.025 50);          /* Surface brown */
+  --sidebar-accent-foreground: oklch(0.94 0.02 70);
+  --sidebar-border: oklch(0.20 0.025 50);
+  --sidebar-ring: oklch(0.62 0.12 50);
   
-  /* Chart colors */
-  --chart-1: oklch(0.55 0.25 295);                 /* Purple */
-  --chart-2: oklch(0.65 0.24 340);                 /* Pink */
-  --chart-3: oklch(0.7 0.15 200);                  /* Cyan */
-  --chart-4: oklch(0.75 0.15 85);                  /* Yellow */
-  --chart-5: oklch(0.6 0.2 145);                   /* Green */
+  /* Chart colors - Warm palette */
+  --chart-1: oklch(0.62 0.12 50);                  /* Copper */
+  --chart-2: oklch(0.54 0.11 50);                  /* Dark copper */
+  --chart-3: oklch(0.72 0.11 50);                  /* Light copper */
+  --chart-4: oklch(0.75 0.15 85);                  /* Warm gold */
+  --chart-5: oklch(0.6 0.15 30);                   /* Terracotta */
   
-  /* Avatar accent colors */
-  --lia: oklch(0.55 0.25 275);                     /* #6366F1 - Indigo */
-  --mia: oklch(0.75 0.15 85);                      /* #F59E0B - Amber/Gold */
-  --allan: oklch(0.7 0.15 200);                    /* #06B6D4 - Cyan */
-}
-
-/* Light theme override */
-.light {
-  --background: oklch(0.985 0.002 247);
-  --foreground: oklch(0.141 0.025 276);
-  
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.025 276);
-  
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.025 276);
-  
-  --primary: oklch(0.55 0.25 295);
-  --primary-foreground: oklch(1 0 0);
-  
-  --secondary: oklch(0.96 0.01 276);
-  --secondary-foreground: oklch(0.141 0.025 276);
-  
-  --muted: oklch(0.96 0.01 276);
-  --muted-foreground: oklch(0.45 0.02 276);
-  
-  --accent: oklch(0.65 0.24 340);
-  --accent-foreground: oklch(1 0 0);
-  
-  --destructive: oklch(0.58 0.22 25);
-  --destructive-foreground: oklch(1 0 0);
-  
-  --border: oklch(0.92 0.01 276);
-  --input: oklch(0.92 0.01 276);
-  --ring: oklch(0.55 0.25 295);
-  
-  /* Sidebar - Light theme */
-  --sidebar: oklch(0.98 0.002 247);
-  --sidebar-foreground: oklch(0.141 0.025 276);
-  --sidebar-primary: oklch(0.55 0.25 295);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.96 0.01 276);
-  --sidebar-accent-foreground: oklch(0.141 0.025 276);
-  --sidebar-border: oklch(0.92 0.01 276);
-  --sidebar-ring: oklch(0.55 0.25 295);
-  
-  /* Chart colors */
-  --chart-1: oklch(0.55 0.25 295);
-  --chart-2: oklch(0.65 0.24 340);
-  --chart-3: oklch(0.7 0.15 200);
-  --chart-4: oklch(0.75 0.15 85);
-  --chart-5: oklch(0.6 0.2 145);
-  
-  /* Avatar colors */
-  --lia: oklch(0.55 0.25 275);
-  --mia: oklch(0.75 0.15 85);
-  --allan: oklch(0.7 0.15 200);
+  /* Avatar accent colors - Distinct but warm-compatible */
+  --lia: oklch(0.62 0.12 50);                      /* Copper - warm */
+  --mia: oklch(0.72 0.14 70);                      /* Warm gold/amber */
+  --allan: oklch(0.55 0.10 200);                   /* Teal (complementary contrast) */
 }
 
 /* ============================================
@@ -204,9 +151,9 @@
    NEXO Custom Utilities
    ============================================ */
 @layer utilities {
-  /* Text gradient - Purple to Pink */
+  /* Text gradient - Copper to Warm Gold */
   .text-gradient {
-    background: linear-gradient(135deg, oklch(0.55 0.25 295) 0%, oklch(0.65 0.24 340) 100%);
+    background: linear-gradient(135deg, oklch(0.62 0.12 50) 0%, oklch(0.72 0.14 70) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -216,45 +163,45 @@
   .gradient-bg-primary {
     background: linear-gradient(
       180deg,
-      oklch(0.141 0.025 276) 0%,
-      oklch(0.16 0.025 276) 50%,
-      oklch(0.18 0.025 276) 100%
+      oklch(0.08 0.015 50) 0%,
+      oklch(0.10 0.018 50) 50%,
+      oklch(0.12 0.02 50) 100%
     );
   }
   
   .gradient-bg-accent {
     background: radial-gradient(
       circle at 50% 50%, 
-      oklch(0.55 0.25 295 / 0.15) 0%,
+      oklch(0.62 0.12 50 / 0.15) 0%,
       transparent 70%
     );
   }
   
   /* Button glow effects */
   .btn-glow {
-    box-shadow: 0 0 20px oklch(0.55 0.25 295 / 0.4);
+    box-shadow: 0 0 20px oklch(0.62 0.12 50 / 0.4);
   }
   
   .btn-glow:hover {
-    box-shadow: 0 0 30px oklch(0.55 0.25 295 / 0.6);
+    box-shadow: 0 0 30px oklch(0.62 0.12 50 / 0.6);
   }
   
   /* Avatar card glows */
   .glow-lia {
-    box-shadow: 0 0 20px oklch(0.55 0.25 275 / 0.3);
+    box-shadow: 0 0 20px oklch(0.62 0.12 50 / 0.3);
   }
   
   .glow-mia {
-    box-shadow: 0 0 20px oklch(0.75 0.15 85 / 0.3);
+    box-shadow: 0 0 20px oklch(0.72 0.14 70 / 0.3);
   }
   
   .glow-allan {
-    box-shadow: 0 0 20px oklch(0.7 0.15 200 / 0.3);
+    box-shadow: 0 0 20px oklch(0.55 0.10 200 / 0.3);
   }
   
   /* Glass effect for cards */
   .glass {
-    background: oklch(0.18 0.025 276 / 0.8);
+    background: oklch(0.12 0.02 50 / 0.8);
     backdrop-filter: blur(12px);
   }
 }
@@ -298,10 +245,10 @@
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 20px oklch(0.55 0.25 295 / 0.4);
+    box-shadow: 0 0 20px oklch(0.62 0.12 50 / 0.4);
   }
   50% {
-    box-shadow: 0 0 30px oklch(0.55 0.25 295 / 0.6);
+    box-shadow: 0 0 30px oklch(0.62 0.12 50 / 0.6);
   }
 }
 
@@ -323,14 +270,14 @@
 }
 
 /* Avatar glow effects - per avatar color */
-@keyframes avatar-glow-indigo {
-  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
-  50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.8); }
+@keyframes avatar-glow-copper {
+  0%, 100% { box-shadow: 0 0 20px rgba(196, 122, 82, 0.4); }
+  50% { box-shadow: 0 0 40px rgba(196, 122, 82, 0.8); }
 }
 
 @keyframes avatar-glow-amber {
-  0%, 100% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
-  50% { box-shadow: 0 0 40px rgba(245, 158, 11, 0.8); }
+  0%, 100% { box-shadow: 0 0 20px rgba(210, 160, 80, 0.4); }
+  50% { box-shadow: 0 0 40px rgba(210, 160, 80, 0.8); }
 }
 
 @keyframes avatar-glow-cyan {
@@ -345,7 +292,7 @@
 
 /* Glow animations per avatar */
 .avatar-glow-lia {
-  animation: avatar-glow-indigo 3s ease-in-out infinite;
+  animation: avatar-glow-copper 3s ease-in-out infinite;
 }
 
 .avatar-glow-mia {

@@ -20,8 +20,8 @@ describe('PWA Configuration', () => {
     });
 
     it('should have theme and background colors', () => {
-      expect(manifest.theme_color).toBe('#2D1B4E');
-      expect(manifest.background_color).toBe('#2D1B4E');
+      expect(manifest.theme_color).toBe('#110e0c');
+      expect(manifest.background_color).toBe('#110e0c');
     });
   });
 

@@ -4,8 +4,8 @@
   "description": "Authentic emotional connection with AI",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#2D1B4E",
-  "theme_color": "#2D1B4E",
+  "background_color": "#110e0c",
+  "theme_color": "#110e0c",
   "orientation": "portrait-primary",
   "icons": [
     {
