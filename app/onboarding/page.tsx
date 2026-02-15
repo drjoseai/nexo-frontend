@@ -309,7 +309,7 @@ export default function OnboardingPage() {
         
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+          <div className="text-4xl font-bold text-gradient mb-2">
             NEXO
           </div>
           <p className="text-muted-foreground text-sm">

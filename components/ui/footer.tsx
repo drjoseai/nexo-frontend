@@ -12,7 +12,7 @@ export function Footer({ className = "" }: FooterProps) {
       <div className="container max-w-6xl mx-auto">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Logo */}
-          <div className="text-lg font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+          <div className="text-lg font-semibold text-gradient">
             NEXO
           </div>
           

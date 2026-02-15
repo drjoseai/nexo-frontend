@@ -131,8 +131,8 @@ export default function HelpContent() {
               >
                 {/* Section Header */}
                 <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center gap-3">
-                  <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                    <IconComponent className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <IconComponent className="w-5 h-5 text-primary" />
                   </div>
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                     {t(`sections.${section.id}.title`)}
@@ -176,14 +176,14 @@ export default function HelpContent() {
         </div>
 
         {/* Contact CTA */}
-        <div className="mt-8 text-center bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8">
+        <div className="mt-8 text-center bg-gradient-to-r from-primary to-accent rounded-2xl p-8">
           <h3 className="text-2xl font-bold text-white mb-2">
             {t("contactCta.title")}
           </h3>
-          <p className="text-purple-100 mb-4">{t("contactCta.subtitle")}</p>
+          <p className="text-primary-foreground/80 mb-4">{t("contactCta.subtitle")}</p>
           <a
             href="mailto:support@trynexo.ai"
-            className="inline-flex items-center gap-2 bg-white text-purple-600 px-6 py-3 rounded-full font-semibold hover:bg-purple-50 transition-colors"
+            className="inline-flex items-center gap-2 bg-white text-primary px-6 py-3 rounded-full font-semibold hover:bg-primary/10 transition-colors"
           >
             <Mail className="w-5 h-5" />
             {t("contactCta.button")}

@@ -68,8 +68,8 @@ export function PWAUpdateNotification() {
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50 animate-in slide-in-from-bottom-4 duration-300">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4">
         <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-            <RefreshCw className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+          <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+            <RefreshCw className="w-5 h-5 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
             <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -81,7 +81,7 @@ export function PWAUpdateNotification() {
             <div className="flex gap-2 mt-3">
               <button
                 onClick={handleUpdate}
-                className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-md transition-colors"
+                className="px-3 py-1.5 bg-primary hover:bg-primary/80 text-white text-sm font-medium rounded-md transition-colors"
               >
                 {t("updateNow")}
               </button>

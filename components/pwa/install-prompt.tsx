@@ -90,7 +90,7 @@ export function PWAInstallPrompt() {
         </button>
 
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600 to-purple-700 flex items-center justify-center flex-shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0">
             <span className="text-white font-bold text-lg">N</span>
           </div>
 

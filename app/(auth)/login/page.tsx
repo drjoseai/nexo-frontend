@@ -125,7 +125,7 @@ export default function LoginPage() {
       <CardHeader className="text-center space-y-1">
         {/* Logo/Brand */}
         <div className="flex justify-center mb-4">
-          <div className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+          <div className="text-4xl font-bold text-gradient">
             NEXO
           </div>
         </div>
