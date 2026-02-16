@@ -94,7 +94,7 @@ export function ChatInput({
   return (
     <div className={cn("relative", className)}>
       {/* Container con borde y fondo */}
-      <div className="flex items-end gap-2 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm transition-colors focus-within:border-primary/50">
+      <div className="flex items-end gap-2 rounded-2xl border border-border bg-white/5 p-3 backdrop-blur-sm transition-colors focus-within:border-primary/50">
         {/* Botón de adjuntar archivo */}
         {onFileSelected && (
           <FileAttachmentButton

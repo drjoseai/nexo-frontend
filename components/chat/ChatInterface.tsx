@@ -385,7 +385,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         {/* ============================================ */}
         {/* INPUT AREA */}
         {/* ============================================ */}
-        <div className="border-t border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+        <div className="border-t border-border bg-white/5 p-4 backdrop-blur-sm">
           {/* File Preview (si hay archivo pendiente) */}
           {pendingFile && (
             <FilePreview
