@@ -41,6 +41,11 @@ jest.mock('next-intl', () => ({
       auth: {
         logout: 'Cerrar Sesión',
       },
+      'pwa.install': {
+        button: 'Instalar',
+        sidebarButton: 'Instalar App',
+        installed: 'App Instalada',
+      },
     };
     return (key: string) => translations[namespace]?.[key] || key;
   },
@@ -69,11 +74,36 @@ jest.mock('@/components/ui/language-selector', () => ({
   ),
 }));
 
+// Default PWA mock values
+const defaultPWAMock = {
+  isInstalled: false,
+  isOnline: true,
+  isIOS: false,
+  isAndroid: false,
+  canInstall: false,
+  deferredPrompt: null,
+  isDismissed: false,
+  triggerPrompt: false,
+  promptInstall: jest.fn().mockResolvedValue(false),
+  dismissInstall: jest.fn(),
+};
+
+let mockPWAValues = { ...defaultPWAMock };
+
+jest.mock('@/lib/hooks/use-pwa', () => ({
+  usePWA: () => mockPWAValues,
+}));
+
 describe('Sidebar', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockPathname.mockReturnValue('/dashboard');
     mockReplace.mockClear();
+    mockPWAValues = {
+      ...defaultPWAMock,
+      promptInstall: jest.fn().mockResolvedValue(false),
+      dismissInstall: jest.fn(),
+    };
   });
 
   describe('Branding', () => {
@@ -210,6 +240,83 @@ describe('Sidebar', () => {
     });
   });
 
+  describe('Install App Button', () => {
+    it('should show install button when canInstall is true and not installed', () => {
+      mockPWAValues = {
+        ...defaultPWAMock,
+        canInstall: true,
+        isInstalled: false,
+        promptInstall: jest.fn().mockResolvedValue(false),
+        dismissInstall: jest.fn(),
+      };
+
+      render(<Sidebar />);
+
+      expect(screen.getByText('Instalar NEXO')).toBeInTheDocument();
+    });
+
+    it('should not show install button when app is installed', () => {
+      mockPWAValues = {
+        ...defaultPWAMock,
+        canInstall: true,
+        isInstalled: true,
+        promptInstall: jest.fn().mockResolvedValue(false),
+        dismissInstall: jest.fn(),
+      };
+
+      render(<Sidebar />);
+
+      expect(screen.queryByText('Instalar NEXO')).not.toBeInTheDocument();
+    });
+
+    it('should not show install button when canInstall is false', () => {
+      mockPWAValues = {
+        ...defaultPWAMock,
+        canInstall: false,
+        isInstalled: false,
+        promptInstall: jest.fn().mockResolvedValue(false),
+        dismissInstall: jest.fn(),
+      };
+
+      render(<Sidebar />);
+
+      expect(screen.queryByText('Instalar NEXO')).not.toBeInTheDocument();
+    });
+
+    it('should call promptInstall when install button is clicked', async () => {
+      const mockPromptInstall = jest.fn().mockResolvedValue(false);
+      mockPWAValues = {
+        ...defaultPWAMock,
+        canInstall: true,
+        isInstalled: false,
+        promptInstall: mockPromptInstall,
+        dismissInstall: jest.fn(),
+      };
+
+      render(<Sidebar />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByText('Instalar NEXO'));
+      });
+
+      expect(mockPromptInstall).toHaveBeenCalled();
+    });
+
+    it('should show install button in mobile sidebar when canInstall is true', () => {
+      mockPWAValues = {
+        ...defaultPWAMock,
+        canInstall: true,
+        isInstalled: false,
+        promptInstall: jest.fn().mockResolvedValue(false),
+        dismissInstall: jest.fn(),
+      };
+
+      render(<Sidebar isMobile={true} isOpen={true} />);
+
+      expect(screen.getByText('Instalar NEXO')).toBeInTheDocument();
+    });
+  });
+
   describe('Logout', () => {
     beforeEach(() => {
       mockReplace.mockClear();
@@ -259,9 +366,6 @@ describe('Sidebar', () => {
       await waitFor(() => {
         expect(mockLogout).toHaveBeenCalledTimes(1);
       });
-      
-      // Note: window.location.href assignment is not easily testable in JSDOM
-      // The important behavior (calling logout) is verified above
     });
   });
 
@@ -295,4 +399,3 @@ describe('Sidebar', () => {
     });
   });
 });
-

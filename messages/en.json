@@ -216,11 +216,13 @@
   },
   "pwa": {
     "install": {
-      "title": "Install NEXO",
-      "description": "Add NEXO to your home screen for the best experience",
-      "button": "Install",
-      "iosStep1": "Tap the share button",
-      "iosStep2": "Then \"Add to Home Screen\""
+    "title": "Install NEXO",
+    "description": "Add NEXO to your home screen for the best experience",
+    "button": "Install",
+    "iosStep1": "Tap the share button",
+    "iosStep2": "Then \"Add to Home Screen\"",
+    "sidebarButton": "Install App",
+    "installed": "App Installed"
     },
     "offline": {
       "title": "You're Offline",

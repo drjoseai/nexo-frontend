@@ -13,8 +13,10 @@ import {
   Sparkles,
   X,
   HelpCircle,
+  Download,
 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/auth";
+import { usePWA } from "@/lib/hooks/use-pwa";
 import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "@/components/ui/language-selector";
 import { Locale } from "@/i18n/config";
@@ -67,6 +69,8 @@ export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarPro
   const t = useTranslations("navigation");
   const tSidebar = useTranslations("sidebar");
   const tAuth = useTranslations("auth");
+  const tPwa = useTranslations("pwa.install");
+  const { canInstall, isInstalled, promptInstall } = usePWA();
 
   const handleLogout = async () => {
     try {
@@ -154,6 +158,20 @@ export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarPro
                 );
               })}
             </nav>
+
+            {/* Install App button */}
+            {canInstall && !isInstalled && (
+              <div className="px-3 pb-2">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2 text-muted-foreground hover:text-primary"
+                  onClick={() => promptInstall()}
+                >
+                  <Download className="h-4 w-4" />
+                  {tPwa("button")} NEXO
+                </Button>
+              </div>
+            )}
 
             {/* User section */}
             <div className="border-t border-sidebar-border p-4">
@@ -244,6 +262,20 @@ export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarPro
             );
           })}
         </nav>
+
+        {/* Install App button */}
+        {canInstall && !isInstalled && (
+          <div className="px-3 pb-2">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2 text-muted-foreground hover:text-primary"
+              onClick={() => promptInstall()}
+            >
+              <Download className="h-4 w-4" />
+              {tPwa("button")} NEXO
+            </Button>
+          </div>
+        )}
 
         {/* User section */}
         <div className="border-t border-sidebar-border p-4">

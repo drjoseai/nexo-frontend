@@ -3,80 +3,50 @@
 import { useEffect, useState } from "react";
 import { X, Download, Share, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
-
-// Lazy initializers to avoid setState in effect
-const getInitialStandalone = () => {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia("(display-mode: standalone)").matches;
-};
-
-const getInitialIsIOS = () => {
-  if (typeof window === "undefined") return false;
-  return /iPad|iPhone|iPod/.test(navigator.userAgent);
-};
+import { usePWA } from "@/lib/hooks/use-pwa";
+import { useTranslations } from "next-intl";
 
 export function PWAInstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const {
+    isInstalled,
+    isIOS,
+    canInstall,
+    isDismissed,
+    triggerPrompt,
+    promptInstall,
+    dismissInstall,
+  } = usePWA();
+  const t = useTranslations("pwa.install");
   const [showPrompt, setShowPrompt] = useState(false);
-  const [isIOS] = useState(getInitialIsIOS);
-  const [isStandalone] = useState(getInitialStandalone);
 
   useEffect(() => {
-    // Check if prompt was dismissed recently (24 hours)
-    const dismissedAt = localStorage.getItem("pwa-prompt-dismissed");
-    if (dismissedAt) {
-      const dismissedTime = parseInt(dismissedAt, 10);
-      const hoursSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60);
-      if (hoursSinceDismissed < 24) {
-        return;
-      }
+    if (isInstalled) return;
+    if (isDismissed && !triggerPrompt) return;
+
+    if (triggerPrompt) {
+      setShowPrompt(true);
+      return;
     }
 
-    const handleBeforeInstall = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setTimeout(() => setShowPrompt(true), 30000);
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
-
-    // For iOS, show custom prompt after 30 seconds
-    if (isIOS && !isStandalone) {
-      const timer = setTimeout(() => setShowPrompt(true), 30000);
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
-      };
+    if (canInstall || isIOS) {
+      const timer = setTimeout(() => setShowPrompt(true), 20000);
+      return () => clearTimeout(timer);
     }
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
-    };
-  }, [isIOS, isStandalone]);
+  }, [isInstalled, isDismissed, triggerPrompt, canInstall, isIOS]);
 
   const handleInstall = async () => {
-    if (!deferredPrompt) return;
-
-    await deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-
-    if (outcome === "accepted") {
+    const accepted = await promptInstall();
+    if (accepted) {
       setShowPrompt(false);
-      setDeferredPrompt(null);
     }
   };
 
   const handleDismiss = () => {
     setShowPrompt(false);
-    localStorage.setItem("pwa-prompt-dismissed", Date.now().toString());
+    dismissInstall();
   };
 
-  if (isStandalone || !showPrompt) return null;
+  if (isInstalled || !showPrompt) return null;
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 animate-in slide-in-from-bottom-4 duration-300">
@@ -95,32 +65,26 @@ export function PWAInstallPrompt() {
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-foreground">Install NEXO</h3>
+            <h3 className="font-semibold text-foreground">{t("title")}</h3>
             <p className="text-sm text-muted-foreground mt-1">
-              {isIOS
-                ? "Add NEXO to your home screen for the best experience"
-                : "Install our app for quick access and offline support"}
+              {t("description")}
             </p>
 
             {isIOS ? (
               <div className="mt-3 space-y-2">
                 <p className="text-xs text-muted-foreground flex items-center gap-2">
                   <Share className="w-4 h-4" />
-                  Tap the share button
+                  {t("iosStep1")}
                 </p>
                 <p className="text-xs text-muted-foreground flex items-center gap-2">
                   <Plus className="w-4 h-4" />
-                  Then &quot;Add to Home Screen&quot;
+                  {t("iosStep2")}
                 </p>
               </div>
             ) : (
-              <Button
-                onClick={handleInstall}
-                size="sm"
-                className="mt-3 gap-2"
-              >
+              <Button onClick={handleInstall} size="sm" className="mt-3 gap-2">
                 <Download className="w-4 h-4" />
-                Install
+                {t("button")}
               </Button>
             )}
           </div>

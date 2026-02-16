@@ -1,6 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
 
 interface PWAStatus {
   isInstalled: boolean;
@@ -8,10 +13,26 @@ interface PWAStatus {
   isIOS: boolean;
   isAndroid: boolean;
   canInstall: boolean;
+  deferredPrompt: BeforeInstallPromptEvent | null;
+  isDismissed: boolean;
+  triggerPrompt: boolean;
+  promptInstall: () => Promise<boolean>;
+  dismissInstall: () => void;
+}
+
+const DISMISS_KEY = "pwa-prompt-dismissed";
+const DISMISS_COOLDOWN_MS = 4 * 60 * 60 * 1000; // 4 hours
+
+function checkIsDismissed(): boolean {
+  if (typeof window === "undefined") return false;
+  const dismissedAt = localStorage.getItem(DISMISS_KEY);
+  if (!dismissedAt) return false;
+  const elapsed = Date.now() - parseInt(dismissedAt, 10);
+  return elapsed < DISMISS_COOLDOWN_MS;
 }
 
 // Lazy initializer to avoid setState in effect
-const getInitialStatus = (): PWAStatus => {
+const getInitialStatus = () => {
   if (typeof window === "undefined") {
     return {
       isInstalled: false,
@@ -24,7 +45,8 @@ const getInitialStatus = (): PWAStatus => {
 
   const isInstalled =
     window.matchMedia("(display-mode: standalone)").matches ||
-    (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
+    (window.navigator as Navigator & { standalone?: boolean }).standalone ===
+      true;
 
   const userAgent = navigator.userAgent.toLowerCase();
   const isIOS = /iphone|ipad|ipod/.test(userAgent);
@@ -36,13 +58,20 @@ const getInitialStatus = (): PWAStatus => {
     isOnline,
     isIOS,
     isAndroid,
-    canInstall: !isInstalled && (isIOS || isAndroid || "BeforeInstallPromptEvent" in window),
+    canInstall:
+      !isInstalled &&
+      (isIOS || isAndroid || "BeforeInstallPromptEvent" in window),
   };
 };
 
 export function usePWA(): PWAStatus {
-  const [status, setStatus] = useState<PWAStatus>(getInitialStatus);
+  const [status, setStatus] = useState(getInitialStatus);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
+  const [isDismissed, setIsDismissed] = useState(checkIsDismissed);
+  const [triggerPrompt, setTriggerPrompt] = useState(false);
 
+  // Listen for online/offline and display-mode changes
   useEffect(() => {
     const handleOnline = () => setStatus((s) => ({ ...s, isOnline: true }));
     const handleOffline = () => setStatus((s) => ({ ...s, isOnline: false }));
@@ -63,5 +92,55 @@ export function usePWA(): PWAStatus {
     };
   }, []);
 
-  return status;
+  // Capture beforeinstallprompt event
+  useEffect(() => {
+    const handleBeforeInstall = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+      setStatus((s) => ({ ...s, canInstall: true }));
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
+    };
+  }, []);
+
+  // Check for ?install=true deep link
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("install") === "true") {
+      setTriggerPrompt(true);
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
+
+  const promptInstall = useCallback(async (): Promise<boolean> => {
+    if (!deferredPrompt) return false;
+
+    await deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === "accepted") {
+      setDeferredPrompt(null);
+      return true;
+    }
+
+    return false;
+  }, [deferredPrompt]);
+
+  const dismissInstall = useCallback(() => {
+    localStorage.setItem(DISMISS_KEY, Date.now().toString());
+    setIsDismissed(true);
+  }, []);
+
+  return {
+    ...status,
+    deferredPrompt,
+    isDismissed,
+    triggerPrompt,
+    promptInstall,
+    dismissInstall,
+  };
 }

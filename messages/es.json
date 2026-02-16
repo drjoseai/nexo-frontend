@@ -216,11 +216,13 @@
   },
   "pwa": {
     "install": {
-      "title": "Instalar NEXO",
-      "description": "Agrega NEXO a tu pantalla de inicio para la mejor experiencia",
-      "button": "Instalar",
-      "iosStep1": "Toca el botón de compartir",
-      "iosStep2": "Luego \"Agregar a pantalla de inicio\""
+    "title": "Instalar NEXO",
+    "description": "Agrega NEXO a tu pantalla de inicio para la mejor experiencia",
+    "button": "Instalar",
+    "iosStep1": "Toca el botón de compartir",
+    "iosStep2": "Luego \"Agregar a pantalla de inicio\"",
+    "sidebarButton": "Instalar App",
+    "installed": "App Instalada"
     },
     "offline": {
       "title": "Sin conexión",
