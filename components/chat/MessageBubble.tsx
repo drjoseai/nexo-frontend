@@ -32,10 +32,10 @@ const AVATAR_COLORS: Record<AvatarId, {
     glowDark: "shadow-amber-500/20",
   },
   allan: {
-    bgLight: "bg-cyan-100 border-cyan-200",
-    bgDark: "bg-gradient-to-br from-cyan-500/55 to-teal-600/40 border-white/10",
-    glowLight: "shadow-cyan-200/50",
-    glowDark: "shadow-cyan-500/20",
+    bgLight: "bg-amber-100 border-amber-200",
+    bgDark: "bg-gradient-to-br from-[var(--allan)]/55 to-[var(--allan)]/30 border-white/10",
+    glowLight: "shadow-amber-200/50",
+    glowDark: "shadow-[var(--allan)]/20",
   },
 };
 
@@ -112,7 +112,7 @@ export const MessageBubble = memo(function MessageBubble({
             "bg-gradient-to-br text-white border-white/10",
             avatarId === "lia" && "from-primary/30 to-primary/20",
             avatarId === "mia" && "bg-amber-100 text-amber-700 border-amber-200 from-amber-500/30 to-orange-600/20",
-            avatarId === "allan" && "bg-cyan-100 text-cyan-700 border-cyan-200 from-cyan-500/30 to-teal-600/20"
+            avatarId === "allan" && "bg-amber-100 text-amber-700 border-amber-200 from-[var(--allan)]/30 to-[var(--allan)]/15"
           )}
         >
           {avatarName.charAt(0).toUpperCase()}

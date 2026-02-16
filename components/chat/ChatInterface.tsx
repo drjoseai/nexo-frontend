@@ -151,7 +151,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const avatarColorClass = {
     lia: "text-primary",
     mia: "text-amber-400",
-    allan: "text-cyan-400",
+    allan: "text-[var(--allan)]",
   }[avatarId];
 
   return (
@@ -207,7 +207,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
                 "relative h-10 w-10 rounded-full overflow-hidden",
                 "border-2",
                 avatarId === "lia" ? "border-primary" : 
-                avatarId === "mia" ? "border-amber-400" : "border-cyan-400"
+                avatarId === "mia" ? "border-amber-400" : "border-[var(--allan)]"
               )}
             >
               <Image

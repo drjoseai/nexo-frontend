@@ -176,14 +176,14 @@ describe("MessageBubble", () => {
       expect(avatarIndicator?.className).toContain("amber");
     });
 
-    it("applies Allan colors (cyan) for allan avatar", () => {
+    it("applies Allan colors (bronze) for allan avatar", () => {
       const message = createMessage({ role: "assistant" });
       render(
         <MessageBubble message={message} avatarId="allan" avatarName="Allan" />
       );
       
       const avatarIndicator = screen.getByText("A").closest("div");
-      expect(avatarIndicator?.className).toContain("cyan");
+      expect(avatarIndicator?.className).toContain("amber");
     });
 
     it("defaults to lia colors when avatarId not provided", () => {

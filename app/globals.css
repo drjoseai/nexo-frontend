@@ -60,6 +60,7 @@
   
   /* Typography */
   --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   --font-mono: var(--font-geist-mono);
 }
 
@@ -126,7 +127,7 @@
   /* Avatar accent colors - Distinct but warm-compatible */
   --lia: oklch(0.62 0.12 50);                      /* Copper - warm */
   --mia: oklch(0.72 0.14 70);                      /* Warm gold/amber */
-  --allan: oklch(0.55 0.10 200);                   /* Teal (complementary contrast) */
+  --allan: oklch(0.52 0.12 45);                    /* Deep Bronze (warm family) */
 }
 
 /* ============================================
@@ -144,6 +145,21 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Scrollbar - Warm Copper */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: oklch(0.08 0.015 50);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(0.62 0.12 50);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.72 0.10 55);
   }
 }
 
@@ -196,7 +212,7 @@
   }
   
   .glow-allan {
-    box-shadow: 0 0 20px oklch(0.55 0.10 200 / 0.3);
+    box-shadow: 0 0 20px oklch(0.52 0.12 45 / 0.3);
   }
   
   /* Glass effect for cards */
@@ -280,9 +296,9 @@
   50% { box-shadow: 0 0 40px rgba(210, 160, 80, 0.8); }
 }
 
-@keyframes avatar-glow-cyan {
-  0%, 100% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.4); }
-  50% { box-shadow: 0 0 40px rgba(6, 182, 212, 0.8); }
+@keyframes avatar-glow-bronze {
+  0%, 100% { box-shadow: 0 0 20px rgba(176, 106, 58, 0.4); }
+  50% { box-shadow: 0 0 40px rgba(176, 106, 58, 0.8); }
 }
 
 /* Combined breathing + float animation */
@@ -300,5 +316,5 @@
 }
 
 .avatar-glow-allan {
-  animation: avatar-glow-cyan 3s ease-in-out infinite;
+  animation: avatar-glow-bronze 3s ease-in-out infinite;
 }

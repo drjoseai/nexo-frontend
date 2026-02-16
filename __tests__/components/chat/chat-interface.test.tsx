@@ -487,11 +487,11 @@ describe("ChatInterface", () => {
       expect(hasCorrectClass).toBe(true);
     });
 
-    it("applies cyan color class for Allan", () => {
+    it("applies bronze color class for Allan", () => {
       render(<ChatInterface avatarId="allan" />);
       
       const avatarNames = screen.getAllByText("Allan");
-      const hasCorrectClass = avatarNames.some(el => el.classList.contains("text-cyan-400"));
+      const hasCorrectClass = avatarNames.some(el => el.className.includes("text-[var(--allan)]"));
       expect(hasCorrectClass).toBe(true);
     });
   });
