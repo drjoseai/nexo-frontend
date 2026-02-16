@@ -119,10 +119,10 @@
     "planPlusRequired": "Plan Plus requerido"
   },
   "relationshipTypes": {
-    "assistant": "Asistente",
-    "friend": "Amigo",
+    "assistant": "Aliado",
+    "friend": "Confidente",
     "confidant": "Confidente",
-    "romantic": "Romántico"
+    "romantic": "Mi Persona"
   },
   "subscription": {
     "free": "Gratis",
@@ -290,9 +290,9 @@
     "accessToLia": "Acceso a Lía",
     "accessToMia": "Acceso a Mía",
     "accessToAllan": "Acceso a Allan",
-    "relationAssistant": "Relación: Asistente",
-    "relationFriend": "Relación: Amigo",
-    "relationRomantic": "Relación: Romántica (18+)",
+    "relationAssistant": "Relación: Aliado",
+    "relationFriend": "Relación: Confidente",
+    "relationRomantic": "Relación: Mi Persona (18+)",
     "conversationMemory": "Memoria de conversaciones",
     "priorityResponses": "Respuestas prioritarias",
     "prioritySupport": "Soporte prioritario",
@@ -319,7 +319,7 @@
         "q2": "¿Los avatares recuerdan nuestras conversaciones?",
         "a2": "¡Sí! Nuestros avatares mantienen memoria de tus conversaciones, permitiendo continuidad y conexiones más profundas con el tiempo. Entre más chateas, mejor te entienden.",
         "q3": "¿Puedo tener diferentes tipos de relaciones?",
-        "a3": "Sí, puedes elegir el tipo de relación con cada avatar: Asistente (útil y profesional), Amigo (casual y comprensivo), o Romántico (conexión íntima, solo Premium)."
+        "a3": "Sí, puedes elegir el tipo de relación con cada avatar: Aliado (útil y profesional), Confidente (casual y comprensivo), o Mi Persona (conexión íntima, solo Premium)."
       },
       "avatars": {
         "title": "Sobre los Avatares",

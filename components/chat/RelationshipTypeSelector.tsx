@@ -45,21 +45,21 @@ interface RelationshipTypeSelectorProps {
 const RELATIONSHIP_OPTIONS: RelationshipOption[] = [
   {
     value: "assistant",
-    label: "Asistente",
-    description: "Respuestas profesionales y útiles",
+    label: "Aliado",
+    description: "Tu guía confiable y profesional",
     premiumOnly: false,
-    icon: "💼",
+    icon: "🤝",
   },
   {
     value: "friend",
-    label: "Amigo",
-    description: "Conversación casual y amigable",
+    label: "Confidente",
+    description: "Alguien que te escucha de verdad",
     premiumOnly: false,
-    icon: "👋",
+    icon: "💛",
   },
   {
     value: "romantic",
-    label: "Romántico",
+    label: "Mi Persona",
     description: "Conexión emocional profunda",
     premiumOnly: true,
     icon: "💕",

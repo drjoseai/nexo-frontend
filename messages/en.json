@@ -119,10 +119,10 @@
     "planPlusRequired": "Plus Plan required"
   },
   "relationshipTypes": {
-    "assistant": "Assistant",
-    "friend": "Friend",
+    "assistant": "Ally",
+    "friend": "Confidant",
     "confidant": "Confidant",
-    "romantic": "Romantic"
+    "romantic": "My Person"
   },
   "subscription": {
     "free": "Free",
@@ -290,9 +290,9 @@
     "accessToLia": "Access to Lía",
     "accessToMia": "Access to Mía",
     "accessToAllan": "Access to Allan",
-    "relationAssistant": "Relationship: Assistant",
-    "relationFriend": "Relationship: Friend",
-    "relationRomantic": "Relationship: Romantic (18+)",
+    "relationAssistant": "Relationship: Ally",
+    "relationFriend": "Relationship: Confidant",
+    "relationRomantic": "Relationship: My Person (18+)",
     "conversationMemory": "Conversation memory",
     "priorityResponses": "Priority responses",
     "prioritySupport": "Priority support",
@@ -319,7 +319,7 @@
         "q2": "Do the avatars remember our conversations?",
         "a2": "Yes! Our avatars maintain memory of your conversations, allowing for continuity and deeper connections over time. The more you chat, the better they understand you.",
         "q3": "Can I have different types of relationships?",
-        "a3": "Yes, you can choose the type of relationship with each avatar: Assistant (helpful and professional), Friend (casual and supportive), or Romantic (intimate connection, Premium only)."
+        "a3": "Yes, you can choose the type of relationship with each avatar: Ally (helpful and professional), Confidant (casual and supportive), or My Person (intimate connection, Premium only)."
       },
       "avatars": {
         "title": "About the Avatars",
