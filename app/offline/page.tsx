@@ -51,7 +51,7 @@ export default function OfflinePage() {
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-2xl font-semibold text-foreground">
+          <h1 className="text-2xl font-semibold text-foreground font-serif">
             {isOnline ? "Back Online!" : "You're Offline"}
           </h1>
           <p className="text-muted-foreground">

@@ -197,7 +197,7 @@ export function SubscriptionContent() {
   return (
     <div className="container max-w-6xl py-8">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold">{t("title")}</h1>
+        <h1 className="text-3xl font-bold font-serif">{t("title")}</h1>
         <p className="mt-2 text-muted-foreground">
           {t("subtitle")}
         </p>

@@ -81,7 +81,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-3xl font-bold font-serif">
           <span className="text-gradient">{t("greeting")}</span>
           {user?.display_name ? `, ${user.display_name}` : ""}!
         </h1>

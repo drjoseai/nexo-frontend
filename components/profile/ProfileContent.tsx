@@ -66,7 +66,7 @@ export function ProfileContent() {
   return (
     <div className="container max-w-4xl py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">{t("title")}</h1>
+        <h1 className="text-3xl font-bold font-serif">{t("title")}</h1>
         <p className="text-muted-foreground">
           {t("subtitle")}
         </p>

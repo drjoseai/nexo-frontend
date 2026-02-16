@@ -162,7 +162,7 @@ export default function RegisterPage() {
       <CardHeader className="text-center space-y-1">
         {/* Logo/Brand */}
         <div className="flex justify-center mb-4">
-          <div className="text-4xl font-bold text-gradient">
+          <div className="text-4xl font-bold text-gradient font-serif">
             NEXO
           </div>
         </div>
