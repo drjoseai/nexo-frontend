@@ -103,8 +103,8 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const handleRelationshipTypeChange = (newType: RelationshipType) => {
     setRelationshipType(newType);
     toast.success(`Tipo de relación cambiado a: ${
-      newType === "assistant" ? "Asistente" :
-      newType === "friend" ? "Amigo" : "Romántico"
+      newType === "assistant" ? "Aliado" :
+      newType === "friend" ? "Confidente" : "Mi Persona"
     }`);
   };
 

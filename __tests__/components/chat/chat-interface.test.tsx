@@ -25,9 +25,9 @@ jest.mock("@/components/chat/RelationshipTypeSelector", () => ({
       value={value}
       onChange={(e) => onChange(e.target.value)}
     >
-      <option value="assistant">Asistente</option>
-      <option value="friend">Amigo</option>
-      <option value="romantic">Romántico</option>
+      <option value="assistant">Aliado</option>
+      <option value="friend">Confidente</option>
+      <option value="romantic">Mi Persona</option>
     </select>
   ),
 }));
