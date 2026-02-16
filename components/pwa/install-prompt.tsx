@@ -18,35 +18,33 @@ export function PWAInstallPrompt() {
   } = usePWA();
   const t = useTranslations("pwa.install");
   const [showPrompt, setShowPrompt] = useState(false);
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    if (isInstalled) return;
-    if (isDismissed && !triggerPrompt) return;
-
-    if (triggerPrompt) {
-      setShowPrompt(true);
-      return;
-    }
+    if (isInstalled || isDismissed || triggerPrompt) return;
 
     if (canInstall || isIOS) {
       const timer = setTimeout(() => setShowPrompt(true), 20000);
       return () => clearTimeout(timer);
     }
-  }, [isInstalled, isDismissed, triggerPrompt, canInstall, isIOS]);
+  }, [canInstall, isIOS, isInstalled, isDismissed, triggerPrompt]);
 
   const handleInstall = async () => {
     const accepted = await promptInstall();
     if (accepted) {
       setShowPrompt(false);
+      setHidden(true);
     }
   };
 
   const handleDismiss = () => {
     setShowPrompt(false);
+    setHidden(true);
     dismissInstall();
   };
 
-  if (isInstalled || !showPrompt) return null;
+  const shouldShow = !hidden && (triggerPrompt || showPrompt);
+  if (isInstalled || !shouldShow) return null;
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 animate-in slide-in-from-bottom-4 duration-300">

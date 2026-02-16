@@ -69,7 +69,15 @@ export function usePWA(): PWAStatus {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [isDismissed, setIsDismissed] = useState(checkIsDismissed);
-  const [triggerPrompt, setTriggerPrompt] = useState(false);
+  const [triggerPrompt] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const params = new URLSearchParams(window.location.search);
+    const hasInstallParam = params.get("install") === "true";
+    if (hasInstallParam) {
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+    return hasInstallParam;
+  });
 
   // Listen for online/offline and display-mode changes
   useEffect(() => {
@@ -105,15 +113,6 @@ export function usePWA(): PWAStatus {
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
     };
-  }, []);
-
-  // Check for ?install=true deep link
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("install") === "true") {
-      setTriggerPrompt(true);
-      window.history.replaceState({}, "", window.location.pathname);
-    }
   }, []);
 
   const promptInstall = useCallback(async (): Promise<boolean> => {
