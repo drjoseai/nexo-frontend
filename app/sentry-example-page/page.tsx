@@ -18,7 +18,7 @@ export default function SentryExamplePage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-900 text-white">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background text-foreground">
       <h1 className="text-2xl font-bold">Sentry Test Page</h1>
       <p className="text-gray-400">Use these buttons to test Sentry integration</p>
       
