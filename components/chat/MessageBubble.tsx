@@ -21,7 +21,7 @@ const AVATAR_COLORS: Record<AvatarId, {
 }> = {
   lia: {
     bgLight: "bg-primary/10 border-primary/20",
-    bgDark: "bg-gradient-to-br from-primary/40 to-primary/25 border-white/10",
+    bgDark: "bg-gradient-to-br from-primary/55 to-primary/35 border-white/10",
     glowLight: "shadow-primary/20",
     glowDark: "shadow-primary/20",
   },
@@ -33,7 +33,7 @@ const AVATAR_COLORS: Record<AvatarId, {
   },
   allan: {
     bgLight: "bg-amber-100 border-amber-200",
-    bgDark: "bg-gradient-to-br from-[var(--allan)]/55 to-[var(--allan)]/30 border-white/10",
+    bgDark: "bg-gradient-to-br from-[var(--allan)]/60 to-[var(--allan)]/40 border-white/10",
     glowLight: "shadow-amber-200/50",
     glowDark: "shadow-[var(--allan)]/20",
   },
@@ -149,7 +149,7 @@ export const MessageBubble = memo(function MessageBubble({
                   // Avatar - Dark mode
                   avatarColors.bgDark,
                   avatarColors.glowDark,
-                  "dark:text-gray-900",
+                  "dark:text-white/90",
                 ],
             // Estado de error
             message.status === "error" && "opacity-70"
