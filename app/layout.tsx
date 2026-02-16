@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Geist_Mono } from "next/font/google";
+import { DM_Sans, Cormorant_Garamond, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
@@ -19,6 +19,13 @@ const dmSans = DM_Sans({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 // PWA Viewport Configuration
@@ -133,7 +140,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
-        className={`${dmSans.variable} ${geistMono.variable} font-sans antialiased`}
+        className={`${dmSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} font-sans antialiased`}
       >
         <ThemeProvider
           attribute="class"

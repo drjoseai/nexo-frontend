@@ -229,7 +229,7 @@ export function ProfileContent() {
                   <p className="text-sm text-muted-foreground">{t("ageVerification")}</p>
                   <p className="font-medium">
                     {user.age_verified ? (
-                      <span className="text-green-400">{t("verified18")}</span>
+                      <span className="text-primary">{t("verified18")}</span>
                     ) : (
                       <span className="text-muted-foreground">{t("notVerified")}</span>
                     )}

@@ -188,7 +188,7 @@ export function SubscriptionContent() {
       return <span className="text-sm font-medium">{value}</span>;
     }
     return value ? (
-      <Check className="h-5 w-5 text-green-400" />
+      <Check className="h-5 w-5 text-primary" />
     ) : (
       <X className="h-5 w-5 text-muted-foreground/50" />
     );
@@ -214,7 +214,7 @@ export function SubscriptionContent() {
         <div
           className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
             statusMessage.type === 'success'
-              ? 'bg-green-500/20 border border-green-500/50 text-green-400'
+              ? 'bg-primary/20 border border-primary/50 text-primary'
               : statusMessage.type === 'canceled'
               ? 'bg-yellow-500/20 border border-yellow-500/50 text-yellow-400'
               : 'bg-red-500/20 border border-red-500/50 text-red-400'
@@ -261,7 +261,7 @@ export function SubscriptionContent() {
                 "relative flex flex-col border-2 transition-all duration-300",
                 isPopular && "border-primary shadow-lg shadow-primary/20",
                 planId === "premium" && !isPopular && "border-amber-500/50 shadow-lg shadow-amber-500/10",
-                (isCurrentPlan || isTrialOnFree) && "ring-2 ring-green-500",
+                (isCurrentPlan || isTrialOnFree) && "ring-2 ring-primary",
                 !isPopular && planId === "free" && !isCurrentPlan && !isTrialOnFree && "border-slate-500/50",
                 !isPopular && planId !== "free" && planId !== "premium" && !isCurrentPlan && !isTrialOnFree && "border-border/50"
               )}
@@ -276,7 +276,7 @@ export function SubscriptionContent() {
               
               {(isCurrentPlan || isTrialOnFree) && (
                 <div className="absolute -top-3 right-4">
-                  <Badge className="bg-green-500 text-white">
+                  <Badge className="bg-primary text-white">
                     {isTrialOnFree ? t("trialActiveBadge") : t("currentPlan")}
                   </Badge>
                 </div>
