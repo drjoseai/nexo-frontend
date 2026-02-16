@@ -94,6 +94,16 @@ export function SubscriptionContent() {
     return t("choosePremium"); // premium es el único caso restante
   };
 
+  // Calculate trial days remaining
+  const getTrialDaysRemaining = (): number => {
+    if (!user?.trial_ends_at) return 0;
+    const now = new Date();
+    const trialEnd = new Date(user.trial_ends_at);
+    const diffTime = trialEnd.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(0, diffDays);
+  };
+
   useEffect(() => {
     const success = searchParams.get('success');
     const canceled = searchParams.get('canceled');
@@ -201,12 +211,6 @@ export function SubscriptionContent() {
         <p className="mt-2 text-muted-foreground">
           {t("subtitle")}
         </p>
-        {isTrialActive && user?.trial_ends_at && (
-          <Badge className="mt-4 bg-blue-500/20 text-blue-400 border-blue-500/30">
-            <Star className="h-3 w-3 mr-1" />
-            {t("trialActive")} {new Date(user.trial_ends_at).toLocaleDateString(locale === "es" ? "es-ES" : "en-US")}
-          </Badge>
-        )}
       </div>
 
       {/* Status Message Banner */}
@@ -245,6 +249,80 @@ export function SubscriptionContent() {
             </svg>
           </button>
         </div>
+      )}
+
+      {/* Trial Status Card - Solo visible durante trial activo */}
+      {isTrialActive && user?.trial_ends_at && (
+        <Card className="mb-8 border-2 border-primary/40 bg-gradient-to-r from-primary/10 via-card to-primary/5 shadow-lg shadow-primary/10">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              {/* Left side - Trial info */}
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20">
+                    <Star className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      {t("trialCardTitle")}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {t("trialCardSubtitle")}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Trial includes list */}
+                <div className="mt-4 ml-[52px]">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                    {t("trialIncludes")}
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    {[
+                      t("trialIncludesMessages"),
+                      t("trialIncludesAllAvatars"),
+                      t("trialIncludesAllRelations"),
+                      t("trialIncludesMemory"),
+                    ].map((item) => (
+                      <div key={item} className="flex items-center gap-2 text-sm text-foreground/80">
+                        <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right side - Days counter */}
+              <div className="flex flex-col items-center md:items-end gap-2 md:min-w-[160px]">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-bold text-primary">
+                    {getTrialDaysRemaining()}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    {getTrialDaysRemaining() === 1
+                      ? t("trialDayRemaining")
+                      : getTrialDaysRemaining() === 0
+                      ? t("trialExpiresToday")
+                      : t("trialDaysRemaining")}
+                  </span>
+                </div>
+                {/* Progress bar */}
+                <div className="w-full max-w-[200px] h-2 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
+                    style={{
+                      width: `${Math.max(5, (getTrialDaysRemaining() / 10) * 100)}%`,
+                    }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground text-center md:text-right">
+                  {t("trialUpgradeCta")}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Plan Cards */}

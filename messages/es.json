@@ -297,7 +297,18 @@
     "priorityResponses": "Respuestas prioritarias",
     "prioritySupport": "Soporte prioritario",
     "days": "días",
-    "unlimited": "Ilimitada"
+    "unlimited": "Ilimitada",
+    "trialCardTitle": "Tu Trial está activo",
+    "trialCardSubtitle": "Estás disfrutando de acceso completo a NEXO",
+    "trialDaysRemaining": "días restantes",
+    "trialDayRemaining": "día restante",
+    "trialIncludes": "Tu trial incluye:",
+    "trialIncludesMessages": "30 mensajes por día",
+    "trialIncludesAllAvatars": "Acceso a los 3 avatares",
+    "trialIncludesAllRelations": "Todas las relaciones disponibles",
+    "trialIncludesMemory": "Memoria de conversaciones completa",
+    "trialUpgradeCta": "Elige un plan para cuando termine tu trial",
+    "trialExpiresToday": "Tu trial expira hoy"
   },
   "help": {
     "title": "Centro de Ayuda",
