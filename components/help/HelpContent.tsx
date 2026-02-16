@@ -108,14 +108,14 @@ export default function HelpContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#1a1a2e] p-4 md:p-8">
+    <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
             {t("title")}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
+          <p className="text-muted-foreground text-lg">
             {t("subtitle")}
           </p>
         </div>
@@ -127,20 +127,20 @@ export default function HelpContent() {
             return (
               <div
                 key={section.id}
-                className="bg-white dark:bg-[#252542] rounded-2xl shadow-sm overflow-hidden"
+                className="bg-card rounded-2xl shadow-sm overflow-hidden"
               >
                 {/* Section Header */}
-                <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center gap-3">
+                <div className="px-6 py-4 border-b border-border flex items-center gap-3">
                   <div className="p-2 bg-primary/10 rounded-lg">
                     <IconComponent className="w-5 h-5 text-primary" />
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  <h2 className="text-xl font-semibold text-foreground">
                     {t(`sections.${section.id}.title`)}
                   </h2>
                 </div>
 
                 {/* FAQ Items */}
-                <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                <div className="divide-y divide-border">
                   {section.items.map((item, index) => {
                     const itemId = `${section.id}-${index}`;
                     const isOpen = openItems.has(itemId);
@@ -148,20 +148,20 @@ export default function HelpContent() {
                       <div key={itemId}>
                         <button
                           onClick={() => toggleItem(itemId)}
-                          className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-[#2a2a4a] transition-colors"
+                          className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-secondary transition-colors"
                         >
-                          <span className="text-gray-800 dark:text-gray-200 font-medium pr-4">
+                          <span className="text-foreground font-medium pr-4">
                             {t(`sections.${section.id}.${item.questionKey}`)}
                           </span>
                           {isOpen ? (
-                            <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                            <ChevronUp className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                           ) : (
-                            <ChevronDown className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                            <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                           )}
                         </button>
                         {isOpen && (
                           <div className="px-6 pb-4">
-                            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                            <p className="text-muted-foreground leading-relaxed">
                               {t(`sections.${section.id}.${item.answerKey}`)}
                             </p>
                           </div>
