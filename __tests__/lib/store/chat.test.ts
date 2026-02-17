@@ -3,7 +3,7 @@
 // Verifica: sendMessage, loadHistory, optimistic updates, error handling
 
 import { renderHook, act } from '@testing-library/react';
-import { useChatStore } from '@/lib/store/chat';
+import { useChatStore, selectMessages, selectIsLoading, selectIsSending, selectError, selectMessagesRemaining, selectUploadLimits, selectFileUploading, selectIsStreaming, selectStreamingMessageId } from '@/lib/store/chat';
 
 // ============================================
 // MOCK: API de chat
@@ -1040,8 +1040,6 @@ describe('useChatStore', () => {
   // ------------------------------------------
   describe('selectores', () => {
     it('debe exponer selectores funcionales', () => {
-      const { selectMessages, selectIsLoading, selectIsSending, selectError, selectMessagesRemaining, selectUploadLimits, selectFileUploading, selectIsStreaming, selectStreamingMessageId } = require('@/lib/store/chat');
-
       const state = useChatStore.getState();
 
       expect(selectMessages(state)).toEqual([]);
