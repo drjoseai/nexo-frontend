@@ -6,7 +6,6 @@ import { useAuthStore } from "@/lib/store/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { 
   Select,
   SelectContent,
@@ -25,28 +24,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Bell, Globe, Trash2, Save, Loader2 } from "lucide-react";
+import { Globe, Trash2, Loader2, Shield, Info } from "lucide-react";
 import { toast } from "sonner";
 
 export function SettingsContent() {
-  const { logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const t = useTranslations("settings");
   const tCommon = useTranslations("common");
-  const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  
-  const [settings, setSettings] = useState({
-    emailNotifications: true,
-    pushNotifications: false,
-    marketingEmails: false,
-    language: "es",
-  });
-
-  const handleSave = async () => {
-    setIsSaving(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsSaving(false);
-  };
+  const [language, setLanguage] = useState("es");
 
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
@@ -91,67 +77,53 @@ export function SettingsContent() {
       </div>
 
       <div className="grid gap-6">
+        {/* Data & Privacy */}
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Bell className="h-5 w-5 text-primary" />
-              {t("notifications")}
+              <Shield className="h-5 w-5 text-primary" />
+              {t("dataPrivacy")}
             </CardTitle>
             <CardDescription>
-              {t("notificationsDescription")}
+              {t("dataPrivacyDescription")}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="email-notifications">{t("emailNotifications")}</Label>
+                <Label>{t("termsOfService")}</Label>
                 <p className="text-sm text-muted-foreground">
-                  {t("emailNotificationsDescription")}
+                  {t("termsOfServiceDescription")}
                 </p>
               </div>
-              <Switch
-                id="email-notifications"
-                checked={settings.emailNotifications}
-                onCheckedChange={(checked) =>
-                  setSettings({ ...settings, emailNotifications: checked })
-                }
-              />
+              <Button variant="outline" size="sm" asChild>
+                <a href="/terms" target="_blank" rel="noopener noreferrer">
+                  {t("view")}
+                </a>
+              </Button>
             </div>
-
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="push-notifications">{t("pushNotifications")}</Label>
+                <Label>{t("privacyPolicy")}</Label>
                 <p className="text-sm text-muted-foreground">
-                  {t("pushNotificationsDescription")}
+                  {t("privacyPolicyDescription")}
                 </p>
               </div>
-              <Switch
-                id="push-notifications"
-                checked={settings.pushNotifications}
-                onCheckedChange={(checked) =>
-                  setSettings({ ...settings, pushNotifications: checked })
-                }
-              />
+              <Button variant="outline" size="sm" asChild>
+                <a href="/privacy" target="_blank" rel="noopener noreferrer">
+                  {t("view")}
+                </a>
+              </Button>
             </div>
-
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="marketing-emails">{t("marketingEmails")}</Label>
-                <p className="text-sm text-muted-foreground">
-                  {t("marketingEmailsDescription")}
-                </p>
-              </div>
-              <Switch
-                id="marketing-emails"
-                checked={settings.marketingEmails}
-                onCheckedChange={(checked) =>
-                  setSettings({ ...settings, marketingEmails: checked })
-                }
-              />
+            <div className="rounded-lg bg-primary/5 border border-primary/10 p-3">
+              <p className="text-xs text-muted-foreground">
+                🔒 {t("dataEncryptionNotice")}
+              </p>
             </div>
           </CardContent>
         </Card>
 
+        {/* Language */}
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -171,10 +143,8 @@ export function SettingsContent() {
                 </p>
               </div>
               <Select
-                value={settings.language}
-                onValueChange={(value) =>
-                  setSettings({ ...settings, language: value })
-                }
+                value={language}
+                onValueChange={(value) => setLanguage(value)}
               >
                 <SelectTrigger className="w-40">
                   <SelectValue />
@@ -188,21 +158,36 @@ export function SettingsContent() {
           </CardContent>
         </Card>
 
-        <div className="flex justify-end">
-          <Button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="bg-primary hover:bg-primary/80"
-          >
-            {isSaving ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            ) : (
-              <Save className="h-4 w-4 mr-2" />
-            )}
-            {t("saveChanges")}
-          </Button>
-        </div>
+        {/* About NEXO */}
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Info className="h-5 w-5 text-primary" />
+              {t("aboutNexo")}
+            </CardTitle>
+            <CardDescription>
+              {t("aboutNexoDescription")}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">{t("version")}</span>
+              <span className="text-sm font-medium">v2.0 Beta</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">{t("support")}</span>
+              <a href="mailto:info@trynexo.ai" className="text-sm font-medium text-primary hover:underline">
+                info@trynexo.ai
+              </a>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">{t("madeBy")}</span>
+              <span className="text-sm font-medium">VENKO AI INNOVATIONS LLC</span>
+            </div>
+          </CardContent>
+        </Card>
 
+        {/* Danger Zone */}
         <Card className="border-red-500/30 bg-red-500/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-400">

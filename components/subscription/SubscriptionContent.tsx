@@ -7,7 +7,17 @@ import { useAuthStore } from "@/lib/store/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Sparkles, Crown, Zap, Star, Loader2 } from "lucide-react";
+import { Check, X, Sparkles, Crown, Zap, Star, Loader2, CreditCard, XCircle } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
 
@@ -28,6 +38,9 @@ export function SubscriptionContent() {
     type: 'success' | 'error' | 'canceled';
     text: string;
   } | null>(null);
+  const [isManaging, setIsManaging] = useState(false);
+  const [isCanceling, setIsCanceling] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
   const t = useTranslations("subscriptionPage");
   const locale = useLocale();
   
@@ -294,6 +307,76 @@ export function SubscriptionContent() {
     }
   };
 
+  const handleManageSubscription = async () => {
+    setIsManaging(true);
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.trynexo.ai';
+      const response = await fetch(`${apiBaseUrl}/api/v1/stripe/customer-portal`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          return_url: `${window.location.origin}/dashboard/subscription`,
+        }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error(t("sessionExpired"));
+        }
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || t("errorManaging"));
+      }
+
+      const data = await response.json();
+      if (data.portal_url) {
+        window.location.href = data.portal_url;
+      }
+    } catch (error) {
+      setStatusMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : t("errorManaging"),
+      });
+    } finally {
+      setIsManaging(false);
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    setIsCanceling(true);
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.trynexo.ai';
+      const response = await fetch(`${apiBaseUrl}/api/v1/stripe/cancel-subscription`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ immediate: false }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error(t("sessionExpired"));
+        }
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || t("errorCanceling"));
+      }
+
+      const data = await response.json();
+      setStatusMessage({
+        type: 'success',
+        text: data.message || t("cancelSuccess"),
+      });
+      setShowCancelDialog(false);
+    } catch (error) {
+      setStatusMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : t("errorCanceling"),
+      });
+    } finally {
+      setIsCanceling(false);
+    }
+  };
+
   const renderFeatureValue = (value: boolean | string) => {
     if (typeof value === "string") {
       return <span className="text-sm font-medium">{value}</span>;
@@ -457,6 +540,38 @@ export function SubscriptionContent() {
         </CardContent>
       </Card>
 
+      {/* Manage Subscription - Solo para usuarios de pago */}
+      {(user?.plan === "plus" || user?.plan === "premium") && (
+        <div className="mb-8 flex flex-col sm:flex-row gap-3 justify-center">
+          <Button
+            variant="outline"
+            onClick={handleManageSubscription}
+            disabled={isManaging}
+            className="gap-2"
+          >
+            {isManaging ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <CreditCard className="h-4 w-4" />
+            )}
+            {t("managePayments")}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setShowCancelDialog(true)}
+            disabled={isCanceling}
+            className="gap-2 text-red-400 border-red-500/30 hover:bg-red-500/10 hover:text-red-300"
+          >
+            {isCanceling ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <XCircle className="h-4 w-4" />
+            )}
+            {t("cancelSubscription")}
+          </Button>
+        </div>
+      )}
+
       {/* Plan Cards */}
       <div className="mb-12 grid gap-6 md:grid-cols-3">
         {(Object.entries(plans) as [PlanId, typeof plans[PlanId]][]).map(([planId, plan]) => {
@@ -588,6 +703,31 @@ export function SubscriptionContent() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Cancel Subscription Dialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("cancelConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("cancelConfirmDescription")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("keepSubscription")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancelSubscription}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={isCanceling}
+            >
+              {isCanceling ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : null}
+              {t("confirmCancel")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
