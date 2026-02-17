@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useTheme } from "next-themes";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/lib/store/auth";
 import { Button } from "@/components/ui/button";
@@ -26,15 +25,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Bell, Moon, Globe, Trash2, Save, Loader2 } from "lucide-react";
+import { Bell, Globe, Trash2, Save, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export function SettingsContent() {
   const { logout } = useAuthStore();
-  const { theme, setTheme } = useTheme();
   const t = useTranslations("settings");
   const tCommon = useTranslations("common");
-  const [mounted, setMounted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   
@@ -44,10 +41,6 @@ export function SettingsContent() {
     marketingEmails: false,
     language: "es",
   });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -155,40 +148,6 @@ export function SettingsContent() {
                   setSettings({ ...settings, marketingEmails: checked })
                 }
               />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Moon className="h-5 w-5 text-primary" />
-              {t("appearance")}
-            </CardTitle>
-            <CardDescription>
-              {t("appearanceDescription")}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>{t("theme")}</Label>
-                <p className="text-sm text-muted-foreground">
-                  {t("themeDescription")}
-                </p>
-              </div>
-              <Select
-                value={mounted ? theme : "dark"}
-                onValueChange={(value) => setTheme(value)}
-              >
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="dark">{t("darkMode")}</SelectItem>
-                  <SelectItem value="light">{t("lightMode")}</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </CardContent>
         </Card>

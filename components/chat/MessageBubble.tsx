@@ -21,21 +21,21 @@ const AVATAR_COLORS: Record<AvatarId, {
 }> = {
   lia: {
     bgLight: "bg-primary/10 border-primary/20",
-    bgDark: "bg-gradient-to-br from-primary/55 to-primary/35 border-white/10",
+    bgDark: "bg-gradient-to-br from-primary/85 to-primary/65 border-white/15",
     glowLight: "shadow-primary/20",
-    glowDark: "shadow-primary/20",
+    glowDark: "shadow-primary/30",
   },
   mia: {
     bgLight: "bg-amber-100 border-amber-200",
-    bgDark: "bg-gradient-to-br from-[var(--mia)]/55 to-[var(--mia)]/35 border-white/10",
+    bgDark: "bg-gradient-to-br from-[var(--mia)]/85 to-[var(--mia)]/65 border-white/15",
     glowLight: "shadow-amber-200/50",
-    glowDark: "shadow-[var(--mia)]/20",
+    glowDark: "shadow-[var(--mia)]/30",
   },
   allan: {
     bgLight: "bg-amber-100 border-amber-200",
-    bgDark: "bg-gradient-to-br from-[var(--allan)]/60 to-[var(--allan)]/40 border-white/10",
+    bgDark: "bg-gradient-to-br from-[var(--allan)]/90 to-[var(--allan)]/70 border-white/15",
     glowLight: "shadow-amber-200/50",
-    glowDark: "shadow-[var(--allan)]/20",
+    glowDark: "shadow-[var(--allan)]/30",
   },
 };
 
@@ -146,10 +146,10 @@ export const MessageBubble = memo(function MessageBubble({
                   avatarColors.bgLight,
                   avatarColors.glowLight,
                   "text-gray-800",
-                  // Avatar - Dark mode
+                  // Avatar - Dark mode (app is dark-only)
                   avatarColors.bgDark,
                   avatarColors.glowDark,
-                  "dark:text-white/90",
+                  "dark:text-white",
                 ],
             // Estado de error
             message.status === "error" && "opacity-70"
