@@ -344,4 +344,202 @@ describe("PWAUpdateNotification", () => {
     // Verify the callback was captured
     expect(controllerChangeCallback).not.toBeNull();
   });
+
+  it("shows update notification when updatefound triggers with installed worker", async () => {
+    let updateFoundCallback: (() => void) | null = null;
+
+    const mockInstallingWorker = {
+      state: "installing",
+      addEventListener: jest.fn((event: string, cb: () => void) => {
+        if (event === "statechange") {
+          // Store callback to trigger later
+          setTimeout(() => {
+            // Simulate state change to "installed"
+            Object.defineProperty(mockInstallingWorker, "state", {
+              value: "installed",
+              writable: true,
+              configurable: true,
+            });
+            cb();
+          }, 10);
+        }
+      }),
+    } as unknown as ServiceWorker;
+
+    const mockReg = {
+      waiting: null,
+      installing: mockInstallingWorker,
+      addEventListener: jest.fn((event: string, cb: () => void) => {
+        if (event === "updatefound") {
+          updateFoundCallback = cb;
+        }
+      }),
+    };
+
+    Object.defineProperty(global.navigator, "serviceWorker", {
+      value: {
+        ready: Promise.resolve(mockReg),
+        controller: mockController,
+        addEventListener: jest.fn(),
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    render(<PWAUpdateNotification />);
+
+    // Wait for effect to register the listener
+    await waitFor(() => {
+      expect(mockReg.addEventListener).toHaveBeenCalledWith(
+        "updatefound",
+        expect.any(Function)
+      );
+    });
+
+    // Trigger updatefound event
+    if (updateFoundCallback) {
+      updateFoundCallback();
+    }
+
+    // Wait for the statechange to fire and show notification
+    await waitFor(() => {
+      expect(screen.getByText("Update Available")).toBeInTheDocument();
+    });
+  });
+
+  it("handles updatefound when installing worker is null", async () => {
+    let updateFoundCallback: (() => void) | null = null;
+
+    const mockReg = {
+      waiting: null,
+      installing: null, // No installing worker
+      addEventListener: jest.fn((event: string, cb: () => void) => {
+        if (event === "updatefound") {
+          updateFoundCallback = cb;
+        }
+      }),
+    };
+
+    Object.defineProperty(global.navigator, "serviceWorker", {
+      value: {
+        ready: Promise.resolve(mockReg),
+        controller: mockController,
+        addEventListener: jest.fn(),
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    render(<PWAUpdateNotification />);
+
+    await waitFor(() => {
+      expect(mockReg.addEventListener).toHaveBeenCalledWith(
+        "updatefound",
+        expect.any(Function)
+      );
+    });
+
+    // Trigger updatefound with no installing worker — should not throw
+    if (updateFoundCallback) {
+      expect(() => updateFoundCallback!()).not.toThrow();
+    }
+
+    // Should NOT show update
+    expect(screen.queryByText("Update Available")).not.toBeInTheDocument();
+  });
+
+  it("calls window.location.reload on controllerchange", async () => {
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    let controllerChangeCallback: (() => void) | null = null;
+
+    const mockSwAddEventListener = jest.fn((event: string, callback: () => void) => {
+      if (event === "controllerchange") {
+        controllerChangeCallback = callback;
+      }
+    });
+
+    Object.defineProperty(global.navigator, "serviceWorker", {
+      value: {
+        ready: Promise.resolve(createMockRegistration()),
+        controller: mockController,
+        addEventListener: mockSwAddEventListener,
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    render(<PWAUpdateNotification />);
+
+    await waitFor(() => {
+      expect(mockSwAddEventListener).toHaveBeenCalledWith(
+        "controllerchange",
+        expect.any(Function)
+      );
+    });
+
+    // Trigger the controllerchange callback — jsdom does not implement
+    // navigation, so window.location.reload() emits a "Not implemented" error
+    controllerChangeCallback!();
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.stringContaining("Not implemented: navigation"),
+      })
+    );
+
+    consoleSpy.mockRestore();
+  });
+
+  it("does not show update when statechange fires but state is not installed", async () => {
+    let updateFoundCallback: (() => void) | null = null;
+
+    const mockInstallingWorker = {
+      state: "activating", // NOT "installed"
+      addEventListener: jest.fn((event: string, cb: () => void) => {
+        if (event === "statechange") {
+          setTimeout(() => cb(), 10);
+        }
+      }),
+    } as unknown as ServiceWorker;
+
+    const mockReg = {
+      waiting: null,
+      installing: mockInstallingWorker,
+      addEventListener: jest.fn((event: string, cb: () => void) => {
+        if (event === "updatefound") {
+          updateFoundCallback = cb;
+        }
+      }),
+    };
+
+    Object.defineProperty(global.navigator, "serviceWorker", {
+      value: {
+        ready: Promise.resolve(mockReg),
+        controller: mockController,
+        addEventListener: jest.fn(),
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    render(<PWAUpdateNotification />);
+
+    await waitFor(() => {
+      expect(mockReg.addEventListener).toHaveBeenCalledWith(
+        "updatefound",
+        expect.any(Function)
+      );
+    });
+
+    if (updateFoundCallback) {
+      updateFoundCallback();
+    }
+
+    // Wait for statechange to fire
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    // Should NOT show update since state is "activating" not "installed"
+    expect(screen.queryByText("Update Available")).not.toBeInTheDocument();
+  });
 });
