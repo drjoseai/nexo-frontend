@@ -34,6 +34,107 @@ export function SubscriptionContent() {
   const currentPlan = user?.plan === "trial" ? "free" : (user?.plan as PlanId) || "free";
   const isTrialActive = user?.plan === "trial";
 
+  // Plan Status Card configuration
+  const planStatusConfig = (() => {
+    const plan = user?.plan || "free";
+    
+    if (plan === "trial") {
+      return {
+        type: "trial" as const,
+        title: t("trialCardTitle"),
+        subtitle: t("trialCardSubtitle"),
+        icon: <Star className="h-5 w-5 text-primary" />,
+        iconBg: "bg-primary/20",
+        borderColor: "border-primary/40",
+        gradient: "from-primary/10 via-card to-primary/5",
+        shadowColor: "shadow-primary/10",
+        includes: [
+          t("trialIncludesMessages"),
+          t("trialIncludesAllAvatars"),
+          t("trialIncludesAllRelations"),
+          t("trialIncludesMemory"),
+        ],
+        includesLabel: t("trialIncludes"),
+        cta: t("trialUpgradeCta"),
+        ctaAction: null as PlanId | null,
+        badge: null as string | null,
+        checkColor: "text-primary",
+      };
+    }
+    
+    if (plan === "plus") {
+      return {
+        type: "plus" as const,
+        title: t("planStatusPlusTitle"),
+        subtitle: t("planStatusPlusSubtitle"),
+        icon: <Sparkles className="h-5 w-5 text-primary" />,
+        iconBg: "bg-primary/20",
+        borderColor: "border-primary/30",
+        gradient: "from-primary/10 via-card to-accent/5",
+        shadowColor: "shadow-primary/10",
+        includes: [
+          t("planStatusPlusMessages"),
+          t("planStatusPlusAvatars"),
+          t("planStatusPlusRelations"),
+          t("planStatusPlusMemory"),
+        ],
+        includesLabel: t("planStatusPlusIncludes"),
+        cta: t("planStatusPlusCta"),
+        ctaAction: "premium" as PlanId | null,
+        badge: null as string | null,
+        checkColor: "text-primary",
+      };
+    }
+    
+    if (plan === "premium") {
+      return {
+        type: "premium" as const,
+        title: t("planStatusPremiumTitle"),
+        subtitle: t("planStatusPremiumSubtitle"),
+        icon: <Crown className="h-5 w-5 text-amber-400" />,
+        iconBg: "bg-amber-500/20",
+        borderColor: "border-amber-500/30",
+        gradient: "from-amber-500/10 via-card to-orange-500/5",
+        shadowColor: "shadow-amber-500/10",
+        includes: [
+          t("planStatusPremiumMessages"),
+          t("planStatusPremiumAvatars"),
+          t("planStatusPremiumRelations"),
+          t("planStatusPremiumMemory"),
+          t("planStatusPremiumSupport"),
+        ],
+        includesLabel: t("planStatusPremiumIncludes"),
+        cta: null as string | null,
+        ctaAction: null as PlanId | null,
+        badge: t("planStatusPremiumBadge"),
+        checkColor: "text-amber-400",
+      };
+    }
+    
+    // Default: free
+    return {
+      type: "free" as const,
+      title: t("planStatusFreeTitle"),
+      subtitle: t("planStatusFreeSubtitle"),
+      icon: <Zap className="h-5 w-5 text-muted-foreground" />,
+      iconBg: "bg-muted",
+      borderColor: "border-border",
+      gradient: "from-muted/30 via-card to-muted/10",
+      shadowColor: "shadow-none",
+      includes: [
+        t("planStatusFreeMessages"),
+        t("planStatusFreeAvatars"),
+        t("planStatusFreeRelations"),
+        t("planStatusFreeMemory"),
+      ],
+      includesLabel: t("planStatusFreeIncludes"),
+      cta: t("planStatusFreeCta"),
+      ctaAction: "plus" as PlanId | null,
+      badge: null as string | null,
+      checkColor: "text-muted-foreground",
+    };
+  })();
+
   // Plans configuration with translations
   const plans: Record<PlanId, {
     name: string;
@@ -251,79 +352,110 @@ export function SubscriptionContent() {
         </div>
       )}
 
-      {/* Trial Status Card - Solo visible durante trial activo */}
-      {isTrialActive && user?.trial_ends_at && (
-        <Card className="mb-8 border-2 border-primary/40 bg-gradient-to-r from-primary/10 via-card to-primary/5 shadow-lg shadow-primary/10">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-              {/* Left side - Trial info */}
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20">
-                    <Star className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground">
-                      {t("trialCardTitle")}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {t("trialCardSubtitle")}
-                    </p>
-                  </div>
+      {/* Plan Status Card - Visible para todos los planes */}
+      <Card className={cn(
+        "mb-8 border-2 bg-gradient-to-r shadow-lg",
+        planStatusConfig.borderColor,
+        planStatusConfig.gradient,
+        planStatusConfig.shadowColor
+      )}>
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            {/* Left side - Plan info */}
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <div className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-full",
+                  planStatusConfig.iconBg
+                )}>
+                  {planStatusConfig.icon}
                 </div>
-
-                {/* Trial includes list */}
-                <div className="mt-4 ml-[52px]">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                    {t("trialIncludes")}
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                    {[
-                      t("trialIncludesMessages"),
-                      t("trialIncludesAllAvatars"),
-                      t("trialIncludesAllRelations"),
-                      t("trialIncludesMemory"),
-                    ].map((item) => (
-                      <div key={item} className="flex items-center gap-2 text-sm text-foreground/80">
-                        <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                        <span>{item}</span>
-                      </div>
-                    ))}
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-foreground">
+                      {planStatusConfig.title}
+                    </h3>
+                    {planStatusConfig.badge && (
+                      <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 text-xs">
+                        {planStatusConfig.badge}
+                      </Badge>
+                    )}
                   </div>
+                  <p className="text-sm text-muted-foreground">
+                    {planStatusConfig.subtitle}
+                  </p>
                 </div>
               </div>
 
-              {/* Right side - Days counter */}
-              <div className="flex flex-col items-center md:items-end gap-2 md:min-w-[160px]">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold text-primary">
-                    {getTrialDaysRemaining()}
-                  </span>
-                  <span className="text-sm text-muted-foreground">
-                    {getTrialDaysRemaining() === 1
-                      ? t("trialDayRemaining")
-                      : getTrialDaysRemaining() === 0
-                      ? t("trialExpiresToday")
-                      : t("trialDaysRemaining")}
-                  </span>
-                </div>
-                {/* Progress bar */}
-                <div className="w-full max-w-[200px] h-2 rounded-full bg-muted overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
-                    style={{
-                      width: `${Math.max(5, (getTrialDaysRemaining() / 10) * 100)}%`,
-                    }}
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground text-center md:text-right">
-                  {t("trialUpgradeCta")}
+              {/* Plan includes list */}
+              <div className="mt-4 ml-[52px]">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                  {planStatusConfig.includesLabel}
                 </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                  {planStatusConfig.includes.map((item) => (
+                    <div key={item} className="flex items-center gap-2 text-sm text-foreground/80">
+                      <Check className={cn("h-3.5 w-3.5 flex-shrink-0", planStatusConfig.checkColor)} />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+
+            {/* Right side - Trial counter OR CTA */}
+            <div className="flex flex-col items-center md:items-end gap-2 md:min-w-[160px]">
+              {planStatusConfig.type === "trial" && user?.trial_ends_at ? (
+                <>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-4xl font-bold text-primary">
+                      {getTrialDaysRemaining()}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {getTrialDaysRemaining() === 1
+                        ? t("trialDayRemaining")
+                        : getTrialDaysRemaining() === 0
+                        ? t("trialExpiresToday")
+                        : t("trialDaysRemaining")}
+                    </span>
+                  </div>
+                  <div className="w-full max-w-[200px] h-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
+                      style={{
+                        width: `${Math.max(5, (getTrialDaysRemaining() / 10) * 100)}%`,
+                      }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center md:text-right">
+                    {planStatusConfig.cta}
+                  </p>
+                </>
+              ) : planStatusConfig.cta ? (
+                <Button
+                  variant={planStatusConfig.type === "free" ? "outline" : "default"}
+                  className={cn(
+                    "whitespace-nowrap",
+                    planStatusConfig.type === "plus" && "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
+                  )}
+                  onClick={() => {
+                    if (planStatusConfig.ctaAction) {
+                      handleSelectPlan(planStatusConfig.ctaAction);
+                    }
+                  }}
+                  disabled={isLoading !== null}
+                >
+                  {isLoading === planStatusConfig.ctaAction ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    planStatusConfig.cta
+                  )}
+                </Button>
+              ) : null}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Plan Cards */}
       <div className="mb-12 grid gap-6 md:grid-cols-3">
