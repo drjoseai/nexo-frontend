@@ -238,7 +238,7 @@ export async function sendMessageStream(
               callbacks?.onError?.(data);
               break;
           }
-        } catch (parseError) {
+        } catch {
           console.warn("[SSE] Failed to parse event:", eventType, eventData);
         }
       }

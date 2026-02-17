@@ -10,7 +10,6 @@
 import { apiClient } from './client';
 import type {
   LoginRequest,
-  LoginResponse,
   RegisterRequest,
   RegisterResponse,
   User,

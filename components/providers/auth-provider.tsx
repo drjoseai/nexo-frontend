@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/lib/store/auth';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [, setIsInitialized] = useState(false);
   const loadUser = useAuthStore((state) => state.loadUser);
 
   useEffect(() => {

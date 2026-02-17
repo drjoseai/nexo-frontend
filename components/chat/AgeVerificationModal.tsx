@@ -29,7 +29,7 @@ export function AgeVerificationModal({
   const [confirmed, setConfirmed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { user, loadUser } = useAuthStore();
+  const { loadUser } = useAuthStore();
 
   const handleVerify = async () => {
     if (!confirmed) return;

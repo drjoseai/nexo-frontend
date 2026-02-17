@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from 'next/navigation';
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/lib/store/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,7 +42,6 @@ export function SubscriptionContent() {
   const [isCanceling, setIsCanceling] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const t = useTranslations("subscriptionPage");
-  const locale = useLocale();
   
   const currentPlan = user?.plan === "trial" ? "free" : (user?.plan as PlanId) || "free";
   const isTrialActive = user?.plan === "trial";
@@ -240,7 +239,7 @@ export function SubscriptionContent() {
       });
       window.history.replaceState({}, '', '/dashboard/subscription');
     }
-  }, [searchParams, t]);
+  }, [searchParams, t, user?.plan]);
 
   const handleSelectPlan = async (planId: PlanId) => {
     // No hacer nada si es el plan actual (y no está en trial) o si es free

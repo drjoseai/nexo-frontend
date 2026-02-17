@@ -28,7 +28,7 @@ import { Globe, Trash2, Loader2, Shield, Info } from "lucide-react";
 import { toast } from "sonner";
 
 export function SettingsContent() {
-  const { user, logout } = useAuthStore();
+  const { logout } = useAuthStore();
   const t = useTranslations("settings");
   const tCommon = useTranslations("common");
   const [isDeleting, setIsDeleting] = useState(false);

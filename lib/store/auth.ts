@@ -201,7 +201,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
           });
 
           console.log('[AuthStore] User loaded successfully:', user.email);
-        } catch (error: unknown) {
+        } catch {
           console.log('[AuthStore] Failed to load user (not authenticated)');
           
           // Clear state if not authenticated
