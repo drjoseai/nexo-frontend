@@ -991,8 +991,8 @@ describe('useChatStore', () => {
         await result.current.sendMessageStreaming('Hola', mockAvatarId);
       });
 
-      expect(capturedState?.isStreaming).toBe(true);
-      expect(capturedState?.streamingMessageId).toBeTruthy();
+      expect(capturedState!.isStreaming).toBe(true);
+      expect(capturedState!.streamingMessageId).toBeTruthy();
       expect(result.current.isStreaming).toBe(false);
       expect(result.current.streamingMessageId).toBeNull();
     });
