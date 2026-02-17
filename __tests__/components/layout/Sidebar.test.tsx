@@ -252,7 +252,7 @@ describe('Sidebar', () => {
 
       render(<Sidebar />);
 
-      expect(screen.getByText('Instalar NEXO')).toBeInTheDocument();
+      expect(screen.getByText('Instalar App')).toBeInTheDocument();
     });
 
     it('should not show install button when app is installed', () => {
@@ -266,7 +266,7 @@ describe('Sidebar', () => {
 
       render(<Sidebar />);
 
-      expect(screen.queryByText('Instalar NEXO')).not.toBeInTheDocument();
+      expect(screen.queryByText('Instalar App')).not.toBeInTheDocument();
     });
 
     it('should not show install button when canInstall is false', () => {
@@ -280,7 +280,7 @@ describe('Sidebar', () => {
 
       render(<Sidebar />);
 
-      expect(screen.queryByText('Instalar NEXO')).not.toBeInTheDocument();
+      expect(screen.queryByText('Instalar App')).not.toBeInTheDocument();
     });
 
     it('should call promptInstall when install button is clicked', async () => {
@@ -296,7 +296,7 @@ describe('Sidebar', () => {
       render(<Sidebar />);
 
       await act(async () => {
-        fireEvent.click(screen.getByText('Instalar NEXO'));
+        fireEvent.click(screen.getByText('Instalar App'));
       });
 
       expect(mockPromptInstall).toHaveBeenCalled();
@@ -313,7 +313,7 @@ describe('Sidebar', () => {
 
       render(<Sidebar isMobile={true} isOpen={true} />);
 
-      expect(screen.getByText('Instalar NEXO')).toBeInTheDocument();
+      expect(screen.getByText('Instalar App')).toBeInTheDocument();
     });
   });
 

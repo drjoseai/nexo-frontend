@@ -161,15 +161,19 @@ export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarPro
 
             {/* Install App button */}
             {canInstall && !isInstalled && (
-              <div className="px-3 pb-2">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2 text-muted-foreground hover:text-primary"
+              <div className="px-3 pb-3">
+                <button
                   onClick={() => promptInstall()}
+                  className="w-full flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2.5 text-sm font-medium text-primary transition-all hover:bg-primary/20 hover:border-primary/50"
                 >
-                  <Download className="h-4 w-4" />
-                  {tPwa("button")} NEXO
-                </Button>
+                  <Download className="h-5 w-5" />
+                  <div className="flex flex-col items-start">
+                    <span>{tPwa("sidebarButton")}</span>
+                    <span className="text-[10px] font-normal text-primary/60">
+                      {tPwa("description")}
+                    </span>
+                  </div>
+                </button>
               </div>
             )}
 
@@ -265,15 +269,19 @@ export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarPro
 
         {/* Install App button */}
         {canInstall && !isInstalled && (
-          <div className="px-3 pb-2">
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2 text-muted-foreground hover:text-primary"
+          <div className="px-3 pb-3">
+            <button
               onClick={() => promptInstall()}
+              className="w-full flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2.5 text-sm font-medium text-primary transition-all hover:bg-primary/20 hover:border-primary/50"
             >
-              <Download className="h-4 w-4" />
-              {tPwa("button")} NEXO
-            </Button>
+              <Download className="h-5 w-5" />
+              <div className="flex flex-col items-start">
+                <span>{tPwa("sidebarButton")}</span>
+                <span className="text-[10px] font-normal text-primary/60">
+                  {tPwa("description")}
+                </span>
+              </div>
+            </button>
           </div>
         )}
 
