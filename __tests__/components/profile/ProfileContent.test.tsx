@@ -88,7 +88,7 @@ jest.mock("lucide-react", () => ({
 // Mock UI components
 jest.mock("@/components/ui/button", () => ({
   Button: ({ children, onClick, disabled, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: string; size?: string }) => (
-    <button onClick={onClick} disabled={disabled} data-testid={props["data-testid"]} {...props}>
+    <button onClick={onClick} disabled={disabled} {...props}>
       {children}
     </button>
   ),
