@@ -62,6 +62,17 @@ describe('Toast Service', () => {
       const id = toast.success('Success');
       expect(id).toBe('toast-id-1');
     });
+
+    it('should pass action option when provided', () => {
+      const action = { label: 'Undo', onClick: jest.fn() };
+      toast.success('Done', { action });
+      expect(sonnerToast.success).toHaveBeenCalledWith('Done', expect.objectContaining({ action }));
+    });
+
+    it('should pass custom id option', () => {
+      toast.success('Done', { id: 'custom-id' });
+      expect(sonnerToast.success).toHaveBeenCalledWith('Done', expect.objectContaining({ id: 'custom-id' }));
+    });
   });
 
   describe('error', () => {
@@ -85,6 +96,12 @@ describe('Toast Service', () => {
       
       expect(errorCall.duration).toBeGreaterThan(successCall.duration);
     });
+
+    it('should pass action option when provided', () => {
+      const action = { label: 'Retry', onClick: jest.fn() };
+      toast.error('Failed', { action });
+      expect(sonnerToast.error).toHaveBeenCalledWith('Failed', expect.objectContaining({ action }));
+    });
   });
 
   describe('warning', () => {
@@ -98,6 +115,12 @@ describe('Toast Service', () => {
         action: undefined,
       });
     });
+
+    it('should pass action option when provided', () => {
+      const action = { label: 'Dismiss', onClick: jest.fn() };
+      toast.warning('Warning', { action });
+      expect(sonnerToast.warning).toHaveBeenCalledWith('Warning', expect.objectContaining({ action }));
+    });
   });
 
   describe('info', () => {
@@ -110,6 +133,12 @@ describe('Toast Service', () => {
         id: undefined,
         action: undefined,
       });
+    });
+
+    it('should pass action option when provided', () => {
+      const action = { label: 'Learn more', onClick: jest.fn() };
+      toast.info('Info', { action });
+      expect(sonnerToast.info).toHaveBeenCalledWith('Info', expect.objectContaining({ action }));
     });
   });
 
@@ -127,6 +156,13 @@ describe('Toast Service', () => {
     it('should return toast ID for later dismissal', () => {
       const id = toast.loading('Loading...');
       expect(id).toBe('toast-id-5');
+    });
+
+    it('should accept custom options', () => {
+      toast.loading('Loading', { id: 'load-1', description: 'Please wait' });
+      expect(sonnerToast.loading).toHaveBeenCalledWith('Loading', expect.objectContaining({ 
+        id: 'load-1', description: 'Please wait' 
+      }));
     });
   });
 
@@ -197,6 +233,36 @@ describe('Toast Service', () => {
       expect(parseApiError(undefined)).toBe('Ha ocurrido un error inesperado. Por favor, intenta de nuevo.');
       expect(parseApiError({})).toBe('Ha ocurrido un error inesperado. Por favor, intenta de nuevo.');
     });
+
+    it('should extract message from Axios response.data.message format', () => {
+      const error = { response: { data: { message: 'Server error occurred' } } };
+      expect(parseApiError(error)).toBe('Server error occurred');
+    });
+
+    it('should extract detail from Axios response.data.detail format (FastAPI)', () => {
+      const error = { response: { data: { detail: 'Not authenticated' } } };
+      expect(parseApiError(error)).toBe('Not authenticated');
+    });
+
+    it('should translate Credenciales inválidas from Spanish', () => {
+      const error = { message: 'Credenciales inválidas' };
+      expect(parseApiError(error)).toBe('Credenciales inválidas. Verifica tu email y contraseña.');
+    });
+
+    it('should translate email ya está registrado from Spanish', () => {
+      const error = { message: 'email ya está registrado' };
+      expect(parseApiError(error)).toBe('Este email ya está registrado.');
+    });
+
+    it('should handle non-string message properties', () => {
+      const error = { message: 12345 };
+      expect(parseApiError(error)).toBe('Ha ocurrido un error inesperado. Por favor, intenta de nuevo.');
+    });
+
+    it('should handle non-string detail properties', () => {
+      const error = { detail: { nested: true } };
+      expect(parseApiError(error)).toBe('Ha ocurrido un error inesperado. Por favor, intenta de nuevo.');
+    });
   });
 
   describe('apiError', () => {
@@ -210,6 +276,14 @@ describe('Toast Service', () => {
       toast.apiError(null, 'Custom fallback');
       
       expect(sonnerToast.error).toHaveBeenCalled();
+    });
+
+    it('should use default fallback when both parsing and fallback are empty', () => {
+      toast.apiError({});
+      expect(sonnerToast.error).toHaveBeenCalledWith(
+        'Ha ocurrido un error inesperado. Por favor, intenta de nuevo.',
+        expect.any(Object)
+      );
     });
   });
 });
