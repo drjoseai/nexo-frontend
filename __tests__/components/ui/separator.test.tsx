@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { Separator } from "@/components/ui/separator";
 
 jest.mock("@radix-ui/react-separator", () => ({
-  Root: ({ className, orientation, decorative, ...props }: any) => (
+  Root: ({ className, orientation, ...props }: any) => (
     <div
       role="separator"
       data-slot="separator"

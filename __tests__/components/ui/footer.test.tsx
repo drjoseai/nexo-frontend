@@ -1,13 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { Footer } from "@/components/ui/footer";
 
 jest.mock("next/link", () => {
-  return ({ children, href, ...props }: any) => (
+  const MockLink = ({ children, href, ...props }: any) => (
     <a href={href} {...props}>
       {children}
     </a>
   );
+  MockLink.displayName = "MockLink";
+  return MockLink;
 });
 
 describe("Footer", () => {
