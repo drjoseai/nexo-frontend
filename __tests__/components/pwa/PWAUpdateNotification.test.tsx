@@ -397,9 +397,7 @@ describe("PWAUpdateNotification", () => {
     });
 
     // Trigger updatefound event
-    if (updateFoundCallback) {
-      updateFoundCallback();
-    }
+    updateFoundCallback!();
 
     // Wait for the statechange to fire and show notification
     await waitFor(() => {
@@ -532,9 +530,8 @@ describe("PWAUpdateNotification", () => {
       );
     });
 
-    if (updateFoundCallback) {
-      updateFoundCallback();
-    }
+    // Trigger updatefound with no installing worker
+    updateFoundCallback!();
 
     // Wait for statechange to fire
     await new Promise(resolve => setTimeout(resolve, 50));
