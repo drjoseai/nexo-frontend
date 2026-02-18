@@ -7,6 +7,7 @@
 
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { ProfileContent } from "@/components/profile/ProfileContent";
+import { useAuthStore } from "@/lib/store/auth";
 import type { User } from "@/types/auth";
 
 // Mock next-intl
@@ -383,8 +384,7 @@ describe("ProfileContent", () => {
   describe("Age Verification Callback", () => {
     it("calls loadUser and toast on verified callback", async () => {
       const mockLoadUser = jest.fn().mockResolvedValue(undefined);
-      const { useAuthStore } = require("@/lib/store/auth");
-      useAuthStore.getState.mockReturnValue({ loadUser: mockLoadUser });
+      (useAuthStore as unknown as jest.Mock & { getState: jest.Mock }).getState.mockReturnValue({ loadUser: mockLoadUser });
 
       render(<ProfileContent />);
 

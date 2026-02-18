@@ -5,6 +5,7 @@
  * @module __tests__/components/settings/SettingsContent.test
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { SettingsContent } from "@/components/settings/SettingsContent";
@@ -134,7 +135,7 @@ jest.mock("@/components/ui/select", () => ({
     <div data-testid="select-trigger" {...props}>{children}</div>
   ),
   SelectValue: () => <span data-testid="select-value" />,
-  SelectContent: ({ children, value, onValueChange }: any) => (
+  SelectContent: ({ children, value: _value, onValueChange }: any) => (
     <div data-testid="select-content">
       {React.Children.map(children, (child: React.ReactElement) =>
         child ? React.cloneElement(child, { onValueChange } as any) : null
@@ -157,7 +158,7 @@ jest.mock("@/components/ui/alert-dialog", () => ({
   AlertDialog: ({ children }: any) => (
     <div data-testid="alert-dialog">{children}</div>
   ),
-  AlertDialogTrigger: ({ children, asChild }: any) => (
+  AlertDialogTrigger: ({ children, asChild: _asChild }: any) => (
     <div data-testid="alert-trigger">{children}</div>
   ),
   AlertDialogContent: ({ children }: any) => (
