@@ -30,6 +30,12 @@ export function Footer({ className = "" }: FooterProps) {
             >
               Privacy Policy
             </Link>
+            <Link 
+              href="/cookies" 
+              className="hover:text-foreground transition-colors"
+            >
+              Cookie Policy
+            </Link>
           </nav>
           
           {/* Copyright */}
