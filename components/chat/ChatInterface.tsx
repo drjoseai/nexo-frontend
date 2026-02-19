@@ -405,6 +405,11 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
             uploadRemaining={uploadLimits?.remaining}
             hasPendingFile={!!pendingFile}
           />
+
+          {/* AI Disclaimer */}
+          <p className="mt-2 text-center text-[11px] text-white/30">
+            NEXO is an AI companion — not a real person. Do not share sensitive personal information.
+          </p>
         </div>
       </div>
     </div>
