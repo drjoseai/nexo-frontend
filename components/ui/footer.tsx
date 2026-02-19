@@ -36,6 +36,12 @@ export function Footer({ className = "" }: FooterProps) {
             >
               Cookie Policy
             </Link>
+            <Link 
+              href="/beta-guide" 
+              className="hover:text-foreground transition-colors"
+            >
+              Beta Guide
+            </Link>
           </nav>
           
           {/* Copyright */}
