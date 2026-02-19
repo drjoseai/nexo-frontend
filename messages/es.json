@@ -188,7 +188,16 @@
     "deleteAccountItem2": "Todas tus conversaciones",
     "deleteAccountItem3": "Tu suscripción activa",
     "deleteAccountItem4": "Relaciones con avatares",
-    "deleteAccountConfirm": "Sí, eliminar mi cuenta"
+    "deleteAccountConfirm": "Sí, eliminar mi cuenta",
+    "clearAllTitle": "Borrar Todas las Conversaciones y Memoria",
+    "clearAllDescription": "Elimina todos los mensajes, memorias e historial de conversaciones. Tu cuenta y suscripción se mantienen.",
+    "clearAllButton": "Borrar Todo",
+    "clearing": "Borrando...",
+    "clearAllSuccess": "Todas las conversaciones y memorias fueron eliminadas exitosamente",
+    "clearAllError": "Error al borrar los datos. Intenta de nuevo.",
+    "clearAllConfirmTitle": "¿Estás completamente seguro?",
+    "clearAllConfirmDescription": "Esto eliminará permanentemente todas tus conversaciones, mensajes y memorias con todos los avatares. Olvidarán todo sobre ti. Esta acción no se puede deshacer.",
+    "clearAllConfirmButton": "Sí, borrar todo"
   },
   "errors": {
     "generic": "Algo salió mal",

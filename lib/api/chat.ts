@@ -248,6 +248,18 @@ export async function sendMessageStream(
   }
 }
 
+/**
+ * Borra TODAS las conversaciones, memories y summaries del usuario.
+ * Resetea relaciones con avatares. Cuenta y suscripción se mantienen.
+ * Endpoint: DELETE /chat/history/clear-all
+ */
+export async function clearAllData(): Promise<{ success: boolean; deleted: { conversations: number; summaries: number; memories: number; relationships_reset: number } }> {
+  const response = await apiClient.delete<{ success: boolean; deleted: { conversations: number; summaries: number; memories: number; relationships_reset: number } }>(
+    "/chat/history/clear-all"
+  );
+  return response.data;
+}
+
 // ============================================
 // CHAT API OBJECT (alternativa para imports)
 // ============================================
@@ -258,6 +270,7 @@ export const chatApi = {
   getChatHistory,
   getChatMessages,
   deleteHistory,
+  clearAllData,
 };
 
 export default chatApi;

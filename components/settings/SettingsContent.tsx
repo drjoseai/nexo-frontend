@@ -26,13 +26,27 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Globe, Trash2, Loader2, Shield, Info } from "lucide-react";
 import { toast } from "sonner";
+import { clearAllData } from "@/lib/api/chat";
 
 export function SettingsContent() {
   const { logout } = useAuthStore();
   const t = useTranslations("settings");
   const tCommon = useTranslations("common");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
   const [language, setLanguage] = useState("es");
+
+  const handleClearAll = async () => {
+    setIsClearing(true);
+    try {
+      await clearAllData();
+      toast.success(t("clearAllSuccess") || "All conversations and memories cleared successfully");
+    } catch {
+      toast.error(t("clearAllError") || "Failed to clear data. Please try again.");
+    } finally {
+      setIsClearing(false);
+    }
+  };
 
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
@@ -199,6 +213,50 @@ export function SettingsContent() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Clear All Data */}
+            <div className="flex items-center justify-between mb-4 pb-4 border-b border-red-500/20">
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium">{t("clearAllTitle") || "Clear All Conversations & Memory"}</p>
+                <p className="text-xs text-muted-foreground">{t("clearAllDescription") || "Delete all messages, memories, and conversation history. Your account and subscription will be kept."}</p>
+              </div>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="border-red-500/50 text-red-400 hover:bg-red-500/10"
+                    disabled={isClearing}
+                  >
+                    {isClearing ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        {t("clearing") || "Clearing..."}
+                      </>
+                    ) : (
+                      t("clearAllButton") || "Clear All Data"
+                    )}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="bg-background border-white/10">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>{t("clearAllConfirmTitle") || "Are you absolutely sure?"}</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {t("clearAllConfirmDescription") || "This will permanently delete all your conversations, messages, and memories with all avatars. They will forget everything about you. This action cannot be undone."}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="border-white/10">{t("cancel") || "Cancel"}</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleClearAll}
+                      className="bg-red-600 hover:bg-red-700 text-white"
+                      disabled={isClearing}
+                    >
+                      {t("clearAllConfirmButton") || "Yes, clear everything"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <p className="font-medium">{t("deleteAccount")}</p>

@@ -329,8 +329,10 @@ describe("SettingsContent", () => {
     it("renders delete account confirmation dialog", () => {
       render(<SettingsContent />);
 
-      expect(screen.getByTestId("alert-dialog")).toBeInTheDocument();
-      expect(screen.getByTestId("alert-title")).toHaveTextContent(
+      const alertDialogs = screen.getAllByTestId("alert-dialog");
+      expect(alertDialogs.length).toBe(2);
+      expect(alertDialogs[1]).toBeInTheDocument();
+      expect(screen.getAllByTestId("alert-title")[1]).toHaveTextContent(
         "¿Estás seguro?"
       );
     });
@@ -355,8 +357,8 @@ describe("SettingsContent", () => {
     it("shows cancel and confirm buttons in dialog", () => {
       render(<SettingsContent />);
 
-      expect(screen.getByTestId("alert-cancel")).toHaveTextContent("Cancelar");
-      expect(screen.getByTestId("alert-action")).toHaveTextContent(
+      expect(screen.getAllByTestId("alert-cancel")[1]).toHaveTextContent("Cancelar");
+      expect(screen.getAllByTestId("alert-action")[1]).toHaveTextContent(
         "Sí, eliminar cuenta"
       );
     });
@@ -367,7 +369,7 @@ describe("SettingsContent", () => {
       render(<SettingsContent />);
 
       await act(async () => {
-        fireEvent.click(screen.getByTestId("alert-action"));
+        fireEvent.click(screen.getAllByTestId("alert-action")[1]);
       });
 
       await waitFor(() => {
@@ -391,7 +393,7 @@ describe("SettingsContent", () => {
       render(<SettingsContent />);
 
       await act(async () => {
-        fireEvent.click(screen.getByTestId("alert-action"));
+        fireEvent.click(screen.getAllByTestId("alert-action")[1]);
       });
 
       await waitFor(() => {
@@ -412,7 +414,7 @@ describe("SettingsContent", () => {
       render(<SettingsContent />);
 
       await act(async () => {
-        fireEvent.click(screen.getByTestId("alert-action"));
+        fireEvent.click(screen.getAllByTestId("alert-action")[1]);
       });
 
       await waitFor(() => {
@@ -431,7 +433,7 @@ describe("SettingsContent", () => {
       render(<SettingsContent />);
 
       await act(async () => {
-        fireEvent.click(screen.getByTestId("alert-action"));
+        fireEvent.click(screen.getAllByTestId("alert-action")[1]);
       });
 
       await waitFor(() => {
@@ -449,7 +451,7 @@ describe("SettingsContent", () => {
       render(<SettingsContent />);
 
       await act(async () => {
-        fireEvent.click(screen.getByTestId("alert-action"));
+        fireEvent.click(screen.getAllByTestId("alert-action")[1]);
       });
 
       await waitFor(() => {
@@ -466,7 +468,7 @@ describe("SettingsContent", () => {
 
       render(<SettingsContent />);
 
-      const actionButton = screen.getByTestId("alert-action");
+      const actionButton = screen.getAllByTestId("alert-action")[1];
 
       await act(async () => {
         fireEvent.click(actionButton);
@@ -506,7 +508,7 @@ describe("SettingsContent", () => {
       render(<SettingsContent />);
 
       await act(async () => {
-        fireEvent.click(screen.getByTestId("alert-action"));
+        fireEvent.click(screen.getAllByTestId("alert-action")[1]);
       });
 
       await waitFor(() => {
