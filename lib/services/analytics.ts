@@ -115,6 +115,9 @@ export const AnalyticsEvents = {
   CHECKOUT_COMPLETED: 'checkout_completed',
   SUBSCRIPTION_CANCELED: 'subscription_canceled',
   
+  // Data management
+  CLEAR_ALL_DATA: 'clear_all_data',
+
   // Errors
   ERROR_OCCURRED: 'error_occurred',
   

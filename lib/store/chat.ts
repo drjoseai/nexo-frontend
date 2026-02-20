@@ -256,6 +256,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
         }));
       }
 
+      const currentMessages = get().messages;
+      if (currentMessages.length === 0) {
+        analytics.track(AnalyticsEvents.CONVERSATION_STARTED, {
+          avatar_id: get().activeAvatarId,
+          relationship_type: get().activeRelationshipType,
+        });
+      }
+
       // Track message sent event
       analytics.track(AnalyticsEvents.MESSAGE_SENT, {
         avatar_id: avatarId,
@@ -477,6 +485,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
                   ? state.messagesRemaining - 1
                   : null,
             }));
+
+            if (get().messages.length <= 1) {
+              analytics.track(AnalyticsEvents.CONVERSATION_STARTED, {
+                avatar_id: get().activeAvatarId,
+                relationship_type: get().activeRelationshipType,
+              });
+            }
 
             analytics.track(AnalyticsEvents.MESSAGE_SENT, {
               avatar_id: avatarId,

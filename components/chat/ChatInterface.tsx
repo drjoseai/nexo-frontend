@@ -20,6 +20,7 @@ import { toast } from "@/lib/services/toast-service";
 import { validateFile } from "@/lib/api/files";
 import type { AvatarId, RelationshipType } from "@/types/chat";
 import { AVATARS } from "@/types/avatar";
+import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
 
 // ============================================
 // PROPS INTERFACE
@@ -37,6 +38,13 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const avatar = AVATARS[avatarId];
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    analytics.track(AnalyticsEvents.AVATAR_SELECTED, {
+      avatar_id: avatarId,
+      avatar_name: avatar?.name || avatarId,
+    });
+  }, [avatarId, avatar?.name]);
 
   // Local storage key para relationship type
   const STORAGE_KEY = `nexo_relationship_${avatarId}`;

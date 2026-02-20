@@ -365,6 +365,9 @@ export function SubscriptionContent() {
         type: 'success',
         text: data.message || t("cancelSuccess"),
       });
+      analytics.track(AnalyticsEvents.SUBSCRIPTION_CANCELED, {
+        plan: currentPlan,
+      });
       setShowCancelDialog(false);
     } catch (error) {
       setStatusMessage({

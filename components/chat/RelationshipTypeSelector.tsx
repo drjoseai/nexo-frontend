@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
 import type { RelationshipType } from "@/types/chat";
 import type { UserPlan } from "@/types/auth";
 import { AgeVerificationModal } from "./AgeVerificationModal";
@@ -117,6 +118,10 @@ export function RelationshipTypeSelector({
     }
 
     // All checks passed, change relationship type
+    analytics.track(AnalyticsEvents.RELATIONSHIP_CHANGED, {
+      new_relationship: option.value,
+      previous_relationship: value,
+    });
     onChange(option.value);
     setOpen(false);
   };
@@ -124,6 +129,10 @@ export function RelationshipTypeSelector({
   const handleAgeVerified = () => {
     // User verified age, apply pending selection
     if (pendingSelection) {
+      analytics.track(AnalyticsEvents.RELATIONSHIP_CHANGED, {
+        new_relationship: pendingSelection.value,
+        previous_relationship: value,
+      });
       onChange(pendingSelection.value);
       setPendingSelection(null);
     }

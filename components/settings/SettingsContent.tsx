@@ -27,6 +27,7 @@ import {
 import { Globe, Trash2, Loader2, Shield, Info } from "lucide-react";
 import { toast } from "sonner";
 import { clearAllData } from "@/lib/api/chat";
+import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
 
 export function SettingsContent() {
   const { logout } = useAuthStore();
@@ -40,6 +41,7 @@ export function SettingsContent() {
     setIsClearing(true);
     try {
       await clearAllData();
+      analytics.track(AnalyticsEvents.CLEAR_ALL_DATA);
       toast.success(t("clearAllSuccess") || "All conversations and memories cleared successfully");
     } catch {
       toast.error(t("clearAllError") || "Failed to clear data. Please try again.");
