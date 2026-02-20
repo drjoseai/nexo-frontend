@@ -287,8 +287,16 @@ export function SubscriptionContent() {
 
       const data = await response.json();
 
-      // Redirigir a Stripe Checkout
-      if (data.checkout_url) {
+      if (data.action === 'checkout' && data.checkout_url) {
+        window.location.href = data.checkout_url;
+      } else if (data.action === 'upgrade' || data.action === 'downgrade' || data.action === 'reactivated') {
+        setStatusMessage({
+          type: 'success',
+          text: data.message || `Plan changed to ${data.new_plan} successfully!`,
+        });
+        const { loadUser } = useAuthStore.getState();
+        await loadUser();
+      } else if (data.checkout_url) {
         window.location.href = data.checkout_url;
       } else {
         throw new Error('No se recibió URL de checkout');
