@@ -140,6 +140,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
       };
     }
 
+    // Capture message count BEFORE optimistic update for conversation_started tracking
+    const isFirstMessage = get().messages.length === 0;
+
     // Optimistic update: agregar mensaje del usuario inmediatamente (con preview si hay imagen)
     const userMessageId = get().addOptimisticMessage(
       trimmedContent || (pendingFile ? "" : ""),
@@ -257,8 +260,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         }));
       }
 
-      const currentMessages = get().messages;
-      if (currentMessages.length === 0) {
+      if (isFirstMessage) {
         analytics.track(AnalyticsEvents.CONVERSATION_STARTED, {
           avatar_id: avatarId,
           avatar_name: AVATARS[avatarId as keyof typeof AVATARS]?.name || avatarId,
@@ -415,6 +417,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
     const trimmedContent = content.trim();
     if (!trimmedContent) return false;
 
+    // Capture message count BEFORE optimistic update for conversation_started tracking
+    const isFirstMessage = get().messages.length === 0;
+
     // Optimistic update: agregar mensaje del usuario
     const userMessageId = get().addOptimisticMessage(trimmedContent);
 
@@ -489,7 +494,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
                   : null,
             }));
 
-            if (get().messages.length <= 1) {
+            if (isFirstMessage) {
               analytics.track(AnalyticsEvents.CONVERSATION_STARTED, {
                 avatar_id: avatarId,
                 avatar_name: AVATARS[avatarId as keyof typeof AVATARS]?.name || avatarId,
