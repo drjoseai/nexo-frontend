@@ -259,8 +259,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
       const currentMessages = get().messages;
       if (currentMessages.length === 0) {
         analytics.track(AnalyticsEvents.CONVERSATION_STARTED, {
-          avatar_id: get().activeAvatarId,
-          relationship_type: get().activeRelationshipType,
+          avatar_id: avatarId,
+          relationship_type: relationshipType,
         });
       }
 
@@ -488,8 +488,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
             if (get().messages.length <= 1) {
               analytics.track(AnalyticsEvents.CONVERSATION_STARTED, {
-                avatar_id: get().activeAvatarId,
-                relationship_type: get().activeRelationshipType,
+                avatar_id: avatarId,
+                relationship_type: relationshipType,
               });
             }
 
