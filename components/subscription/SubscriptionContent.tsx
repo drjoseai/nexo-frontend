@@ -226,10 +226,15 @@ export function SubscriptionContent() {
         type: 'success',
         text: t("paymentSuccess"),
       });
-      // Track checkout completed
-      analytics.track(AnalyticsEvents.CHECKOUT_COMPLETED, {
-        plan: user?.plan,
-      });
+      // Track checkout completed - retry to ensure Mixpanel is initialized
+      const trackCheckout = () => {
+        analytics.track(AnalyticsEvents.CHECKOUT_COMPLETED, {
+          plan: user?.plan,
+          source: 'stripe_redirect',
+        });
+      };
+      trackCheckout();
+      setTimeout(trackCheckout, 2000);
       // Limpiar URL params después de mostrar mensaje
       window.history.replaceState({}, '', '/dashboard/subscription');
     } else if (canceled === 'true') {

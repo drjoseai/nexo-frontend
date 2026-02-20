@@ -11,6 +11,7 @@ import type {
   Message,
   AvatarId,
 } from "@/types/chat";
+import { AVATARS } from "@/types/avatar";
 
 // ============================================
 // STORE STATE INTERFACE
@@ -260,6 +261,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       if (currentMessages.length === 0) {
         analytics.track(AnalyticsEvents.CONVERSATION_STARTED, {
           avatar_id: avatarId,
+          avatar_name: AVATARS[avatarId as keyof typeof AVATARS]?.name || avatarId,
           relationship_type: relationshipType,
         });
       }
@@ -267,6 +269,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       // Track message sent event
       analytics.track(AnalyticsEvents.MESSAGE_SENT, {
         avatar_id: avatarId,
+        avatar_name: AVATARS[avatarId as keyof typeof AVATARS]?.name || avatarId,
         relationship_type: relationshipType,
         model_used: response.model_used,
         sentiment_detected: response.sentiment_detected,
@@ -489,12 +492,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
             if (get().messages.length <= 1) {
               analytics.track(AnalyticsEvents.CONVERSATION_STARTED, {
                 avatar_id: avatarId,
+                avatar_name: AVATARS[avatarId as keyof typeof AVATARS]?.name || avatarId,
                 relationship_type: relationshipType,
               });
             }
 
             analytics.track(AnalyticsEvents.MESSAGE_SENT, {
               avatar_id: avatarId,
+              avatar_name: AVATARS[avatarId as keyof typeof AVATARS]?.name || avatarId,
               relationship_type: relationshipType,
               model_used: finalMetadata.model,
               streaming: true,
