@@ -3,7 +3,18 @@
  * @module __tests__/lib/services/toast-service.test
  */
 
-import { toast, parseApiError } from '@/lib/services/toast-service';
+import {
+  toast,
+  parseApiError,
+  success,
+  error,
+  warning,
+  info,
+  loading,
+  dismiss,
+  promise,
+  apiError,
+} from '@/lib/services/toast-service';
 import { toast as sonnerToast } from 'sonner';
 
 // Mock sonner
@@ -284,6 +295,60 @@ describe('Toast Service', () => {
         'Ha ocurrido un error inesperado. Por favor, intenta de nuevo.',
         expect.any(Object)
       );
+    });
+  });
+
+  describe('named exports (direct function calls)', () => {
+    it('success() works as standalone export', () => {
+      const id = success('direct success');
+      expect(id).toBe('toast-id-1');
+      expect(sonnerToast.success).toHaveBeenCalledWith('direct success', expect.any(Object));
+    });
+
+    it('error() works as standalone export', () => {
+      const id = error('direct error');
+      expect(id).toBe('toast-id-2');
+      expect(sonnerToast.error).toHaveBeenCalledWith('direct error', expect.any(Object));
+    });
+
+    it('warning() works as standalone export', () => {
+      const id = warning('direct warning');
+      expect(id).toBe('toast-id-3');
+      expect(sonnerToast.warning).toHaveBeenCalledWith('direct warning', expect.any(Object));
+    });
+
+    it('info() works as standalone export', () => {
+      const id = info('direct info');
+      expect(id).toBe('toast-id-4');
+      expect(sonnerToast.info).toHaveBeenCalledWith('direct info', expect.any(Object));
+    });
+
+    it('loading() works as standalone export', () => {
+      const id = loading('direct loading');
+      expect(id).toBe('toast-id-5');
+      expect(sonnerToast.loading).toHaveBeenCalledWith('direct loading', expect.any(Object));
+    });
+
+    it('dismiss() works as standalone export', () => {
+      dismiss('some-id');
+      expect(sonnerToast.dismiss).toHaveBeenCalledWith('some-id');
+    });
+
+    it('promise() works as standalone export', async () => {
+      const p = Promise.resolve('ok');
+      const result = await promise(p, {
+        loading: 'Loading...',
+        success: 'OK',
+        error: 'Fail',
+      });
+      expect(result).toBe('ok');
+      expect(sonnerToast.promise).toHaveBeenCalled();
+    });
+
+    it('apiError() works as standalone export', () => {
+      const id = apiError({ message: 'standalone error' });
+      expect(id).toBe('toast-id-2');
+      expect(sonnerToast.error).toHaveBeenCalledWith('standalone error', expect.any(Object));
     });
   });
 });

@@ -44,6 +44,21 @@ jest.mock("next-intl", () => ({
         deleteAccountItem3: "Se cancelará tu suscripción",
         deleteAccountItem4: "No podrás recuperar tu cuenta",
         deleteAccountConfirm: "Sí, eliminar cuenta",
+        clearAllTitle: "Clear All Conversations & Memory",
+        clearAllDescription: "Delete all messages",
+        clearAllButton: "Clear All Data",
+        clearing: "Clearing...",
+        clearAllConfirmTitle: "Are you absolutely sure?",
+        clearAllConfirmDescription: "This will permanently delete all data",
+        clearAllConfirmButton: "Yes, clear everything",
+        clearAllSuccess: "All conversations cleared",
+        clearAllError: "Failed to clear data",
+        exportDataTitle: "Export My Data",
+        exportDataDescription: "Download all your data",
+        exportDataButton: "Download",
+        exporting: "Exporting...",
+        exportDataSuccess: "Data downloaded",
+        exportDataError: "Failed to export data",
       },
       common: {
         cancel: "Cancelar",
@@ -83,8 +98,12 @@ jest.mock("lucide-react", () => ({
 
 // Mock sonner
 const mockToastError = jest.fn();
+const mockToastSuccess = jest.fn();
 jest.mock("sonner", () => ({
-  toast: { error: (...args: unknown[]) => mockToastError(...args) },
+  toast: {
+    error: (...args: unknown[]) => mockToastError(...args),
+    success: (...args: unknown[]) => mockToastSuccess(...args),
+  },
 }));
 
 // Mock UI components
@@ -192,6 +211,21 @@ jest.mock("@/lib/utils", () => ({
   cn: (...args: unknown[]) => args.filter(Boolean).join(" "),
 }));
 
+// Mock chat API
+const mockClearAllData = jest.fn();
+const mockExportUserData = jest.fn();
+jest.mock("@/lib/api/chat", () => ({
+  clearAllData: (...args: unknown[]) => mockClearAllData(...args),
+  exportUserData: (...args: unknown[]) => mockExportUserData(...args),
+}));
+
+// Mock analytics
+const mockAnalyticsTrack = jest.fn();
+jest.mock("@/lib/services/analytics", () => ({
+  analytics: { track: (...args: unknown[]) => mockAnalyticsTrack(...args) },
+  AnalyticsEvents: { CLEAR_ALL_DATA: "clear_all_data" },
+}));
+
 // Mock global fetch
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
@@ -200,7 +234,11 @@ describe("SettingsContent", () => {
   beforeEach(() => {
     mockLogout.mockClear();
     mockToastError.mockClear();
+    mockToastSuccess.mockClear();
     mockFetch.mockClear();
+    mockClearAllData.mockClear();
+    mockExportUserData.mockClear();
+    mockAnalyticsTrack.mockClear();
     process.env.NEXT_PUBLIC_API_URL = "http://localhost:8000";
   });
 
@@ -483,6 +521,93 @@ describe("SettingsContent", () => {
 
       await waitFor(() => {
         expect(actionButton).not.toBeDisabled();
+      });
+    });
+  });
+
+  // === CLEAR ALL DATA ===
+  describe("Clear All Data", () => {
+    it("calls clearAllData and tracks analytics on success", async () => {
+      mockClearAllData.mockResolvedValueOnce(undefined);
+
+      render(<SettingsContent />);
+
+      const clearActions = screen.getAllByTestId("alert-action");
+      await act(async () => {
+        fireEvent.click(clearActions[0]);
+      });
+
+      await waitFor(() => {
+        expect(mockClearAllData).toHaveBeenCalled();
+      });
+      expect(mockAnalyticsTrack).toHaveBeenCalledWith("clear_all_data");
+      expect(mockToastSuccess).toHaveBeenCalled();
+    });
+
+    it("shows error toast when clearAllData fails", async () => {
+      mockClearAllData.mockRejectedValueOnce(new Error("clear failed"));
+
+      render(<SettingsContent />);
+
+      const clearActions = screen.getAllByTestId("alert-action");
+      await act(async () => {
+        fireEvent.click(clearActions[0]);
+      });
+
+      await waitFor(() => {
+        expect(mockToastError).toHaveBeenCalled();
+      });
+    });
+  });
+
+  // === EXPORT DATA ===
+  describe("Export Data", () => {
+    it("calls exportUserData and shows success toast on success", async () => {
+      const mockBlob = new Blob(["{}"], { type: "application/json" });
+      mockExportUserData.mockResolvedValueOnce(mockBlob);
+
+      const mockCreateObjectURL = jest.fn(() => "blob:test-url");
+      const mockRevokeObjectURL = jest.fn();
+      const origURL = window.URL;
+      Object.defineProperty(window, "URL", {
+        value: { ...origURL, createObjectURL: mockCreateObjectURL, revokeObjectURL: mockRevokeObjectURL },
+        writable: true,
+        configurable: true,
+      });
+
+      render(<SettingsContent />);
+
+      const exportBtn = screen.getByText("Download");
+
+      const appendSpy = jest.spyOn(document.body, "appendChild").mockImplementation((node) => node);
+      const removeSpy = jest.spyOn(document.body, "removeChild").mockImplementation((node) => node);
+
+      await act(async () => {
+        fireEvent.click(exportBtn);
+      });
+
+      await waitFor(() => {
+        expect(mockExportUserData).toHaveBeenCalled();
+      });
+      expect(mockToastSuccess).toHaveBeenCalled();
+
+      appendSpy.mockRestore();
+      removeSpy.mockRestore();
+      Object.defineProperty(window, "URL", { value: origURL, writable: true, configurable: true });
+    });
+
+    it("shows error toast when export fails", async () => {
+      mockExportUserData.mockRejectedValueOnce(new Error("export failed"));
+
+      render(<SettingsContent />);
+
+      const exportBtn = screen.getByText("Download");
+      await act(async () => {
+        fireEvent.click(exportBtn);
+      });
+
+      await waitFor(() => {
+        expect(mockToastError).toHaveBeenCalled();
       });
     });
   });
