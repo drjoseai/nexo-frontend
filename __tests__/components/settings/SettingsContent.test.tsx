@@ -59,6 +59,10 @@ jest.mock("next-intl", () => ({
         exporting: "Exporting...",
         exportDataSuccess: "Data downloaded",
         exportDataError: "Failed to export data",
+        cookiePreferences: "Cookie Preferences",
+        cookiePreferencesDescription: "Manage which cookies NEXO can use",
+        resetCookiePreferences: "Reset Cookie Preferences",
+        cookiePreferencesReset: "Cookie preferences have been reset",
       },
       common: {
         cancel: "Cancelar",
@@ -72,6 +76,19 @@ jest.mock("next-intl", () => ({
 const mockLogout = jest.fn();
 jest.mock("@/lib/store/auth", () => ({
   useAuthStore: jest.fn(() => ({ logout: mockLogout })),
+}));
+
+// Mock cookie consent hook
+const mockResetConsent = jest.fn();
+jest.mock("@/lib/hooks/use-cookie-consent", () => ({
+  useCookieConsent: () => ({
+    consent: null,
+    loaded: true,
+    hasConsent: false,
+    analyticsConsent: false,
+    updateConsent: jest.fn(),
+    resetConsent: mockResetConsent,
+  }),
 }));
 
 // Mock lucide-react
@@ -93,6 +110,9 @@ jest.mock("lucide-react", () => ({
   ),
   Download: (props: React.SVGProps<SVGSVGElement>) => (
     <svg data-testid="icon-download" {...props} />
+  ),
+  Cookie: (props: React.SVGProps<SVGSVGElement>) => (
+    <svg data-testid="icon-cookie" {...props} />
   ),
 }));
 
@@ -251,11 +271,11 @@ describe("SettingsContent", () => {
       expect(screen.getByText("Personaliza tu experiencia")).toBeInTheDocument();
     });
 
-    it("renders all 4 cards", () => {
+    it("renders all 5 cards", () => {
       render(<SettingsContent />);
 
       const cards = screen.getAllByTestId("card");
-      expect(cards).toHaveLength(4);
+      expect(cards).toHaveLength(5);
     });
 
     it("renders Data & Privacy card with terms and privacy links", () => {

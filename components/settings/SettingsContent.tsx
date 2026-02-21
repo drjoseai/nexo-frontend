@@ -24,13 +24,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Globe, Trash2, Loader2, Shield, Info, Download } from "lucide-react";
+import { Globe, Trash2, Loader2, Shield, Info, Download, Cookie } from "lucide-react";
 import { toast } from "sonner";
 import { clearAllData, exportUserData } from "@/lib/api/chat";
 import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
+import { useCookieConsent } from "@/lib/hooks/use-cookie-consent";
 
 export function SettingsContent() {
   const { logout } = useAuthStore();
+  const { resetConsent } = useCookieConsent();
   const t = useTranslations("settings");
   const tCommon = useTranslations("common");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -220,6 +222,39 @@ export function SettingsContent() {
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">{t("madeBy")}</span>
               <span className="text-sm font-medium">VENKO AI INNOVATIONS LLC</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Cookie Preferences */}
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Cookie className="h-5 w-5 text-primary" />
+              {t("cookiePreferences")}
+            </CardTitle>
+            <CardDescription>
+              {t("cookiePreferencesDescription")}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>{t("cookiePreferences")}</Label>
+                <p className="text-sm text-muted-foreground">
+                  {t("cookiePreferencesDescription")}
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  resetConsent();
+                  toast.success(t("cookiePreferencesReset"));
+                }}
+              >
+                {t("resetCookiePreferences")}
+              </Button>
             </div>
           </CardContent>
         </Card>

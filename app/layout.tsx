@@ -8,6 +8,7 @@ import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { PWAInstallPrompt, PWAUpdateNotification } from "@/components/pwa";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
+import { CookieBanner } from "@/components/cookie-consent";
 
 const dmSans = DM_Sans({
   variable: "--font-sans",
@@ -156,6 +157,7 @@ export default async function RootLayout({
               <Toaster position="top-right" richColors />
               <PWAInstallPrompt />
               <PWAUpdateNotification />
+              <CookieBanner />
             </AnalyticsProvider>
           </NextIntlClientProvider>
         </ThemeProvider>

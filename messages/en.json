@@ -203,7 +203,11 @@
     "exportDataButton": "Download",
     "exporting": "Exporting...",
     "exportDataSuccess": "Your data has been downloaded successfully",
-    "exportDataError": "Failed to export data. Please try again."
+    "exportDataError": "Failed to export data. Please try again.",
+    "cookiePreferences": "Cookie Preferences",
+    "cookiePreferencesDescription": "Manage which cookies NEXO can use",
+    "resetCookiePreferences": "Reset Cookie Preferences",
+    "cookiePreferencesReset": "Cookie preferences have been reset"
   },
   "errors": {
     "generic": "Something went wrong",
@@ -359,6 +363,26 @@
     "cancelConfirmDescription": "Your subscription will remain active until the end of the current billing period. After that, you'll be moved to the Free plan. You can resubscribe at any time.",
     "keepSubscription": "Keep subscription",
     "confirmCancel": "Yes, cancel subscription"
+  },
+  "cookies": {
+    "banner": {
+      "title": "Cookie Preferences",
+      "description": "We use essential cookies for app functionality and optional analytics cookies to improve your experience.",
+      "acceptAll": "Accept All",
+      "rejectNonEssential": "Reject Non-Essential",
+      "managePreferences": "Manage Preferences",
+      "savePreferences": "Save Preferences"
+    },
+    "categories": {
+      "essential": {
+        "title": "Essential",
+        "description": "Required for authentication, security, and basic functionality. Cannot be disabled."
+      },
+      "analytics": {
+        "title": "Analytics",
+        "description": "Help us understand how you use NEXO to improve the experience. Powered by Mixpanel."
+      }
+    }
   },
   "help": {
     "title": "Help Center",
