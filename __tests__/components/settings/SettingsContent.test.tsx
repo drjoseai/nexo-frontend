@@ -76,6 +76,9 @@ jest.mock("lucide-react", () => ({
   Info: (props: React.SVGProps<SVGSVGElement>) => (
     <svg data-testid="icon-info" {...props} />
   ),
+  Download: (props: React.SVGProps<SVGSVGElement>) => (
+    <svg data-testid="icon-download" {...props} />
+  ),
 }));
 
 // Mock sonner

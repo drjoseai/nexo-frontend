@@ -24,9 +24,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Globe, Trash2, Loader2, Shield, Info } from "lucide-react";
+import { Globe, Trash2, Loader2, Shield, Info, Download } from "lucide-react";
 import { toast } from "sonner";
-import { clearAllData } from "@/lib/api/chat";
+import { clearAllData, exportUserData } from "@/lib/api/chat";
 import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
 
 export function SettingsContent() {
@@ -35,6 +35,7 @@ export function SettingsContent() {
   const tCommon = useTranslations("common");
   const [isDeleting, setIsDeleting] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [language, setLanguage] = useState("es");
 
   const handleClearAll = async () => {
@@ -47,6 +48,26 @@ export function SettingsContent() {
       toast.error(t("clearAllError") || "Failed to clear data. Please try again.");
     } finally {
       setIsClearing(false);
+    }
+  };
+
+  const handleExportData = async () => {
+    setIsExporting(true);
+    try {
+      const blob = await exportUserData();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `nexo-my-data-${new Date().toISOString().split("T")[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      toast.success(t("exportDataSuccess") || "Your data has been downloaded successfully");
+    } catch {
+      toast.error(t("exportDataError") || "Failed to export data. Please try again.");
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -257,6 +278,32 @@ export function SettingsContent() {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+            </div>
+
+            {/* Export My Data (GDPR) */}
+            <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium">{t("exportDataTitle") || "Export My Data"}</p>
+                <p className="text-xs text-muted-foreground">{t("exportDataDescription") || "Download all your data including profile, conversations, and memories as a JSON file."}</p>
+              </div>
+              <Button
+                variant="outline"
+                className="border-white/20 hover:bg-white/5"
+                onClick={handleExportData}
+                disabled={isExporting}
+              >
+                {isExporting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    {t("exporting") || "Exporting..."}
+                  </>
+                ) : (
+                  <>
+                    <Download className="h-4 w-4 mr-2" />
+                    {t("exportDataButton") || "Download"}
+                  </>
+                )}
+              </Button>
             </div>
 
             <div className="flex items-center justify-between">

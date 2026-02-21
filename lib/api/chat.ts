@@ -260,6 +260,12 @@ export async function clearAllData(): Promise<{ success: boolean; deleted: { con
   return response.data;
 }
 
+export async function exportUserData(): Promise<Blob> {
+  const response = await apiClient.get("/api/v1/auth/export-data");
+  const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: "application/json" });
+  return blob;
+}
+
 // ============================================
 // CHAT API OBJECT (alternativa para imports)
 // ============================================
@@ -271,6 +277,7 @@ export const chatApi = {
   getChatMessages,
   deleteHistory,
   clearAllData,
+  exportUserData,
 };
 
 export default chatApi;

@@ -197,7 +197,13 @@
     "clearAllError": "Failed to clear data. Please try again.",
     "clearAllConfirmTitle": "Are you absolutely sure?",
     "clearAllConfirmDescription": "This will permanently delete all your conversations, messages, and memories with all avatars. They will forget everything about you. This action cannot be undone.",
-    "clearAllConfirmButton": "Yes, clear everything"
+    "clearAllConfirmButton": "Yes, clear everything",
+    "exportDataTitle": "Export My Data",
+    "exportDataDescription": "Download all your data including profile, conversations, and memories as a JSON file.",
+    "exportDataButton": "Download",
+    "exporting": "Exporting...",
+    "exportDataSuccess": "Your data has been downloaded successfully",
+    "exportDataError": "Failed to export data. Please try again."
   },
   "errors": {
     "generic": "Something went wrong",

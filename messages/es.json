@@ -197,7 +197,13 @@
     "clearAllError": "Error al borrar los datos. Intenta de nuevo.",
     "clearAllConfirmTitle": "¿Estás completamente seguro?",
     "clearAllConfirmDescription": "Esto eliminará permanentemente todas tus conversaciones, mensajes y memorias con todos los avatares. Olvidarán todo sobre ti. Esta acción no se puede deshacer.",
-    "clearAllConfirmButton": "Sí, borrar todo"
+    "clearAllConfirmButton": "Sí, borrar todo",
+    "exportDataTitle": "Exportar Mis Datos",
+    "exportDataDescription": "Descarga todos tus datos incluyendo perfil, conversaciones y memorias en un archivo JSON.",
+    "exportDataButton": "Descargar",
+    "exporting": "Exportando...",
+    "exportDataSuccess": "Tus datos se han descargado exitosamente",
+    "exportDataError": "Error al exportar los datos. Intenta de nuevo."
   },
   "errors": {
     "generic": "Algo salió mal",
