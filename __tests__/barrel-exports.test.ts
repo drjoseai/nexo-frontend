@@ -22,9 +22,14 @@ jest.mock("@/components/settings/SettingsPageLazy", () => ({ SettingsPageLazy: {
 jest.mock("@/components/subscription/SubscriptionContent", () => ({ SubscriptionContent: {} }));
 jest.mock("@/components/subscription/SubscriptionPageLazy", () => ({ SubscriptionPageLazy: {}, SubscriptionSkeleton: {} }));
 
+import * as chatExports from "@/components/chat";
+import * as profileExports from "@/components/profile";
+import * as pwaExports from "@/components/pwa";
+import * as settingsExports from "@/components/settings";
+import * as subscriptionExports from "@/components/subscription";
+
 describe("Barrel exports", () => {
   it("components/chat/index.ts re-exports all chat components", () => {
-    const chatExports = require("@/components/chat");
     expect(chatExports.ChatInterface).toBeDefined();
     expect(chatExports.ChatInterfaceLazy).toBeDefined();
     expect(chatExports.ChatInput).toBeDefined();
@@ -39,27 +44,23 @@ describe("Barrel exports", () => {
   });
 
   it("components/profile/index.ts re-exports profile components", () => {
-    const profileExports = require("@/components/profile");
     expect(profileExports.ProfileContent).toBeDefined();
     expect(profileExports.ProfilePageLazy).toBeDefined();
     expect(profileExports.ProfileSkeleton).toBeDefined();
   });
 
   it("components/pwa/index.ts re-exports pwa components", () => {
-    const pwaExports = require("@/components/pwa");
     expect(pwaExports.PWAInstallPrompt).toBeDefined();
     expect(pwaExports.PWAUpdateNotification).toBeDefined();
   });
 
   it("components/settings/index.ts re-exports settings components", () => {
-    const settingsExports = require("@/components/settings");
     expect(settingsExports.SettingsContent).toBeDefined();
     expect(settingsExports.SettingsPageLazy).toBeDefined();
     expect(settingsExports.SettingsSkeleton).toBeDefined();
   });
 
   it("components/subscription/index.ts re-exports subscription components", () => {
-    const subscriptionExports = require("@/components/subscription");
     expect(subscriptionExports.SubscriptionContent).toBeDefined();
     expect(subscriptionExports.SubscriptionPageLazy).toBeDefined();
     expect(subscriptionExports.SubscriptionSkeleton).toBeDefined();

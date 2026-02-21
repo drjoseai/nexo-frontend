@@ -6,7 +6,7 @@ jest.mock("@/lib/utils", () => ({
 }));
 
 jest.mock("@radix-ui/react-tabs", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
 
   const Root = React.forwardRef(
     (
@@ -34,7 +34,7 @@ jest.mock("@radix-ui/react-tabs", () => {
   );
   Root.displayName = "TabsRoot";
 
-  const TabsContext = React.createContext({ active: "", setActive: (_v: string) => {} });
+  const TabsContext = React.createContext<{ active: string; setActive: (v: string) => void }>({ active: "", setActive: () => {} });
 
   const List = React.forwardRef(
     ({ className, children, ...props }: { className?: string; children?: React.ReactNode; [key: string]: unknown }, ref: React.Ref<HTMLDivElement>) => (

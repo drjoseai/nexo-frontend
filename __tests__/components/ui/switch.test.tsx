@@ -6,7 +6,7 @@ jest.mock("@/lib/utils", () => ({
 }));
 
 jest.mock("@radix-ui/react-switch", () => {
-  const React = require("react");
+  const React = jest.requireActual("react");
   const Root = React.forwardRef(
     (
       { className, children, checked, defaultChecked, onCheckedChange, disabled, ...props }: {

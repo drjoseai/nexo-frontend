@@ -157,7 +157,7 @@ jest.mock("@/components/ui/select", () => ({
     <div data-testid="select-trigger" {...props}>{children}</div>
   ),
   SelectValue: () => <span data-testid="select-value" />,
-  SelectContent: ({ children, value: _value, onValueChange }: any) => (
+  SelectContent: ({ children, onValueChange }: any) => (
     <div data-testid="select-content">
       {React.Children.map(children, (child: React.ReactElement) =>
         child ? React.cloneElement(child, { onValueChange } as any) : null
@@ -180,7 +180,7 @@ jest.mock("@/components/ui/alert-dialog", () => ({
   AlertDialog: ({ children }: any) => (
     <div data-testid="alert-dialog">{children}</div>
   ),
-  AlertDialogTrigger: ({ children, asChild: _asChild }: any) => (
+  AlertDialogTrigger: ({ children }: any) => (
     <div data-testid="alert-trigger">{children}</div>
   ),
   AlertDialogContent: ({ children }: any) => (
