@@ -324,3 +324,31 @@ export function getAvatarBorderColor(avatarId: AvatarId): string {
   return colorMap[avatarId];
 }
 
+/**
+ * Map relationship type to avatar image suffix.
+ * Used to show different photos per conversation mode.
+ */
+export function getAvatarImageByMode(
+  avatarId: AvatarId,
+  relationshipType?: RelationshipType
+): string {
+  if (!relationshipType) {
+    return `/avatars/${avatarId}_main.png`;
+  }
+
+  const modeImageMap: Record<RelationshipType, string> = {
+    assistant: "aliado",
+    friend: "confidente",
+    confidant: "confidente",
+    romantic: "mipersona",
+  };
+
+  const suffix = modeImageMap[relationshipType] || "main";
+  return `/avatars/${avatarId}_${suffix}.png`;
+}
+
+/** Get the main/default avatar image (for cards, dashboard) */
+export function getAvatarMainImage(avatarId: AvatarId): string {
+  return `/avatars/${avatarId}_main.png`;
+}
+

@@ -62,7 +62,7 @@ function AvatarImage({
   return (
     <div className="relative h-full w-full">
       <Image
-        src={`/avatars/${avatarId}.webp`}
+        src={`/avatars/${avatarId}_main.png`}
         alt={name}
         fill
         className="object-cover"
@@ -129,20 +129,24 @@ export function AvatarCard({
       </div>
 
       <div className="flex flex-1 flex-col p-4">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-primary/80">
+          {t(`avatars.${avatarId}.showcaseMode`)}
+        </p>
+
         <div className="mb-1 flex items-baseline gap-2">
           <h3 className="text-xl font-bold">{avatar.name}</h3>
           <span className="text-sm text-muted-foreground">{avatar.age}</span>
         </div>
 
-        <p className="mb-3 text-sm text-muted-foreground line-clamp-2">
+        <p className="mb-2 text-sm font-medium text-foreground">
           {t(`avatars.${avatarId}.role`)}
         </p>
 
-        <div className="mt-auto flex items-center justify-between">
-          <Badge variant="outline" className="gap-1">
-            {t(`relationshipTypes.${currentRelationship}`)}
-          </Badge>
+        <p className="mb-3 text-xs text-muted-foreground line-clamp-2">
+          {t(`avatars.${avatarId}.description`)}
+        </p>
 
+        <div className="mt-auto flex items-center justify-between">
           {messageCount > 0 && (
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <MessageCircle className="h-3 w-3" />

@@ -19,7 +19,8 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/lib/services/toast-service";
 import { validateFile } from "@/lib/api/files";
 import type { AvatarId, RelationshipType } from "@/types/chat";
-import { AVATARS } from "@/types/avatar";
+import { AVATARS, getAvatarImageByMode } from "@/types/avatar";
+import { ImageLightbox } from "./ImageLightbox";
 import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
 
 // ============================================
@@ -38,6 +39,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const avatar = AVATARS[avatarId];
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [isAvatarLightboxOpen, setIsAvatarLightboxOpen] = useState(false);
 
   useEffect(() => {
     analytics.track(AnalyticsEvents.AVATAR_SELECTED, {
@@ -168,21 +170,27 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
       {/* AVATAR SIDEBAR - Solo visible en pantallas grandes */}
       {/* ============================================ */}
       <div className="hidden lg:flex flex-col items-center justify-center w-48 border-r border-white/10 bg-black/20 p-4">
-        <div
-          className={cn(
-            "relative w-36 h-36 rounded-full overflow-hidden",
-            "avatar-animated",
-            `avatar-glow-${avatarId}`
-          )}
+        <button
+          onClick={() => setIsAvatarLightboxOpen(true)}
+          className="group/avatar cursor-pointer focus:outline-none"
+          aria-label={`Ver foto de ${avatar?.name}`}
         >
-          <Image
-            src={`/avatars/${avatarId}.webp`}
-            alt={avatar?.name || "Avatar"}
-            fill
-            className="object-cover object-top"
-            priority
-          />
-        </div>
+          <div
+            className={cn(
+              "relative w-36 h-36 rounded-full overflow-hidden transition-transform duration-200 group-hover/avatar:scale-105",
+              "avatar-animated",
+              `avatar-glow-${avatarId}`
+            )}
+          >
+            <Image
+              src={getAvatarImageByMode(avatarId, relationshipType as any)}
+              alt={avatar?.name || "Avatar"}
+              fill
+              className="object-cover object-top"
+              priority
+            />
+          </div>
+        </button>
         <p className={cn("mt-4 font-semibold text-lg", avatarColorClass)}>
           {avatar?.name}
         </p>
@@ -190,6 +198,14 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
           {isSending ? "Escribiendo..." : "En línea"}
         </p>
       </div>
+
+      {/* Avatar photo lightbox */}
+      <ImageLightbox
+        imageUrl={getAvatarImageByMode(avatarId, relationshipType as any)}
+        filename={`${avatar?.name} - ${relationshipType}`}
+        isOpen={isAvatarLightboxOpen}
+        onClose={() => setIsAvatarLightboxOpen(false)}
+      />
 
       {/* ============================================ */}
       {/* MAIN CHAT AREA */}
@@ -209,22 +225,28 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
 
           {/* Info del avatar */}
           <div className="flex items-center gap-3">
-            {/* Avatar circle */}
-            <div
-              className={cn(
-                "relative h-10 w-10 rounded-full overflow-hidden",
-                "border-2",
-                avatarId === "lia" ? "border-primary" : 
-                avatarId === "mia" ? "border-amber-400" : "border-[var(--allan)]"
-              )}
+            {/* Avatar circle - photo changes based on relationship mode */}
+            <button
+              onClick={() => setIsAvatarLightboxOpen(true)}
+              className="group/headeravatar cursor-pointer focus:outline-none"
+              aria-label={`Ver foto de ${avatar?.name}`}
             >
-              <Image
-                src={`/avatars/${avatarId}.webp`}
-                alt={avatar?.name || "Avatar"}
-                fill
-                className="object-cover object-top"
-              />
-            </div>
+              <div
+                className={cn(
+                  "relative h-10 w-10 rounded-full overflow-hidden transition-transform duration-200 group-hover/headeravatar:scale-110",
+                  "border-2",
+                  avatarId === "lia" ? "border-primary" : 
+                  avatarId === "mia" ? "border-amber-400" : "border-[var(--allan)]"
+                )}
+              >
+                <Image
+                  src={getAvatarImageByMode(avatarId, relationshipType as any)}
+                  alt={avatar?.name || "Avatar"}
+                  fill
+                  className="object-cover object-top"
+                />
+              </div>
+            </button>
 
             {/* Nombre y estado */}
             <div>

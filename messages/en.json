@@ -99,20 +99,23 @@
     "lia": {
       "name": "Lía",
       "age": "22",
-      "role": "Empathic and Reflective AI",
-      "description": "Warm, intuitive, and always ready to listen"
+      "role": "Your Unconditional Confidant",
+      "showcaseMode": "Confidant",
+      "description": "Real conversations, judgment-free support, and someone who's always there."
     },
     "mia": {
       "name": "Mía",
       "age": "25",
-      "role": "Energetic and Adventurous AI",
-      "description": "Energetic, fun, and full of curiosity"
+      "role": "Your Unique Connection",
+      "showcaseMode": "My Person",
+      "description": "Flirting, laughter, complicity. A bond that feels like home."
     },
     "allan": {
       "name": "Allan",
       "age": "30",
-      "role": "Reflective and Wise AI",
-      "description": "Thoughtful, deep, and insightful"
+      "role": "Your Strategic Ally",
+      "showcaseMode": "Ally",
+      "description": "Organize your mind, clarify your ideas, and reach your goals."
     },
     "chooseAvatar": "Choose your companion",
     "currentAvatar": "Current avatar",
