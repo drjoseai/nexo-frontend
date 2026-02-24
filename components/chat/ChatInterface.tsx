@@ -183,7 +183,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
             )}
           >
             <Image
-              src={getAvatarImageByMode(avatarId, relationshipType as any)}
+              src={getAvatarImageByMode(avatarId, relationshipType as RelationshipType)}
               alt={avatar?.name || "Avatar"}
               fill
               className="object-cover object-top"
@@ -201,7 +201,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
 
       {/* Avatar photo lightbox */}
       <ImageLightbox
-        imageUrl={getAvatarImageByMode(avatarId, relationshipType as any)}
+        imageUrl={getAvatarImageByMode(avatarId, relationshipType as RelationshipType)}
         filename={`${avatar?.name} - ${relationshipType}`}
         isOpen={isAvatarLightboxOpen}
         onClose={() => setIsAvatarLightboxOpen(false)}
@@ -240,7 +240,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
                 )}
               >
                 <Image
-                  src={getAvatarImageByMode(avatarId, relationshipType as any)}
+                  src={getAvatarImageByMode(avatarId, relationshipType as RelationshipType)}
                   alt={avatar?.name || "Avatar"}
                   fill
                   className="object-cover object-top"

@@ -76,7 +76,7 @@ function AvatarImage({
 export function AvatarCard({
   avatarId,
   userPlan,
-  currentRelationship = "friend",
+  currentRelationship: _currentRelationship = "friend",
   messageCount = 0,
   isLocked: forceLockedState,
   className,
