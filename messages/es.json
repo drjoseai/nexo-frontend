@@ -341,15 +341,15 @@
     "planStatusFreeIncludes": "Tu plan incluye:",
     "planStatusPlusTitle": "Plan Plus",
     "planStatusPlusSubtitle": "Estás disfrutando de NEXO Plus",
-    "planStatusPlusMessages": "70 mensajes por día",
+    "planStatusPlusMessages": "120 mensajes por día",
     "planStatusPlusAvatars": "Acceso a los 3 avatares",
     "planStatusPlusRelations": "Relaciones: Aliado y Confidente",
-    "planStatusPlusMemory": "Memoria de 30 días",
+    "planStatusPlusMemory": "Memoria de 90 días",
     "planStatusPlusCta": "Pasa a Premium para Mi Persona",
     "planStatusPlusIncludes": "Tu plan incluye:",
     "planStatusPremiumTitle": "Experiencia Premium",
     "planStatusPremiumSubtitle": "Estás disfrutando de la experiencia completa",
-    "planStatusPremiumMessages": "150 mensajes por día",
+    "planStatusPremiumMessages": "150 mensajes/día (30 Mi Persona + 120 normales)",
     "planStatusPremiumAvatars": "Acceso a los 3 avatares",
     "planStatusPremiumRelations": "Todas las relaciones incluyendo Mi Persona",
     "planStatusPremiumMemory": "Memoria ilimitada",
@@ -365,7 +365,11 @@
     "cancelConfirmTitle": "¿Cancelar suscripción?",
     "cancelConfirmDescription": "Tu suscripción permanecerá activa hasta el final del periodo de facturación actual. Después serás movido al plan Free. Puedes re-suscribirte en cualquier momento.",
     "keepSubscription": "Mantener suscripción",
-    "confirmCancel": "Sí, cancelar suscripción"
+    "confirmCancel": "Sí, cancelar suscripción",
+    "premiumBoostInfo": "¿Necesitas más mensajes de Mi Persona? Obtén 50 extra por solo $0.99",
+    "premiumMessagesBreakdown": "30 Mi Persona + 120 mensajes normales al día",
+    "boostLabel": "Boost disponible",
+    "boostDescription": "+50 mensajes Mi Persona por $0.99"
   },
   "cookies": {
     "banner": {

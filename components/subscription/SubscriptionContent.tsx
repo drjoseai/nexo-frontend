@@ -114,6 +114,7 @@ export function SubscriptionContent() {
           t("planStatusPremiumRelations"),
           t("planStatusPremiumMemory"),
           t("planStatusPremiumSupport"),
+          t("premiumBoostInfo"),
         ],
         includesLabel: t("planStatusPremiumIncludes"),
         cta: null as string | null,
@@ -186,7 +187,7 @@ export function SubscriptionContent() {
 
   // Features configuration with translations
   const features: PlanFeature[] = [
-    { name: t("messagesPerDay"), free: "10", plus: "120", premium: "150" },
+    { name: t("messagesPerDay"), free: "10", plus: "120", premium: "150 ✦" },
     { name: t("accessToLia"), free: true, plus: true, premium: true },
     { name: t("accessToMia"), free: false, plus: true, premium: true },
     { name: t("accessToAllan"), free: false, plus: true, premium: true },
@@ -652,6 +653,17 @@ export function SubscriptionContent() {
                     </li>
                   ))}
                 </ul>
+
+                {planId === "premium" && (
+                  <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                    <p className="text-xs text-amber-400/90 font-medium mb-1">
+                      ✦ {t("premiumMessagesBreakdown")}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      🚀 {t("boostDescription")}
+                    </p>
+                  </div>
+                )}
               </CardContent>
 
               <CardFooter>
