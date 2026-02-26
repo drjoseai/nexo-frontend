@@ -130,7 +130,7 @@ export interface StreamCallbacks {
   onContent?: (text: string) => void;
   onMetadata?: (data: { tokens: number; cost: number; model: string; duration_ms: number; cache_hit: boolean }) => void;
   onComplete?: (data: { message_id: string; conversation_id: string }) => void;
-  onError?: (data: { message: string; error_type?: string; retry_after?: number }) => void;
+  onError?: (data: { message: string; error_type?: string; retry_after?: number; daily_limit?: number; boost_available?: boolean; mi_persona_remaining?: number }) => void;
 }
 
 /**

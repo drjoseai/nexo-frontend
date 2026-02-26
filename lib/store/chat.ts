@@ -29,6 +29,8 @@ interface ChatState {
   fileUploading: boolean;
   isStreaming: boolean;
   streamingMessageId: string | null;
+  showBoostPopup: boolean;
+  boostDailyLimit: number;
   
   // Acciones
   sendMessage: (content: string, avatarId: string, relationshipType?: string, pendingFile?: File | null) => Promise<boolean>;
@@ -42,6 +44,8 @@ interface ChatState {
   addOptimisticMessage: (content: string, attachment?: { url: string; type: string; filename: string }) => string;
   updateMessageStatus: (messageId: string, status: Message["status"]) => void;
   fetchUploadLimits: () => Promise<void>;
+  openBoostPopup: (dailyLimit: number) => void;
+  closeBoostPopup: () => void;
 }
 
 // ============================================
@@ -71,6 +75,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
   fileUploading: false,
   isStreaming: false,
   streamingMessageId: null,
+  showBoostPopup: false,
+  boostDailyLimit: 30,
 
   // ============================================
   // ACCIONES
@@ -514,6 +520,20 @@ export const useChatStore = create<ChatState>((set, get) => ({
           },
 
           onError: (data) => {
+            if (data.error_type === "mi_persona_limit_reached") {
+              set((state) => ({
+                messages: state.messages.filter(
+                  (msg) => msg.id !== avatarMessageId
+                ),
+                isSending: false,
+                isStreaming: false,
+                streamingMessageId: null,
+                showBoostPopup: true,
+                boostDailyLimit: data.daily_limit || 30,
+              }));
+              return;
+            }
+
             set((state) => {
               const avatarMsg = state.messages.find(
                 (m) => m.id === avatarMessageId
@@ -600,6 +620,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
       currentAbortController.abort();
       currentAbortController = null;
     }
+  },
+
+  openBoostPopup: (dailyLimit: number) => {
+    set({ showBoostPopup: true, boostDailyLimit: dailyLimit });
+  },
+
+  closeBoostPopup: () => {
+    set({ showBoostPopup: false });
   },
 }));
 

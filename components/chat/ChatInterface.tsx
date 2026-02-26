@@ -21,6 +21,7 @@ import { validateFile } from "@/lib/api/files";
 import type { AvatarId, RelationshipType } from "@/types/chat";
 import { AVATARS, getAvatarImageByMode } from "@/types/avatar";
 import { ImageLightbox } from "./ImageLightbox";
+import { BoostPopup } from "./BoostPopup";
 import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
 
 // ============================================
@@ -80,6 +81,9 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     uploadLimits,
     fileUploading,
     fetchUploadLimits,
+    showBoostPopup,
+    boostDailyLimit,
+    closeBoostPopup,
   } = useChatStore();
 
   // Auth store para obtener plan del usuario
@@ -442,6 +446,12 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
           </p>
         </div>
       </div>
+
+      <BoostPopup
+        isOpen={showBoostPopup}
+        onClose={closeBoostPopup}
+        dailyLimit={boostDailyLimit}
+      />
     </div>
   );
 }
