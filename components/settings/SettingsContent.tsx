@@ -24,14 +24,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Globe, Trash2, Loader2, Shield, Info, Download, Cookie } from "lucide-react";
+import { Globe, Trash2, Loader2, Shield, Info, Download, Cookie, CreditCard, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { clearAllData, exportUserData } from "@/lib/api/chat";
 import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
 import { useCookieConsent } from "@/lib/hooks/use-cookie-consent";
 
 export function SettingsContent() {
-  const { logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const { resetConsent } = useCookieConsent();
   const t = useTranslations("settings");
   const tCommon = useTranslations("common");
@@ -39,6 +39,9 @@ export function SettingsContent() {
   const [isClearing, setIsClearing] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [language, setLanguage] = useState("es");
+  const [isManaging, setIsManaging] = useState(false);
+  const [isCanceling, setIsCanceling] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const handleClearAll = async () => {
     setIsClearing(true);
@@ -103,6 +106,62 @@ export function SettingsContent() {
       toast.error('Error de conexión. Por favor verifica tu internet e intenta de nuevo.');
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    setIsManaging(true);
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.trynexo.ai';
+      const response = await fetch(`${apiBaseUrl}/api/v1/stripe/customer-portal`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          return_url: `${window.location.origin}/dashboard/settings`,
+        }),
+      });
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Tu sesión ha expirado. Por favor inicia sesión de nuevo.');
+        }
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Error al gestionar suscripción');
+      }
+      const data = await response.json();
+      if (data.portal_url) {
+        window.location.href = data.portal_url;
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Error al gestionar suscripción');
+    } finally {
+      setIsManaging(false);
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    setIsCanceling(true);
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.trynexo.ai';
+      const response = await fetch(`${apiBaseUrl}/api/v1/stripe/cancel-subscription`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ immediate: false }),
+      });
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Tu sesión ha expirado. Por favor inicia sesión de nuevo.');
+        }
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Error al cancelar suscripción');
+      }
+      toast.success(t("cancelSubscriptionSuccess") || 'Tu suscripción se cancelará al final del período de facturación');
+      setShowCancelDialog(false);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Error al cancelar suscripción');
+    } finally {
+      setIsCanceling(false);
     }
   };
 
@@ -259,6 +318,51 @@ export function SettingsContent() {
           </CardContent>
         </Card>
 
+        {/* Subscription Management - Solo para usuarios de pago */}
+        {(user?.plan === "plus" || user?.plan === "premium") && (
+          <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5 text-primary" />
+                {t("subscriptionManagement") || "Subscription"}
+              </CardTitle>
+              <CardDescription>
+                {t("subscriptionManagementDescription") || "Manage your subscription and payments"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  variant="outline"
+                  onClick={handleManageSubscription}
+                  disabled={isManaging}
+                  className="gap-2"
+                >
+                  {isManaging ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <CreditCard className="h-4 w-4" />
+                  )}
+                  {t("managePayments") || "Manage payments"}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCancelDialog(true)}
+                  disabled={isCanceling}
+                  className="gap-2 text-red-400 border-red-500/30 hover:bg-red-500/10 hover:text-red-300"
+                >
+                  {isCanceling ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <XCircle className="h-4 w-4" />
+                  )}
+                  {t("cancelSubscription") || "Cancel subscription"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Danger Zone */}
         <Card className="border-red-500/30 bg-red-500/5">
           <CardHeader>
@@ -386,6 +490,37 @@ export function SettingsContent() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Cancel Subscription Dialog */}
+      {(user?.plan === "plus" || user?.plan === "premium") && (
+        <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {t("cancelSubscriptionConfirmTitle") || "Cancel subscription?"}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {t("cancelSubscriptionConfirmDescription") || "Your subscription will remain active until the end of your current billing period. After that, you'll be downgraded to the Free plan."}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>
+                {t("keepSubscription") || "Keep subscription"}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleCancelSubscription}
+                className="bg-red-600 hover:bg-red-700"
+                disabled={isCanceling}
+              >
+                {isCanceling ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
+                {t("confirmCancelSubscription") || "Yes, cancel"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 }
