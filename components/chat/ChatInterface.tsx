@@ -4,6 +4,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -91,6 +92,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   // Auth store para obtener plan del usuario
   const user = useAuthStore((state) => state.user);
   const userPlan = user?.plan || "free";
+  const tRel = useTranslations("relationshipTypes");
 
   // Cargar historial al montar y al cambiar relationship type
   useEffect(() => {
@@ -118,10 +120,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   // Handler para cambiar relationship type
   const handleRelationshipTypeChange = (newType: RelationshipType) => {
     setRelationshipType(newType);
-    toast.success(`Tipo de relación cambiado a: ${
-      newType === "assistant" ? "Aliado" :
-      newType === "friend" ? "Confidente" : "Mi Persona"
-    }`);
+    toast.success(`${tRel("changedTo")}: ${tRel(newType === "assistant" ? "assistant" : newType === "friend" ? "friend" : "romantic")}`);
   };
 
   // Handler cuando se requiere premium

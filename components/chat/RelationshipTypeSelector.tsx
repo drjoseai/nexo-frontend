@@ -4,6 +4,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Check, ChevronDown, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,34 +41,6 @@ interface RelationshipTypeSelectorProps {
 }
 
 // ============================================
-// CONSTANTS
-// ============================================
-
-const RELATIONSHIP_OPTIONS: RelationshipOption[] = [
-  {
-    value: "assistant",
-    label: "Aliado",
-    description: "Tu guía confiable y profesional",
-    premiumOnly: false,
-    icon: "🤝",
-  },
-  {
-    value: "friend",
-    label: "Confidente",
-    description: "Alguien que te escucha de verdad",
-    premiumOnly: false,
-    icon: "💛",
-  },
-  {
-    value: "romantic",
-    label: "Mi Persona",
-    description: "Conexión emocional profunda",
-    premiumOnly: true,
-    icon: "💕",
-  },
-];
-
-// ============================================
 // HELPER FUNCTIONS
 // ============================================
 
@@ -95,6 +68,31 @@ export function RelationshipTypeSelector({
   const [open, setOpen] = useState(false);
   const [showAgeModal, setShowAgeModal] = useState(false);
   const [pendingSelection, setPendingSelection] = useState<RelationshipOption | null>(null);
+  const t = useTranslations("relationshipTypes");
+
+  const RELATIONSHIP_OPTIONS: RelationshipOption[] = [
+    {
+      value: "assistant",
+      label: t("assistant"),
+      description: t("assistantDescription"),
+      premiumOnly: false,
+      icon: "🤝",
+    },
+    {
+      value: "friend",
+      label: t("friend"),
+      description: t("friendDescription"),
+      premiumOnly: false,
+      icon: "💛",
+    },
+    {
+      value: "romantic",
+      label: t("romantic"),
+      description: t("romanticDescription"),
+      premiumOnly: true,
+      icon: "💕",
+    },
+  ];
 
   const currentOption = RELATIONSHIP_OPTIONS.find((opt) => opt.value === value) || RELATIONSHIP_OPTIONS[0];
   const canAccessCurrent = canAccessOption(currentOption, userPlan);
@@ -161,7 +159,7 @@ export function RelationshipTypeSelector({
 
       <DropdownMenuContent align="end" className="w-64 border-white/10 bg-black/95 backdrop-blur-xl">
         <div className="px-2 py-1.5 text-xs font-medium text-white/40">
-          Tipo de relación
+          {t("selectorTitle")}
         </div>
 
         {RELATIONSHIP_OPTIONS.map((option) => {
@@ -202,7 +200,7 @@ export function RelationshipTypeSelector({
                 </p>
                 {isLocked && (
                   <p className="mt-1 text-xs font-medium text-amber-500">
-                    Solo Premium
+                    {t("premiumOnly")}
                   </p>
                 )}
               </div>
@@ -215,10 +213,10 @@ export function RelationshipTypeSelector({
           {isPremiumPlan(userPlan) ? (
             <span className="flex items-center gap-1.5">
               <Crown className="h-3 w-3 text-amber-500" />
-              Plan Premium activo
+              {t("premiumActive")}
             </span>
           ) : (
-            <span>Actualiza a Premium para más opciones</span>
+            <span>{t("upgradeForMore")}</span>
           )}
         </div>
       </DropdownMenuContent>

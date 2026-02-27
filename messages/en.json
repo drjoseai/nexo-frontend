@@ -125,7 +125,15 @@
     "assistant": "Ally",
     "friend": "Confidant",
     "confidant": "Confidant",
-    "romantic": "My Person"
+    "romantic": "My Person",
+    "assistantDescription": "Your reliable and professional guide",
+    "friendDescription": "Someone who truly listens to you",
+    "romanticDescription": "A deep emotional connection",
+    "selectorTitle": "Relationship type",
+    "premiumOnly": "Premium only",
+    "premiumActive": "Premium Plan active",
+    "upgradeForMore": "Upgrade to Premium for more options",
+    "changedTo": "Relationship changed to"
   },
   "subscription": {
     "free": "Free",

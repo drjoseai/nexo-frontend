@@ -10,6 +10,11 @@ import type { Message } from "@/types/chat";
 // MOCK SETUP
 // ============================================
 
+// Mock next-intl
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => key,
+}));
+
 // Mock next/link
 jest.mock("next/link", () => {
   return function MockLink({ children, href }: { children: React.ReactNode; href: string }) {

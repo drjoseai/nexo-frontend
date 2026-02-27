@@ -125,7 +125,15 @@
     "assistant": "Aliado",
     "friend": "Confidente",
     "confidant": "Confidente",
-    "romantic": "Mi Persona"
+    "romantic": "Mi Persona",
+    "assistantDescription": "Tu guía confiable y profesional",
+    "friendDescription": "Alguien que te escucha de verdad",
+    "romanticDescription": "Conexión emocional profunda",
+    "selectorTitle": "Tipo de relación",
+    "premiumOnly": "Solo Premium",
+    "premiumActive": "Plan Premium activo",
+    "upgradeForMore": "Actualiza a Premium para más opciones",
+    "changedTo": "Tipo de relación cambiado a"
   },
   "subscription": {
     "free": "Gratis",
