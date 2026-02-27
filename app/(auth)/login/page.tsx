@@ -180,14 +180,13 @@ export default function LoginPage() {
 
           {/* Forgot Password Link */}
           <div className="flex justify-end">
-            <button
-              type="button"
-              disabled
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            <Link
+              href="/forgot-password"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               data-testid="login-forgot-password"
             >
               {t("forgotPassword")}
-            </button>
+            </Link>
           </div>
         </CardContent>
 

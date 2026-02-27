@@ -114,11 +114,11 @@ describe('LoginPage', () => {
       expect(screen.getByPlaceholderText('••••••••')).toBeInTheDocument();
     });
 
-    it('renders forgot password button (disabled)', () => {
+    it('renders forgot password link', () => {
       render(<LoginPage />);
-      const forgotButton = screen.getByRole('button', { name: '¿Olvidaste tu contraseña?' });
-      expect(forgotButton).toBeInTheDocument();
-      expect(forgotButton).toBeDisabled();
+      const forgotLink = screen.getByTestId('login-forgot-password');
+      expect(forgotLink).toBeInTheDocument();
+      expect(forgotLink).toHaveAttribute('href', '/forgot-password');
     });
 
     it('renders submit button', () => {

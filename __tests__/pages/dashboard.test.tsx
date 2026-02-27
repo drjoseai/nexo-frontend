@@ -63,6 +63,15 @@ jest.mock('@/types/avatar', () => ({
   isAvatarAvailableForPlan: jest.fn(() => true),
 }));
 
+// Mock avatar API
+jest.mock('@/lib/api/avatars', () => ({
+  getRelationshipsSummary: jest.fn().mockResolvedValue({
+    lia: { relationship_type: 'assistant', message_count: 5 },
+    mia: { relationship_type: 'assistant', message_count: 3 },
+    allan: { relationship_type: 'assistant', message_count: 0 },
+  }),
+}));
+
 // ============================================
 // TEST SETUP
 // ============================================
