@@ -261,7 +261,22 @@
     "logout": "Log out"
   },
   "sidebar": {
-    "currentPlan": "Current plan"
+    "currentPlan": "Current plan",
+    "feedback": "Feedback"
+  },
+  "feedback": {
+    "title": "Send Feedback",
+    "subtitle": "Help us improve NEXO. Your feedback goes directly to our team.",
+    "typeGeneral": "General",
+    "typeSuggestion": "Suggestion",
+    "typeBug": "Bug Report",
+    "typeComplaint": "Complaint",
+    "placeholder": "Tell us what you think, report a bug, or suggest an improvement...",
+    "minChars": "Minimum 10 characters",
+    "submit": "Send Feedback",
+    "thankYouTitle": "Thank you!",
+    "thankYouMessage": "Your feedback has been received. We read every message and it helps us make NEXO better.",
+    "close": "Close"
   },
   "pwa": {
     "install": {
