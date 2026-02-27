@@ -369,7 +369,11 @@
     "premiumBoostInfo": "¿Necesitas más mensajes de Mi Persona? Obtén 50 extra por solo $0.99",
     "premiumMessagesBreakdown": "30 Mi Persona + 120 mensajes normales al día",
     "boostLabel": "Boost disponible",
-    "boostDescription": "+50 mensajes Mi Persona por $0.99"
+    "boostDescription": "+50 mensajes Mi Persona por $0.99",
+    "boostPromo": "¿Necesitas más mensajes Mi Persona?",
+    "buyBoostButton": "Obtener 50 Mensajes — $0.99",
+    "boostPurchaseSuccess": "¡Boost comprado exitosamente! 50 mensajes extra Mi Persona agregados a tu cuenta.",
+    "boostPurchaseCanceled": "La compra del Boost fue cancelada. Puedes intentar nuevamente."
   },
   "cookies": {
     "banner": {

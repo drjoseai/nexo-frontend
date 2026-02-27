@@ -128,7 +128,7 @@ export async function deleteHistory(
 export interface StreamCallbacks {
   onStart?: (data: { avatar_id: string; avatar_name: string; relationship_type: string }) => void;
   onContent?: (text: string) => void;
-  onMetadata?: (data: { tokens: number; cost: number; model: string; duration_ms: number; cache_hit: boolean }) => void;
+  onMetadata?: (data: { tokens: number; cost: number; model: string; duration_ms: number; cache_hit: boolean; mi_persona_remaining?: number; boost_remaining?: number }) => void;
   onComplete?: (data: { message_id: string; conversation_id: string }) => void;
   onError?: (data: { message: string; error_type?: string; retry_after?: number; daily_limit?: number; boost_available?: boolean; mi_persona_remaining?: number }) => void;
 }

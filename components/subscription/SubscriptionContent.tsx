@@ -40,6 +40,7 @@ export function SubscriptionContent() {
   } | null>(null);
   const [isManaging, setIsManaging] = useState(false);
   const [isCanceling, setIsCanceling] = useState(false);
+  const [isBoostLoading, setIsBoostLoading] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const t = useTranslations("subscriptionPage");
   
@@ -245,6 +246,23 @@ export function SubscriptionContent() {
       });
       window.history.replaceState({}, '', '/dashboard/subscription');
     }
+
+    const boostStatus = searchParams.get('boost');
+    if (boostStatus === 'success') {
+      setStatusMessage({
+        type: 'success',
+        text: t("boostPurchaseSuccess"),
+      });
+      const { loadUser } = useAuthStore.getState();
+      loadUser();
+      window.history.replaceState({}, '', '/dashboard/subscription');
+    } else if (boostStatus === 'cancelled') {
+      setStatusMessage({
+        type: 'canceled',
+        text: t("boostPurchaseCanceled"),
+      });
+      window.history.replaceState({}, '', '/dashboard/subscription');
+    }
   }, [searchParams, t, user?.plan]);
 
   const handleSelectPlan = async (planId: PlanId) => {
@@ -390,6 +408,44 @@ export function SubscriptionContent() {
       });
     } finally {
       setIsCanceling(false);
+    }
+  };
+
+  const handlePurchaseBoost = async () => {
+    setIsBoostLoading(true);
+    setStatusMessage(null);
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.trynexo.ai';
+      const response = await fetch(`${apiBaseUrl}/api/v1/stripe/purchase-boost`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          success_url: `${window.location.origin}/dashboard/subscription?boost=success`,
+          cancel_url: `${window.location.origin}/dashboard/subscription?boost=cancelled`,
+        }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error(t("sessionExpired"));
+        }
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Error initiating boost purchase');
+      }
+
+      const data = await response.json();
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url;
+      }
+    } catch (error) {
+      console.error('Boost purchase error:', error);
+      setStatusMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : 'Error initiating boost purchase',
+      });
+    } finally {
+      setIsBoostLoading(false);
     }
   };
 
@@ -553,6 +609,33 @@ export function SubscriptionContent() {
               ) : null}
             </div>
           </div>
+
+          {/* Boost Purchase Button - Only for Premium */}
+          {user?.plan === "premium" && (
+            <div className="w-full mt-4 pt-4 border-t border-amber-500/20">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-sm text-amber-400/80">
+                  <Zap className="h-4 w-4" />
+                  <span>{t("boostPromo")}</span>
+                </div>
+                <Button
+                  onClick={handlePurchaseBoost}
+                  disabled={isBoostLoading}
+                  className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-black font-semibold gap-2 whitespace-nowrap"
+                  size="sm"
+                >
+                  {isBoostLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4" />
+                      {t("buyBoostButton")}
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

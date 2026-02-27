@@ -31,6 +31,8 @@ interface ChatState {
   streamingMessageId: string | null;
   showBoostPopup: boolean;
   boostDailyLimit: number;
+  miPersonaRemaining: number | null;
+  boostRemaining: number | null;
   
   // Acciones
   sendMessage: (content: string, avatarId: string, relationshipType?: string, pendingFile?: File | null) => Promise<boolean>;
@@ -77,6 +79,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
   streamingMessageId: null,
   showBoostPopup: false,
   boostDailyLimit: 30,
+  miPersonaRemaining: null,
+  boostRemaining: null,
 
   // ============================================
   // ACCIONES
@@ -387,7 +391,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
    * Limpia todos los mensajes (al cambiar de avatar)
    */
   clearMessages: () => {
-    set({ messages: [], error: null });
+    set({ messages: [], error: null, miPersonaRemaining: null, boostRemaining: null });
   },
 
   /**
@@ -474,6 +478,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
           onMetadata: (data) => {
             finalMetadata = data;
+            const metaAny = data as Record<string, unknown>;
+            if (metaAny.mi_persona_remaining !== undefined) {
+              set({
+                miPersonaRemaining: metaAny.mi_persona_remaining as number,
+                boostRemaining: (metaAny.boost_remaining as number) ?? null,
+              });
+            }
           },
 
           onComplete: () => {
@@ -644,6 +655,8 @@ export const selectUploadLimits = (state: ChatState) => state.uploadLimits;
 export const selectFileUploading = (state: ChatState) => state.fileUploading;
 export const selectIsStreaming = (state: ChatState) => state.isStreaming;
 export const selectStreamingMessageId = (state: ChatState) => state.streamingMessageId;
+export const selectMiPersonaRemaining = (state: ChatState) => state.miPersonaRemaining;
+export const selectBoostRemaining = (state: ChatState) => state.boostRemaining;
 
 export default useChatStore;
 

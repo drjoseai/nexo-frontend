@@ -4,7 +4,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -84,6 +84,8 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     showBoostPopup,
     boostDailyLimit,
     closeBoostPopup,
+    miPersonaRemaining,
+    boostRemaining,
   } = useChatStore();
 
   // Auth store para obtener plan del usuario
@@ -282,6 +284,21 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
               disabled={isSending || isLoading}
               ageVerified={user?.age_verified ?? false}
             />
+
+            {/* Mi Persona counter */}
+            {relationshipType === "romantic" && userPlan === "premium" && miPersonaRemaining !== null && (
+              <div className={cn(
+                "flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium border",
+                miPersonaRemaining > 10
+                  ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
+                  : miPersonaRemaining > 0
+                  ? "border-orange-500/30 bg-orange-500/10 text-orange-400"
+                  : "border-red-500/30 bg-red-500/10 text-red-400"
+              )}>
+                <Sparkles className="h-3 w-3" />
+                <span>{miPersonaRemaining}{boostRemaining ? ` +${boostRemaining}` : ""}</span>
+              </div>
+            )}
 
             {/* Mensajes restantes */}
             {messagesRemaining !== null && (

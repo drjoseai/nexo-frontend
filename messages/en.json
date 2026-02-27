@@ -369,7 +369,11 @@
     "premiumBoostInfo": "Need more My Person messages? Get 50 extra for just $0.99",
     "premiumMessagesBreakdown": "30 My Person + 120 normal messages daily",
     "boostLabel": "Boost available",
-    "boostDescription": "+50 My Person messages for $0.99"
+    "boostDescription": "+50 My Person messages for $0.99",
+    "boostPromo": "Need more My Person messages?",
+    "buyBoostButton": "Get 50 Messages — $0.99",
+    "boostPurchaseSuccess": "Boost purchased successfully! 50 extra My Person messages added to your account.",
+    "boostPurchaseCanceled": "Boost purchase was canceled. You can try again anytime."
   },
   "cookies": {
     "banner": {
