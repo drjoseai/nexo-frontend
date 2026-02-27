@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), {
   ssr: false,
   loading: () => (
-    <div className="w-[320px] h-[400px] bg-background animate-pulse rounded-lg" />
+    <div className="w-[320px] h-[350px] bg-background animate-pulse rounded-lg" />
   ),
 });
 
@@ -70,12 +70,12 @@ export function EmojiPickerButton({
       </Button>
 
       {isOpen && (
-        <div className="absolute bottom-12 right-0 z-50">
+        <div className="absolute bottom-12 left-0 z-50 max-w-[calc(100vw-2rem)]">
           <EmojiPicker
             onEmojiClick={handleEmojiClick}
             theme={Theme.DARK}
-            width={320}
-            height={400}
+            width={Math.min(320, typeof window !== "undefined" ? window.innerWidth - 32 : 320)}
+            height={350}
             searchPlaceholder="Buscar emoji..."
             previewConfig={{ showPreview: false }}
           />

@@ -26,6 +26,36 @@ import { BoostPopup } from "./BoostPopup";
 import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
 
 // ============================================
+// DATE SEPARATOR HELPER
+// ============================================
+
+function getDateLabel(date: Date): string {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const isToday = date.toDateString() === today.toDateString();
+  const isYesterday = date.toDateString() === yesterday.toDateString();
+
+  if (isToday) return "Hoy";
+  if (isYesterday) return "Ayer";
+
+  return date.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "long",
+    year: date.getFullYear() !== today.getFullYear() ? "numeric" : undefined,
+  });
+}
+
+function shouldShowDateSeparator(
+  currentMsg: { timestamp: Date },
+  prevMsg: { timestamp: Date } | undefined
+): boolean {
+  if (!prevMsg) return true;
+  return currentMsg.timestamp.toDateString() !== prevMsg.timestamp.toDateString();
+}
+
+// ============================================
 // PROPS INTERFACE
 // ============================================
 
@@ -170,7 +200,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   }[avatarId];
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-[100dvh] lg:h-full">
       {/* ============================================ */}
       {/* AVATAR SIDEBAR - Solo visible en pantallas grandes */}
       {/* ============================================ */}
@@ -219,7 +249,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         {/* ============================================ */}
         {/* HEADER */}
         {/* ============================================ */}
-        <header className="flex items-center gap-4 border-b border-white/10 bg-white/5 px-4 py-3 backdrop-blur-sm">
+        <header className="sticky top-0 z-30 flex items-center gap-4 border-b border-white/10 bg-background/95 px-4 py-3 backdrop-blur-md">
           {/* Botón volver */}
           <Link href="/dashboard">
             <Button variant="ghost" size="icon" className="shrink-0">
@@ -340,7 +370,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         {/* ============================================ */}
         {/* MESSAGES AREA */}
         {/* ============================================ */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto px-3 py-4 sm:px-4">
           {/* Loading state */}
           {isLoading && (
             <div className="flex h-full items-center justify-center">
@@ -374,14 +404,22 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
           {/* Messages list */}
           {!isLoading && messages.length > 0 && (
             <div className="flex flex-col gap-4">
-              {messages.map((message) => (
-                <MessageBubble
-                  key={message.id}
-                  message={message}
-                  avatarId={avatarId}
-                  avatarName={avatar?.name}
-                  isStreaming={isStreaming && message.id === streamingMessageId}
-                />
+              {messages.map((message, index) => (
+                <div key={message.id}>
+                  {shouldShowDateSeparator(message, messages[index - 1]) && (
+                    <div className="flex items-center justify-center my-4">
+                      <div className="rounded-full bg-white/10 px-4 py-1.5 text-[11px] font-medium text-white/50 shadow-sm backdrop-blur-sm">
+                        {getDateLabel(message.timestamp)}
+                      </div>
+                    </div>
+                  )}
+                  <MessageBubble
+                    message={message}
+                    avatarId={avatarId}
+                    avatarName={avatar?.name}
+                    isStreaming={isStreaming && message.id === streamingMessageId}
+                  />
+                </div>
               ))}
 
               {/* Typing indicator - solo antes del primer token, NO durante streaming */}
@@ -435,7 +473,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         {/* ============================================ */}
         {/* INPUT AREA */}
         {/* ============================================ */}
-        <div className="border-t border-border bg-white/5 p-4 backdrop-blur-sm">
+        <div className="sticky bottom-0 z-20 border-t border-border bg-background/95 p-4 backdrop-blur-md">
           {/* File Preview (si hay archivo pendiente) */}
           {pendingFile && (
             <FilePreview

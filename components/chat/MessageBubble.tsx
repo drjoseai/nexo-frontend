@@ -1,5 +1,5 @@
 // components/chat/MessageBubble.tsx
-// Burbuja de mensaje para el chat de NEXO v2.0
+// Burbuja de mensaje estilo WhatsApp para NEXO v2.0
 
 "use client";
 
@@ -58,11 +58,11 @@ interface MessageBubbleProps {
 function StatusIcon({ status }: { status: Message["status"] }) {
   switch (status) {
     case "sending":
-      return <Clock className="h-3 w-3 animate-pulse text-muted-foreground" />;
+      return <Clock className="h-3 w-3 animate-pulse" />;
     case "sent":
-      return <Check className="h-3 w-3 text-muted-foreground" />;
+      return <Check className="h-3 w-3" />;
     case "error":
-      return <AlertCircle className="h-3 w-3 text-red-500 dark:text-red-400" />;
+      return null;
     default:
       return null;
   }
@@ -96,7 +96,7 @@ export const MessageBubble = memo(function MessageBubble({
   return (
     <div
       className={cn(
-        "flex w-full gap-3",
+        "flex w-full gap-2",
         isUser ? "justify-end" : "justify-start"
       )}
     >
@@ -104,114 +104,112 @@ export const MessageBubble = memo(function MessageBubble({
       {!isUser && (
         <div
           className={cn(
-            "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
-            "text-xs font-semibold",
-            // Base
-            "bg-primary/10 text-primary border border-primary/20",
-            // Gradient
-            "bg-gradient-to-br text-white border-white/10",
-            avatarId === "lia" && "from-primary/30 to-primary/20",
-            avatarId === "mia" && "bg-amber-100 text-amber-700 border-amber-200 from-[var(--mia)]/30 to-[var(--mia)]/15",
-            avatarId === "allan" && "bg-amber-100 text-amber-700 border-amber-200 from-[var(--allan)]/30 to-[var(--allan)]/15"
+            "flex h-7 w-7 shrink-0 items-center justify-center rounded-full mt-auto mb-6",
+            "text-[10px] font-semibold",
+            "bg-gradient-to-br text-white border border-white/10",
+            avatarId === "lia" && "from-primary/40 to-primary/20",
+            avatarId === "mia" && "from-amber-400/40 to-[var(--mia)]/20",
+            avatarId === "allan" && "from-amber-500/40 to-[var(--allan)]/20"
           )}
         >
           {avatarName.charAt(0).toUpperCase()}
         </div>
       )}
 
-      {/* Contenedor del mensaje */}
+      {/* Burbuja del mensaje */}
       <div
         className={cn(
-          "flex max-w-[80%] flex-col gap-1",
-          isUser ? "items-end" : "items-start"
+          "relative max-w-[85%] sm:max-w-[70%] rounded-2xl text-sm leading-relaxed",
+          message.attachment_url && message.attachment_type === "image"
+            ? "pb-1.5 pt-1 px-1.5"
+            : "px-3 pt-2 pb-1.5",
+          isUser
+            ? "rounded-br-sm"
+            : "rounded-bl-sm",
+          isUser
+            ? [
+                "bg-primary text-primary-foreground",
+              ]
+            : [
+                "border shadow-lg",
+                avatarColors.bgLight,
+                avatarColors.glowLight,
+                "text-gray-800",
+                avatarColors.bgDark,
+                avatarColors.glowDark,
+                "dark:text-white",
+              ],
+          message.status === "error" && "opacity-70"
         )}
       >
-        {/* Burbuja del mensaje */}
-        <div
-          className={cn(
-            "rounded-2xl text-sm leading-relaxed overflow-hidden",
-            // Padding: reducido arriba si hay attachment de imagen
-            message.attachment_url && message.attachment_type === "image"
-              ? "px-4 pb-2.5 pt-1"
-              : "px-4 py-2.5",
-            isUser
-              ? [
-                  // Usuario - Light mode
-                  "bg-primary text-primary-foreground",
-                  "rounded-br-md",
-                ]
-              : [
-                  // Avatar - Light mode
-                  "border rounded-bl-md shadow-lg",
-                  avatarColors.bgLight,
-                  avatarColors.glowLight,
-                  "text-gray-800",
-                  // Avatar - Dark mode (app is dark-only)
-                  avatarColors.bgDark,
-                  avatarColors.glowDark,
-                  "dark:text-white",
-                ],
-            // Estado de error
-            message.status === "error" && "opacity-70"
-          )}
-        >
-          {/* Attachment (si existe) */}
-          {message.attachment_url && message.attachment_type && (
+        {/* Attachment (si existe) */}
+        {message.attachment_url && message.attachment_type && (
+          <div className="overflow-hidden rounded-xl mb-1">
             <MessageAttachment
               attachmentUrl={message.attachment_url}
               attachmentType={message.attachment_type}
               attachmentFilename={message.attachment_filename || "archivo"}
               storagePath={message.attachment_storage_path}
             />
-          )}
+          </div>
+        )}
 
-          {/* Contenido del mensaje (solo si tiene texto) */}
-          {message.content && (
-            <p className="whitespace-pre-wrap break-words">
-              {message.content}
-              {isStreaming && (
-                <span className="inline-block w-0.5 h-4 bg-current opacity-60 animate-pulse ml-0.5 align-text-bottom" />
-              )}
-            </p>
-          )}
-          {/* Animación "pensando" mientras espera primer token del modelo */}
-          {isStreaming && !message.content && (
-            <div className="flex items-center gap-1 py-1">
-              <span className="h-2 w-2 rounded-full bg-current opacity-40 animate-bounce" style={{ animationDelay: '0ms' }} />
-              <span className="h-2 w-2 rounded-full bg-current opacity-40 animate-bounce" style={{ animationDelay: '150ms' }} />
-              <span className="h-2 w-2 rounded-full bg-current opacity-40 animate-bounce" style={{ animationDelay: '300ms' }} />
-            </div>
-          )}
-        </div>
+        {/* Contenido del mensaje con timestamp inline */}
+        {message.content && (
+          <p className="whitespace-pre-wrap break-words">
+            {message.content}
+            {isStreaming && (
+              <span className="inline-block w-0.5 h-4 bg-current opacity-60 animate-pulse ml-0.5 align-text-bottom" />
+            )}
+            {/* Spacer invisible para que el timestamp no se sobreponga al texto */}
+            {showTimestamp && !isStreaming && (
+              <span className={cn(
+                "inline-block align-baseline",
+                isUser ? "w-[60px]" : "w-[44px]"
+              )} />
+            )}
+          </p>
+        )}
 
-        {/* Metadata: timestamp y status */}
-        <div
-          className={cn(
-            "flex items-center gap-2 text-xs",
-            "text-muted-foreground", // Usa variable CSS que respeta el tema
-            isUser ? "flex-row-reverse" : "flex-row"
-          )}
-        >
-          {/* Timestamp */}
-          {showTimestamp && (
-            <span>{formatTime(message.timestamp)}</span>
-          )}
+        {/* Animación "pensando" mientras espera primer token del modelo */}
+        {isStreaming && !message.content && (
+          <div className="flex items-center gap-1 py-1">
+            <span className="h-2 w-2 rounded-full bg-current opacity-40 animate-bounce" style={{ animationDelay: '0ms' }} />
+            <span className="h-2 w-2 rounded-full bg-current opacity-40 animate-bounce" style={{ animationDelay: '150ms' }} />
+            <span className="h-2 w-2 rounded-full bg-current opacity-40 animate-bounce" style={{ animationDelay: '300ms' }} />
+          </div>
+        )}
 
-          {/* Status icon (solo para mensajes del usuario) */}
-          {isUser && <StatusIcon status={message.status} />}
+        {/* Timestamp + Status DENTRO de la burbuja (estilo WhatsApp) */}
+        {showTimestamp && !isStreaming && (
+          <div
+            className={cn(
+              "flex items-center gap-1 justify-end mt-0.5",
+              isUser
+                ? "text-primary-foreground/60"
+                : "text-current opacity-40"
+            )}
+          >
+            <span className="text-[10px] leading-none">
+              {formatTime(message.timestamp)}
+            </span>
+            {isUser && <StatusIcon status={message.status} />}
+          </div>
+        )}
 
-          {/* Error message */}
-          {message.status === "error" && (
-            <span className="text-red-500 dark:text-red-400">Error al enviar</span>
-          )}
-        </div>
+        {/* Error message */}
+        {message.status === "error" && (
+          <div className="flex items-center gap-1 mt-1">
+            <AlertCircle className="h-3 w-3 text-red-300" />
+            <span className="text-[10px] text-red-300">Error al enviar</span>
+          </div>
+        )}
       </div>
 
       {/* Spacer para alinear mensajes del usuario */}
-      {isUser && <div className="w-8 shrink-0" />}
+      {isUser && <div className="w-7 shrink-0" />}
     </div>
   );
 });
 
 export default MessageBubble;
-

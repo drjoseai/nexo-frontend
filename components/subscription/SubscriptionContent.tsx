@@ -672,8 +672,8 @@ export function SubscriptionContent() {
       )}
 
       {/* Plan Cards */}
-      <div className="mb-12 grid gap-6 md:grid-cols-3">
-        {(Object.entries(plans) as [PlanId, typeof plans[PlanId]][]).map(([planId, plan]) => {
+      <div className="mb-12 grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+        {(Object.entries(plans) as [PlanId, typeof plans[PlanId]][]).filter(([planId]) => planId !== "free").map(([planId, plan]) => {
           const isCurrentPlan = currentPlan === planId && !isTrialActive;
           const isTrialOnFree = isTrialActive && planId === "free";
           const isPopular = plan.popular;
