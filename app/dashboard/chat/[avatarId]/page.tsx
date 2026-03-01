@@ -8,6 +8,22 @@ import type { AvatarId } from "@/types/chat";
 import type { Metadata } from "next";
 
 // ============================================
+// STATIC PARAMS (Capacitor static export)
+// ============================================
+
+/**
+ * Generate static params for Capacitor static export.
+ * Pre-generates pages for all avatar IDs.
+ */
+export function generateStaticParams() {
+  return [
+    { avatarId: 'lia' },
+    { avatarId: 'mia' },
+    { avatarId: 'allan' },
+  ];
+}
+
+// ============================================
 // TIPOS
 // ============================================
 
