@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1048678548869",
+    "project_id": "nexo-ai-8bef3",
+    "storage_bucket": "nexo-ai-8bef3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1048678548869:android:34e0b94c8e9e2aef51f0ec",
+        "android_client_info": {
+          "package_name": "ai.trynexo.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASAP6HQJzRN_PWP-JwkGuWEqGsOMNAhEI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
