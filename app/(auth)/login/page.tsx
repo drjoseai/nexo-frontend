@@ -18,6 +18,8 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/lib/store/auth";
+import { AppleSignInButton } from "@/components/auth/AppleSignInButton";
+import { useNativePlatform } from "@/lib/hooks/use-native-platform";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -52,6 +54,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { login, isLoading, isAuthenticated } = useAuthStore();
   const t = useTranslations("auth");
+  const { isIOSApp } = useNativePlatform();
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   // Redirect to dashboard if already authenticated
@@ -201,6 +204,23 @@ export default function LoginPage() {
           >
             {isLoading || isRedirecting ? t("loggingIn") : t("login")}
           </Button>
+
+          {/* Apple Sign In - iOS only */}
+          {isIOSApp && (
+            <div className="w-full">
+              <div className="relative my-2">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">
+                    {t("orContinueWith")}
+                  </span>
+                </div>
+              </div>
+              <AppleSignInButton redirectTo="/dashboard" />
+            </div>
+          )}
 
           {/* Register Link */}
           <p className="text-sm text-center text-muted-foreground">

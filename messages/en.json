@@ -81,7 +81,9 @@
     "resetPasswordSuccessDescription": "Your password has been reset. You can now log in with your new password.",
     "resetPasswordError": "Failed to reset password. The link may have expired.",
     "resetPasswordInvalidToken": "Invalid or missing reset token",
-    "resetting": "Resetting..."
+    "resetting": "Resetting...",
+    "signInWithApple": "Sign in with Apple",
+    "orContinueWith": "or"
   },
   "chat": {
     "placeholder": "Type a message...",
@@ -417,7 +419,10 @@
     "boostPromo": "Need more My Person messages?",
     "buyBoostButton": "Get 50 Messages — $0.99",
     "boostPurchaseSuccess": "Boost purchased successfully! 50 extra My Person messages added to your account.",
-    "boostPurchaseCanceled": "Boost purchase was canceled. You can try again anytime."
+    "boostPurchaseCanceled": "Boost purchase was canceled. You can try again anytime.",
+    "restorePurchases": "Restore Purchases",
+    "restoreSuccess": "Purchases restored successfully",
+    "restoreError": "Failed to restore purchases"
   },
   "cookies": {
     "banner": {

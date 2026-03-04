@@ -13,6 +13,7 @@ import * as authApi from '@/lib/api/auth';
 import { tokenManager } from '@/lib/services/token-manager';
 import { toast } from '@/lib/services/toast-service';
 import { analytics, AnalyticsEvents } from '@/lib/services/analytics';
+import { identifyUser as rcIdentify, logOutRevenueCat } from '@/lib/capacitor/revenuecat';
 
 /**
  * Initial authentication state
@@ -69,6 +70,8 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
           analytics.track(AnalyticsEvents.USER_LOGGED_IN, {
             plan: user.plan,
           });
+
+          rcIdentify(user.id).catch(() => {});
 
           toast.dismiss(toastId);
           toast.success(`¡Bienvenido, ${user.display_name || user.email}!`);
@@ -147,6 +150,8 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
 
           // Call backend logout endpoint to clear httpOnly cookies
           await authApi.logout();
+
+          logOutRevenueCat().catch(() => {});
           
           // Reset state to initial values
           set(initialState);
@@ -199,6 +204,8 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
             isAuthenticated: true,
             error: null,
           });
+
+          rcIdentify(user.id).catch(() => {});
 
           console.log('[AuthStore] User loaded successfully:', user.email);
         } catch {

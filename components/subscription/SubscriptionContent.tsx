@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
+import { useNativePlatform } from "@/lib/hooks/use-native-platform";
+import { useRevenueCat } from "@/lib/hooks/use-revenuecat";
 
 type PlanId = "free" | "plus" | "premium";
 
@@ -43,7 +45,14 @@ export function SubscriptionContent() {
   const [isBoostLoading, setIsBoostLoading] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const t = useTranslations("subscriptionPage");
-  
+  const { isNativeApp } = useNativePlatform();
+  const {
+    isAvailable: isIAPAvailable,
+    isLoading: isIAPLoading,
+    presentPaywallIfNeeded,
+    restore,
+  } = useRevenueCat();
+
   const currentPlan = user?.plan === "trial" ? "free" : (user?.plan as PlanId) || "free";
   const isTrialActive = user?.plan === "trial";
 
@@ -266,14 +275,52 @@ export function SubscriptionContent() {
   }, [searchParams, t, user?.plan]);
 
   const handleSelectPlan = async (planId: PlanId) => {
-    // No hacer nada si es el plan actual (y no está en trial) o si es free
     if (planId === currentPlan && !isTrialActive) return;
     if (planId === 'free') return;
 
-    setIsLoading(planId);
-    setStatusMessage(null); // Limpiar mensajes anteriores
+    // === NATIVE IAP FLOW ===
+    if (isNativeApp && isIAPAvailable) {
+      setIsLoading(planId);
+      setStatusMessage(null);
 
-    // Track checkout started
+      analytics.track(AnalyticsEvents.CHECKOUT_STARTED, {
+        plan: planId,
+        price: plans[planId].price,
+        provider: 'revenuecat',
+      });
+
+      try {
+        const entitlementId = planId === 'premium' ? 'premium_access' : 'plus_access';
+        const purchased = await presentPaywallIfNeeded(entitlementId);
+
+        if (purchased) {
+          setStatusMessage({
+            type: 'success',
+            text: t("paymentSuccess"),
+          });
+          analytics.track(AnalyticsEvents.CHECKOUT_COMPLETED, {
+            plan: planId,
+            provider: 'revenuecat',
+          });
+          const { loadUser } = useAuthStore.getState();
+          await loadUser();
+        }
+      } catch (error) {
+        console.error('IAP error:', error);
+        setStatusMessage({
+          type: 'error',
+          text: error instanceof Error ? error.message : 'Purchase failed',
+        });
+      } finally {
+        setIsLoading(null);
+      }
+      return;
+    }
+
+    // === WEB STRIPE FLOW ===
+    setIsLoading(planId);
+    setStatusMessage(null);
+
     analytics.track(AnalyticsEvents.CHECKOUT_STARTED, {
       plan: planId,
       price: plans[planId].price,
@@ -639,8 +686,42 @@ export function SubscriptionContent() {
         </CardContent>
       </Card>
 
-      {/* Manage Subscription - Solo para usuarios de pago */}
-      {(user?.plan === "plus" || user?.plan === "premium") && (
+      {/* Restore Purchases - Native only */}
+      {isNativeApp && isIAPAvailable && (
+        <div className="mb-8 flex justify-center">
+          <Button
+            variant="outline"
+            onClick={async () => {
+              try {
+                await restore();
+                const { loadUser } = useAuthStore.getState();
+                await loadUser();
+                setStatusMessage({
+                  type: 'success',
+                  text: t("restoreSuccess"),
+                });
+              } catch {
+                setStatusMessage({
+                  type: 'error',
+                  text: t("restoreError"),
+                });
+              }
+            }}
+            disabled={isIAPLoading}
+            className="gap-2"
+          >
+            {isIAPLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <CreditCard className="h-4 w-4" />
+            )}
+            {t("restorePurchases")}
+          </Button>
+        </div>
+      )}
+
+      {/* Manage Subscription - Solo para usuarios de pago EN WEB */}
+      {(user?.plan === "plus" || user?.plan === "premium") && !isNativeApp && (
         <div className="mb-8 flex flex-col sm:flex-row gap-3 justify-center">
           <Button
             variant="outline"

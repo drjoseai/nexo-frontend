@@ -81,7 +81,9 @@
     "resetPasswordSuccessDescription": "Tu contraseña ha sido restablecida. Ya puedes iniciar sesión con tu nueva contraseña.",
     "resetPasswordError": "Error al restablecer contraseña. El enlace puede haber expirado.",
     "resetPasswordInvalidToken": "Token de restablecimiento inválido o faltante",
-    "resetting": "Restableciendo..."
+    "resetting": "Restableciendo...",
+    "signInWithApple": "Iniciar sesión con Apple",
+    "orContinueWith": "o"
   },
   "chat": {
     "placeholder": "Escribe un mensaje...",
@@ -417,7 +419,10 @@
     "boostPromo": "¿Necesitas más mensajes Mi Persona?",
     "buyBoostButton": "Obtener 50 Mensajes — $0.99",
     "boostPurchaseSuccess": "¡Boost comprado exitosamente! 50 mensajes extra Mi Persona agregados a tu cuenta.",
-    "boostPurchaseCanceled": "La compra del Boost fue cancelada. Puedes intentar nuevamente."
+    "boostPurchaseCanceled": "La compra del Boost fue cancelada. Puedes intentar nuevamente.",
+    "restorePurchases": "Restaurar Compras",
+    "restoreSuccess": "Compras restauradas exitosamente",
+    "restoreError": "Error al restaurar compras"
   },
   "cookies": {
     "banner": {
