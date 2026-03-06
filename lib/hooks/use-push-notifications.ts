@@ -84,7 +84,10 @@ export function usePushNotifications(options?: {
   const cleanupRef = useRef<Array<() => void>>([]);
   const mountedRef = useRef(true);
   const optionsRef = useRef(options);
-  optionsRef.current = options;
+
+  useEffect(() => {
+    optionsRef.current = options;
+  });
 
   const updateState = useCallback((updates: Partial<UsePushNotificationsState>) => {
     if (mountedRef.current) {

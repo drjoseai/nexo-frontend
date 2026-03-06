@@ -29,7 +29,10 @@ export function useDeepLinks(options?: {
   const router = useRouter();
   const cleanupRef = useRef<(() => void) | null>(null);
   const optionsRef = useRef(options);
-  optionsRef.current = options;
+
+  useEffect(() => {
+    optionsRef.current = options;
+  });
 
   useEffect(() => {
     if (!isNative()) return;
