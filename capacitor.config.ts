@@ -16,6 +16,8 @@ const config: CapacitorConfig = {
   ios: {
     scheme: 'NEXO',
     contentInset: 'automatic',
+    allowsLinkPreview: false,
+    preferredContentMode: 'mobile',
   },
 
   // Android configuration  
@@ -37,6 +39,9 @@ const config: CapacitorConfig = {
     },
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],
+    },
+    ScreenOrientation: {
+      default: 'portrait',
     },
   },
 

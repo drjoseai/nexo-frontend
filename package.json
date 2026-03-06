@@ -20,6 +20,7 @@
     "generate:pwa": "npm run generate:icons && npm run generate:screenshots"
   },
   "dependencies": {
+    "@capacitor-community/in-app-review": "^8.0.0",
     "@capacitor/android": "^8.1.0",
     "@capacitor/app": "^8.0.1",
     "@capacitor/cli": "^8.1.0",
@@ -27,6 +28,7 @@
     "@capacitor/haptics": "^8.0.1",
     "@capacitor/ios": "^8.1.0",
     "@capacitor/keyboard": "^8.0.1",
+    "@capacitor/network": "^8.0.1",
     "@capacitor/preferences": "^8.0.1",
     "@capacitor/push-notifications": "^8.0.1",
     "@capacitor/splash-screen": "^8.0.1",
@@ -48,6 +50,7 @@
     "@revenuecat/purchases-capacitor-ui": "^12.2.1",
     "@sentry/nextjs": "^10.35.0",
     "axios": "^1.13.5",
+    "capacitor-plugin-app-tracking-transparency": "^3.0.0",
     "capacitor-plugin-safe-area": "^5.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

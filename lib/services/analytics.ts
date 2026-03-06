@@ -46,6 +46,32 @@ export const analytics = {
   },
 
   /**
+   * Initialize Mixpanel in anonymous mode (ATT denied on iOS).
+   * No persistent user identity, minimal tracking.
+   */
+  initAnonymous: async () => {
+    if (!isBrowser || isInitialized || !MIXPANEL_TOKEN) return;
+
+    const mixpanel = (await import('mixpanel-browser')).default;
+    mixpanelInstance = mixpanel;
+
+    mixpanel.init(MIXPANEL_TOKEN, {
+      debug: !IS_PRODUCTION,
+      track_pageview: false,
+      persistence: 'localStorage',
+      ignore_dnt: true,
+    });
+
+    // Clear any stored identity for anonymous mode
+    mixpanel.reset();
+
+    mixpanel.identify(`anon_${Math.random().toString(36).substring(2, 10)}`);
+
+    isInitialized = true;
+    console.log('[Analytics] Initialized in anonymous mode (ATT denied)');
+  },
+
+  /**
    * Identify user after login/register
    */
   identify: (userId: string, properties?: Record<string, unknown>) => {

@@ -8,6 +8,7 @@ import { Lock, MessageCircle, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { AvatarId, RelationshipType, PlanType } from "@/types/avatar";
 import { AVATARS, isAvatarAvailableForPlan } from "@/types/avatar";
+import { hapticMedium } from "@/lib/capacitor/haptics";
 
 interface AvatarCardProps {
   avatarId: AvatarId;
@@ -76,7 +77,6 @@ function AvatarImage({
 export function AvatarCard({
   avatarId,
   userPlan,
-  currentRelationship: _currentRelationship = "friend",
   messageCount = 0,
   isLocked: forceLockedState,
   className,
@@ -163,7 +163,11 @@ export function AvatarCard({
   }
 
   return (
-    <Link href={`/dashboard/chat/${avatarId}`} className="block">
+    <Link
+      href={`/dashboard/chat/${avatarId}`}
+      className="block"
+      onClick={() => hapticMedium().catch(() => {})}
+    >
       {cardContent}
     </Link>
   );

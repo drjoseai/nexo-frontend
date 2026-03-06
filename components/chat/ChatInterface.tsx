@@ -24,6 +24,7 @@ import { AVATARS, getAvatarImageByMode } from "@/types/avatar";
 import { ImageLightbox } from "./ImageLightbox";
 import { BoostPopup } from "./BoostPopup";
 import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
+import { trackMessageAndRequestReview } from "@/lib/capacitor/in-app-review";
 
 // ============================================
 // DATE SEPARATOR HELPER
@@ -176,13 +177,17 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     const fileToSend = pendingFile;
     setPendingFile(null);
 
-    if (fileToSend) {
-      // Archivos usan endpoint síncrono (streaming no soporta attachments)
-      await sendMessage(content, avatarId, relationshipType, fileToSend);
-    } else {
-      // Mensajes de texto usan streaming SSE
-      const { sendMessageStreaming } = useChatStore.getState();
-      await sendMessageStreaming(content, avatarId, relationshipType);
+    try {
+      if (fileToSend) {
+        await sendMessage(content, avatarId, relationshipType, fileToSend);
+      } else {
+        const { sendMessageStreaming } = useChatStore.getState();
+        await sendMessageStreaming(content, avatarId, relationshipType);
+      }
+
+      trackMessageAndRequestReview().catch(() => {});
+    } catch {
+      // Error already handled by chat store
     }
   };
 

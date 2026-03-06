@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { PWAInstallPrompt, PWAUpdateNotification } from "@/components/pwa";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 import { CookieBanner } from "@/components/cookie-consent";
+import { OfflineScreen } from "@/components/native/OfflineScreen";
 
 const dmSans = DM_Sans({
   variable: "--font-sans",
@@ -37,6 +38,7 @@ export const viewport: Viewport = {
   userScalable: false,
   themeColor: "#110e0c",
   colorScheme: "dark light",
+  viewportFit: "cover",
 };
 
 // PWA Metadata Configuration
@@ -139,9 +141,9 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning style={{ WebkitTextSizeAdjust: '100%' }}>
       <body
-        className={`${dmSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} font-sans antialiased`}
+        className={`${dmSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} font-sans antialiased min-h-screen`}
       >
         <ThemeProvider
           attribute="class"
@@ -151,13 +153,15 @@ export default async function RootLayout({
         >
           <NextIntlClientProvider locale={locale} messages={messages}>
             <AnalyticsProvider>
-              <AuthProvider>
-                {children}
-              </AuthProvider>
-              <Toaster position="top-right" richColors />
-              <PWAInstallPrompt />
-              <PWAUpdateNotification />
-              <CookieBanner />
+              <OfflineScreen>
+                <AuthProvider>
+                  {children}
+                </AuthProvider>
+                <Toaster position="top-right" richColors />
+                <PWAInstallPrompt />
+                <PWAUpdateNotification />
+                <CookieBanner />
+              </OfflineScreen>
             </AnalyticsProvider>
           </NextIntlClientProvider>
         </ThemeProvider>

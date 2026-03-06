@@ -1,12 +1,14 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 
-const mockInit = jest.fn();
+const mockInit = jest.fn().mockResolvedValue(undefined);
+const mockInitAnonymous = jest.fn().mockResolvedValue(undefined);
 const mockTrack = jest.fn();
 
 jest.mock("@/lib/services/analytics", () => ({
   analytics: {
     init: (...args: unknown[]) => mockInit(...args),
+    initAnonymous: (...args: unknown[]) => mockInitAnonymous(...args),
     track: (...args: unknown[]) => mockTrack(...args),
   },
   AnalyticsEvents: {
@@ -20,9 +22,27 @@ jest.mock("@/lib/hooks/use-cookie-consent", () => ({
   useCookieConsent: () => mockUseCookieConsent(),
 }));
 
+jest.mock("@/lib/hooks/use-native-platform", () => ({
+  useNativePlatform: () => ({
+    platform: "web",
+    isNativeApp: false,
+    isIOSApp: false,
+    isAndroidApp: false,
+    isWebApp: true,
+    paymentProvider: "stripe",
+    isReady: true,
+  }),
+}));
+
+jest.mock("@/lib/capacitor/att", () => ({
+  requestATTPermission: jest.fn().mockResolvedValue("authorized"),
+  isTrackingAuthorized: (status: string) => status === "authorized",
+}));
+
 describe("AnalyticsProvider", () => {
   beforeEach(() => {
     mockInit.mockClear();
+    mockInitAnonymous.mockClear();
     mockTrack.mockClear();
     mockUseCookieConsent.mockReturnValue({
       consent: { essential: true, analytics: true, timestamp: "", version: "1.0" },
@@ -43,22 +63,26 @@ describe("AnalyticsProvider", () => {
     expect(screen.getByText("app content")).toBeInTheDocument();
   });
 
-  it("calls analytics.init when consent is granted", () => {
+  it("calls analytics.init when consent is granted", async () => {
     render(
       <AnalyticsProvider>
         <div />
       </AnalyticsProvider>
     );
-    expect(mockInit).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(mockInit).toHaveBeenCalledTimes(1);
+    });
   });
 
-  it("tracks page view when consent is granted", () => {
+  it("tracks page view when consent is granted", async () => {
     render(
       <AnalyticsProvider>
         <div />
       </AnalyticsProvider>
     );
-    expect(mockTrack).toHaveBeenCalledWith("page_viewed", { page: "/" });
+    await waitFor(() => {
+      expect(mockTrack).toHaveBeenCalledWith("page_viewed", { page: "/" });
+    });
   });
 
   it("does not init analytics when consent is denied", () => {

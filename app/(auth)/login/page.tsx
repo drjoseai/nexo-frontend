@@ -20,6 +20,7 @@ import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/lib/store/auth";
 import { AppleSignInButton } from "@/components/auth/AppleSignInButton";
 import { useNativePlatform } from "@/lib/hooks/use-native-platform";
+import { usePushNotifications } from "@/lib/hooks/use-push-notifications";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -55,6 +56,7 @@ export default function LoginPage() {
   const { login, isLoading, isAuthenticated } = useAuthStore();
   const t = useTranslations("auth");
   const { isIOSApp } = useNativePlatform();
+  const { registerPush } = usePushNotifications({ sendToBackend: true });
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   // Redirect to dashboard if already authenticated
@@ -94,6 +96,10 @@ export default function LoginPage() {
       await login(data);
       
       console.log('[LoginPage] Login successful, redirecting...');
+
+      registerPush().catch((err) =>
+        console.warn('[LoginPage] Push registration failed (non-critical):', err)
+      );
       
       // Show success toast
       toast.success(t("loginSuccess"), {

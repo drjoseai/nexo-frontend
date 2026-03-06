@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { EmojiPickerButton } from "./EmojiPickerButton";
 import { FileAttachmentButton } from "./FileAttachmentButton";
 import { cn } from "@/lib/utils";
+import { hapticLight } from "@/lib/capacitor/haptics";
 
 // ============================================
 // PROPS INTERFACE
@@ -65,6 +66,7 @@ export function ChatInput({
   const handleSend = () => {
     const trimmedMessage = message.trim();
     if ((trimmedMessage || hasPendingFile) && !disabled && !sendDisabled) {
+      hapticLight().catch(() => {});
       onSend(trimmedMessage);
       setMessage("");
       // Reset textarea height

@@ -19,6 +19,7 @@ import {
   type PushNotificationPayload,
   type PushNotificationToken,
 } from '@/lib/capacitor/push-notifications';
+import { registerDeviceToken } from '@/lib/api/notifications';
 
 export interface UsePushNotificationsState {
   /** Whether push notifications are supported on this platform */
@@ -79,6 +80,7 @@ export function usePushNotifications(options?: {
   onNotification?: (notification: PushNotificationPayload) => void;
   onAction?: (notification: PushNotificationPayload) => void;
   autoRegister?: boolean;
+  sendToBackend?: boolean;
 }): UsePushNotificationsResult {
   const [state, setState] = useState<UsePushNotificationsState>(initialState);
   const cleanupRef = useRef<Array<() => void>>([]);
@@ -149,9 +151,21 @@ export function usePushNotifications(options?: {
       updateState({ permissionStatus: 'granted' });
 
       const cleanup = await registerForPushNotifications(
-        (token) => {
+        async (token) => {
           updateState({ token, isRegistering: false });
           optionsRef.current?.onToken?.(token);
+
+          if (optionsRef.current?.sendToBackend) {
+            try {
+              await registerDeviceToken({
+                token: token.value,
+                platform: token.platform,
+              });
+              console.log('[usePushNotifications] Device token registered with backend');
+            } catch (err) {
+              console.log('[usePushNotifications] Backend token registration failed (non-critical):', err);
+            }
+          }
         },
         (error) => {
           updateState({

@@ -11,8 +11,13 @@
 
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/lib/store/auth';
+import { useAppInit } from '@/lib/hooks/use-app-init';
+import { useAndroidBack } from '@/lib/hooks/use-android-back';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  useAppInit();
+  useAndroidBack();
+
   const [, setIsInitialized] = useState(false);
   const loadUser = useAuthStore((state) => state.loadUser);
 
