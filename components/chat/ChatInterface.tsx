@@ -254,7 +254,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         {/* ============================================ */}
         {/* HEADER */}
         {/* ============================================ */}
-        <header className="sticky top-0 z-30 flex items-center gap-4 border-b border-white/10 bg-background/95 px-4 py-3 backdrop-blur-md shrink-0">
+        <header className="sticky top-0 z-30 flex items-center gap-4 border-b border-white/10 bg-background/95 px-4 py-3 backdrop-blur-md shrink-0 safe-area-top">
           {/* Botón volver */}
           <Link href="/dashboard">
             <Button variant="ghost" size="icon" className="shrink-0">
