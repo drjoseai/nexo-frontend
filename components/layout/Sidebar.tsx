@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/auth";
 import { usePWA } from "@/lib/hooks/use-pwa";
+import { useNativePlatform } from "@/lib/hooks/use-native-platform";
 import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "@/components/ui/language-selector";
 import { Locale } from "@/i18n/config";
@@ -74,6 +75,7 @@ export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarPro
   const tAuth = useTranslations("auth");
   const tPwa = useTranslations("pwa.install");
   const { canInstall, isInstalled, promptInstall } = usePWA();
+  const { isNativeApp } = useNativePlatform();
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -178,7 +180,7 @@ export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarPro
             </div>
 
             {/* Install App button */}
-            {canInstall && !isInstalled && (
+            {!isNativeApp && canInstall && !isInstalled && (
               <div className="px-3 pb-3">
                 <button
                   onClick={() => promptInstall()}
@@ -299,7 +301,7 @@ export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarPro
           </div>
 
           {/* Install App button */}
-          {canInstall && !isInstalled && (
+          {!isNativeApp && canInstall && !isInstalled && (
             <div className="px-3 pb-3">
               <button
                 onClick={() => promptInstall()}

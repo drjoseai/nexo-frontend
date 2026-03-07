@@ -4,14 +4,16 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useCookieConsent } from "@/lib/hooks/use-cookie-consent";
+import { useNativePlatform } from "@/lib/hooks/use-native-platform";
 import { CookiePreferences } from "./CookiePreferences";
 
 export function CookieBanner() {
   const t = useTranslations("cookies");
   const { hasConsent, loaded, updateConsent } = useCookieConsent();
+  const { isNativeApp } = useNativePlatform();
   const [showPreferences, setShowPreferences] = useState(false);
 
-  if (!loaded || hasConsent) return null;
+  if (isNativeApp || !loaded || hasConsent) return null;
 
   return (
     <div

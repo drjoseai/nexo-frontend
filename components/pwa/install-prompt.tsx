@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { X, Download, Share, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePWA } from "@/lib/hooks/use-pwa";
+import { useNativePlatform } from "@/lib/hooks/use-native-platform";
 import { useTranslations } from "next-intl";
 
 export function PWAInstallPrompt() {
@@ -16,6 +17,7 @@ export function PWAInstallPrompt() {
     promptInstall,
     dismissInstall,
   } = usePWA();
+  const { isNativeApp } = useNativePlatform();
   const t = useTranslations("pwa.install");
   const [showPrompt, setShowPrompt] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -44,7 +46,7 @@ export function PWAInstallPrompt() {
   };
 
   const shouldShow = !hidden && (triggerPrompt || showPrompt);
-  if (isInstalled || !shouldShow) return null;
+  if (isNativeApp || isInstalled || !shouldShow) return null;
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 animate-in slide-in-from-bottom-4 duration-300">

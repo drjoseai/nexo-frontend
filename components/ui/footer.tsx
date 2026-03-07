@@ -1,12 +1,18 @@
+"use client";
+
 import Link from "next/link";
+import { useNativePlatform } from "@/lib/hooks/use-native-platform";
 
 interface FooterProps {
   className?: string;
 }
 
 export function Footer({ className = "" }: FooterProps) {
+  const { isNativeApp } = useNativePlatform();
   const currentYear = new Date().getFullYear();
-  
+
+  if (isNativeApp) return null;
+
   return (
     <footer className={`py-6 px-4 border-t border-border/40 ${className}`}>
       <div className="container max-w-6xl mx-auto">
@@ -53,4 +59,3 @@ export function Footer({ className = "" }: FooterProps) {
     </footer>
   );
 }
-
