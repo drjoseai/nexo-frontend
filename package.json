@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:mobile": "NEXT_PUBLIC_IS_MOBILE=true next build",
+    "build:mobile": "NEXT_PUBLIC_IS_MOBILE=true NODE_ENV=production next build",
     "start": "next start",
     "lint": "eslint",
     "test": "jest",

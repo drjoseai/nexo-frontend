@@ -7,6 +7,9 @@
  * @module lib/api/auth
  */
 
+import { Capacitor } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
+
 import { apiClient } from './client';
 import type {
   LoginRequest,
@@ -14,6 +17,8 @@ import type {
   RegisterResponse,
   User,
 } from '@/types/auth';
+
+export const NATIVE_TOKEN_KEY = 'nexo_access_token';
 
 // ============================================
 // Backend Response Types (internal use)
@@ -85,19 +90,25 @@ export const login = async (credentials: LoginRequest): Promise<User> => {
   formData.append('username', credentials.email); // Backend expects 'username'
   formData.append('password', credentials.password);
 
-  // Backend returns user object directly; tokens are handled via httpOnly cookies
-  const response = await apiClient.post<BackendUserResponse>(
+  const response = await apiClient.post<BackendUserResponse & { access_token?: string }>(
     '/api/v1/auth/login',
     formData,
     {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      withCredentials: true, // Ensure cookies are sent/received
+      withCredentials: true,
     }
   );
 
-  // Transform and return the user directly (no second API call needed)
+  if (Capacitor.isNativePlatform() && response.data.access_token) {
+    await Preferences.set({
+      key: NATIVE_TOKEN_KEY,
+      value: response.data.access_token,
+    });
+    console.log('[Auth] Native: token stored in Preferences');
+  }
+
   return transformUser(response.data);
 };
 
@@ -155,8 +166,12 @@ export const logout = async (): Promise<void> => {
   try {
     await apiClient.post('/api/v1/auth/logout');
   } catch (error) {
-    // Logout can fail silently - client-side cleanup is more important
     console.warn('Server logout failed, continuing with client-side cleanup', error);
+  } finally {
+    if (Capacitor.isNativePlatform()) {
+      await Preferences.remove({ key: NATIVE_TOKEN_KEY });
+      console.log('[Auth] Native: token cleared from Preferences');
+    }
   }
 };
 
@@ -223,4 +238,10 @@ export const verifyAge = async (): Promise<{
   }>('/api/v1/auth/verify-age');
   
   return response.data;
+};
+
+export const getNativeToken = async (): Promise<string | null> => {
+  if (!Capacitor.isNativePlatform()) return null;
+  const { value } = await Preferences.get({ key: NATIVE_TOKEN_KEY });
+  return value;
 };

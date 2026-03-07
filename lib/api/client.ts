@@ -9,6 +9,10 @@
  */
 
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+import { Capacitor } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
+
+const NATIVE_TOKEN_KEY = 'nexo_access_token';
 
 /**
  * Get the API base URL from environment variables
@@ -71,12 +75,17 @@ const createApiClient = (): AxiosInstance => {
    * Request interceptor
    */
   instance.interceptors.request.use(
-    (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
+    async (config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> => {
+      if (Capacitor.isNativePlatform()) {
+        const { value: token } = await Preferences.get({ key: NATIVE_TOKEN_KEY });
+        if (token) {
+          config.headers = config.headers || {};
+          config.headers['Authorization'] = `Bearer ${token}`;
+        }
+      }
       return config;
     },
-    (error: AxiosError) => {
-      return Promise.reject(error);
-    }
+    (error: AxiosError) => Promise.reject(error)
   );
 
   /**
@@ -135,9 +144,18 @@ const createApiClient = (): AxiosInstance => {
         try {
           console.log('[API Client] Access token expired, attempting refresh...');
           
-          await instance.post('/api/v1/auth/refresh', undefined, {
-            withCredentials: true,
-          });
+          const refreshResponse = await instance.post<{ access_token?: string }>(
+            '/api/v1/auth/refresh',
+            undefined,
+            { withCredentials: true }
+          );
+
+          if (Capacitor.isNativePlatform() && refreshResponse.data?.access_token) {
+            await Preferences.set({
+              key: NATIVE_TOKEN_KEY,
+              value: refreshResponse.data.access_token,
+            });
+          }
           
           console.log('[API Client] Token refresh successful, retrying original request');
           

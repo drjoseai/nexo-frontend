@@ -11,7 +11,7 @@ import type { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axio
 // TYPES
 // ============================================
 
-type RequestInterceptor = (config: InternalAxiosRequestConfig) => InternalAxiosRequestConfig;
+type RequestInterceptor = (config: InternalAxiosRequestConfig) => InternalAxiosRequestConfig | Promise<InternalAxiosRequestConfig>;
 type RequestErrorInterceptor = (error: AxiosError) => Promise<never>;
 type ResponseInterceptor = (response: AxiosResponse) => AxiosResponse;
 type ResponseErrorInterceptor = (error: AxiosError) => Promise<unknown>;
@@ -183,13 +183,13 @@ describe('apiClient', () => {
   // ============================================
 
   describe('request interceptor', () => {
-    it('debe pasar la configuración sin modificar', () => {
+    it('debe pasar la configuración sin modificar', async () => {
       const config = {
         url: '/test',
         headers: {},
       } as InternalAxiosRequestConfig;
 
-      const result = capturedRequestInterceptor(config);
+      const result = await capturedRequestInterceptor(config);
       expect(result).toBe(config);
     });
 
