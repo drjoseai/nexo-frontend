@@ -205,7 +205,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   }[avatarId];
 
   return (
-    <div className="flex h-[100dvh] lg:h-full">
+    <div className="flex h-[100dvh] lg:h-full overflow-hidden">
       {/* ============================================ */}
       {/* AVATAR SIDEBAR - Solo visible en pantallas grandes */}
       {/* ============================================ */}
@@ -250,11 +250,11 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
       {/* ============================================ */}
       {/* MAIN CHAT AREA */}
       {/* ============================================ */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {/* ============================================ */}
         {/* HEADER */}
         {/* ============================================ */}
-        <header className="sticky top-0 z-30 flex items-center gap-4 border-b border-white/10 bg-background/95 px-4 py-3 backdrop-blur-md">
+        <header className="sticky top-0 z-30 flex items-center gap-4 border-b border-white/10 bg-background/95 px-4 py-3 backdrop-blur-md shrink-0">
           {/* Botón volver */}
           <Link href="/dashboard">
             <Button variant="ghost" size="icon" className="shrink-0">
@@ -375,7 +375,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         {/* ============================================ */}
         {/* MESSAGES AREA */}
         {/* ============================================ */}
-        <div className="flex-1 overflow-y-auto px-3 py-4 sm:px-4">
+        <div className="flex-1 overflow-y-auto px-3 py-4 sm:px-4 min-h-0">
           {/* Loading state */}
           {isLoading && (
             <div className="flex h-full items-center justify-center">
