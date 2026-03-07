@@ -2,7 +2,10 @@
 // API service para el sistema de chat de NEXO v2.0
 // Endpoints: POST /chat/message, GET /chat/history/{avatar_id}
 
+import { Capacitor } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
 import { apiClient } from "./client";
+import { NATIVE_TOKEN_KEY } from './auth';
 import type {
   ChatMessageRequest,
   ChatMessageResponse,
@@ -155,12 +158,23 @@ export async function sendMessageStream(
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+  // Build headers — inject Bearer token on native (cookies don't work in Capacitor WebView)
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    "Accept": "text/event-stream",
+  };
+
+  if (Capacitor.isNativePlatform()) {
+    const { value: token } = await Preferences.get({ key: NATIVE_TOKEN_KEY });
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+      console.log('[Chat] Native: injecting Bearer token in stream request');
+    }
+  }
+
   const response = await fetch(`${apiUrl}/chat/message/stream`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "text/event-stream",
-    },
+    headers,
     body: JSON.stringify(request),
     signal,
     credentials: "include",
