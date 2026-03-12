@@ -190,17 +190,38 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
             set(initialState);
           });
 
+          // CRITICAL FIX: On native platforms, check for stored token FIRST.
+          // If no token exists in Preferences, user is definitely not authenticated.
+          // Skip the API call entirely to avoid hanging on fresh installs.
+          if (typeof window !== 'undefined') {
+            const { Capacitor } = await import('@capacitor/core');
+            if (Capacitor.isNativePlatform()) {
+              const { Preferences } = await import('@capacitor/preferences');
+              const { value: storedToken } = await Preferences.get({ key: 'nexo_access_token' });
+              if (!storedToken) {
+                console.log('[AuthStore] Native: no stored token found, skipping API call');
+                set({ ...initialState, isLoading: false });
+                return;
+              }
+              console.log('[AuthStore] Native: stored token found, verifying with backend...');
+            }
+          }
+
           set({ isLoading: true, error: null });
 
-          // Fetch current user data
-          // Backend verifies httpOnly cookies automatically
-          // Returns user data if valid, or 401 if not authenticated
-          const user = await authApi.getCurrentUser();
+          // Fetch current user with a timeout safety net (8 seconds max).
+          // This prevents infinite loading if backend is slow (e.g. Render cold start).
+          const user = await Promise.race([
+            authApi.getCurrentUser(),
+            new Promise<never>((_, reject) =>
+              setTimeout(() => reject(new Error('Auth timeout: backend took too long')), 8000)
+            ),
+          ]);
 
           // Update state with user data
           set({
             user,
-            token: null, // Token not stored in frontend
+            token: null,
             isAuthenticated: true,
             error: null,
           });
@@ -208,10 +229,20 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
           rcIdentify(user.id).catch(() => {});
 
           console.log('[AuthStore] User loaded successfully:', user.email);
-        } catch {
-          console.log('[AuthStore] Failed to load user (not authenticated)');
-          
-          // Clear state if not authenticated
+        } catch (error) {
+          console.log('[AuthStore] Failed to load user (not authenticated or timeout):', error);
+
+          // On native timeout or error: clear token if it's invalid
+          if (typeof window !== 'undefined') {
+            const { Capacitor } = await import('@capacitor/core');
+            if (Capacitor.isNativePlatform()) {
+              const { Preferences } = await import('@capacitor/preferences');
+              await Preferences.remove({ key: 'nexo_access_token' }).catch(() => {});
+              console.log('[AuthStore] Native: cleared invalid/expired token');
+            }
+          }
+
+          // Clear state - user goes to login
           set(initialState);
         } finally {
           set({ isLoading: false });

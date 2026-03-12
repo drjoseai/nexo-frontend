@@ -155,6 +155,17 @@ export const register = async (data: RegisterRequest): Promise<RegisterResponse>
  * Get the currently authenticated user's profile
  */
 export const getCurrentUser = async (): Promise<User> => {
+  // On native platforms, ensure we're sending the Bearer token.
+  // The apiClient interceptor handles this automatically via Preferences,
+  // but we log here for debugging visibility.
+  if (Capacitor.isNativePlatform()) {
+    const { value: token } = await Preferences.get({ key: NATIVE_TOKEN_KEY });
+    console.log('[Auth] getCurrentUser native: token present =', !!token);
+    if (!token) {
+      throw new Error('No token available on native platform');
+    }
+  }
+
   const response = await apiClient.get<BackendUserResponse>('/api/v1/auth/me');
   return transformUser(response.data);
 };
