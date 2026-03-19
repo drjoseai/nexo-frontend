@@ -10,6 +10,7 @@ import { PWAInstallPrompt, PWAUpdateNotification } from "@/components/pwa";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 import { CookieBanner } from "@/components/cookie-consent";
 import { OfflineScreen } from "@/components/native/OfflineScreen";
+import PWAInstallSuppressor from "@/components/PWAInstallSuppressor";
 
 const dmSans = DM_Sans({
   variable: "--font-sans",
@@ -145,6 +146,7 @@ export default async function RootLayout({
       <body
         className={`${dmSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} font-sans antialiased min-h-screen`}
       >
+        <PWAInstallSuppressor />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
