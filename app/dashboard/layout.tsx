@@ -103,7 +103,7 @@ export default function DashboardLayout({
         // Desktop: always pad for sidebar
         "lg:pl-64",
         // Mobile: pad top for header (except in chat which has own header)
-        !isInChat && "pt-14 lg:pt-0",
+        !isInChat && "pt-[calc(3.5rem+env(safe-area-inset-top,0px))] lg:pt-0",
         // Mobile chat: no padding (full screen)
         isInChat && "pl-0"
       )}>
