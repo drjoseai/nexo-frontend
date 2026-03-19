@@ -67,7 +67,6 @@ export function RelationshipTypeSelector({
 
   useEffect(() => {
     if (!open) return;
-    let timeoutId: NodeJS.Timeout;
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       if (
         dropdownRef.current &&
@@ -76,7 +75,7 @@ export function RelationshipTypeSelector({
         setOpen(false);
       }
     };
-    timeoutId = setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("touchstart", handleClickOutside);
     }, 100);
