@@ -478,7 +478,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         {/* ============================================ */}
         {/* INPUT AREA */}
         {/* ============================================ */}
-        <div className="sticky bottom-0 z-20 border-t border-border bg-background/95 p-4 backdrop-blur-md">
+        <div className="shrink-0 z-20 border-t border-border bg-background/95 px-4 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] backdrop-blur-md">
           {/* File Preview (si hay archivo pendiente) */}
           {pendingFile && (
             <FilePreview
