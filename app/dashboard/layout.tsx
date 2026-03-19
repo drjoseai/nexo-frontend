@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileHeader } from "@/components/layout/MobileHeader";
 import { useAuthStore } from "@/lib/store/auth";
 import { PWAInstallPrompt } from "@/components/pwa/install-prompt";
+import { useRevenueCat } from "@/lib/hooks/use-revenuecat";
 import { cn } from "@/lib/utils";
 
 export default function DashboardLayout({
@@ -17,6 +18,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const { isAuthenticated, isLoading, loadUser, user } = useAuthStore();
   
+  const { initialize: initializeRC } = useRevenueCat();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isInChat = pathname?.startsWith("/dashboard/chat");
 
@@ -24,6 +26,13 @@ export default function DashboardLayout({
   useEffect(() => {
     loadUser();
   }, [loadUser]);
+
+  // Initialize RevenueCat on native platforms
+  useEffect(() => {
+    if (user?.id) {
+      initializeRC(user.id).catch(console.error);
+    }
+  }, [user?.id]);
 
   // Redirect to login if not authenticated (backup for middleware)
   useEffect(() => {

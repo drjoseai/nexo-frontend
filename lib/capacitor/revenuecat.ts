@@ -13,11 +13,9 @@
  * @module lib/capacitor/revenuecat
  */
 
+import { Capacitor } from '@capacitor/core';
 import { isNative } from '@/src/lib/native';
 import type { CustomerInfo, PurchasesPackage } from '@revenuecat/purchases-capacitor';
-
-/** RevenueCat API key from environment */
-const RC_API_KEY = process.env.NEXT_PUBLIC_REVENUECAT_API_KEY || '';
 
 /** Track initialization state */
 let isInitialized = false;
@@ -39,8 +37,13 @@ export async function initRevenueCat(userId?: string): Promise<void> {
     return;
   }
 
-  if (!RC_API_KEY) {
-    console.error('[RevenueCat] Missing NEXT_PUBLIC_REVENUECAT_API_KEY');
+  const platform = Capacitor.getPlatform();
+  const apiKey = platform === 'android'
+    ? process.env.NEXT_PUBLIC_REVENUECAT_ANDROID_API_KEY!
+    : process.env.NEXT_PUBLIC_REVENUECAT_API_KEY!;
+
+  if (!apiKey) {
+    console.error(`[RevenueCat] Missing API key for platform: ${platform}`);
     return;
   }
 
@@ -48,7 +51,7 @@ export async function initRevenueCat(userId?: string): Promise<void> {
     const { Purchases } = await import('@revenuecat/purchases-capacitor');
 
     await Purchases.configure({
-      apiKey: RC_API_KEY,
+      apiKey,
       appUserID: userId || undefined,
     });
 
