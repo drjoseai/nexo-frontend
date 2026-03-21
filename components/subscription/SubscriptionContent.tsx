@@ -46,6 +46,16 @@ export function SubscriptionContent() {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const t = useTranslations("subscriptionPage");
   const { isNativeApp } = useNativePlatform();
+
+  // En Capacitor nativo, window.location.origin es 'capacitor://localhost'
+  // y Stripe no puede redirigir ahí — usar siempre el dominio real.
+  const getBaseUrl = (): string => {
+    if (isNativeApp) {
+      return 'https://app.trynexo.ai';
+    }
+    return window.location.origin;
+  };
+
   const {
     isAvailable: isIAPAvailable,
     isLoading: isIAPLoading,
@@ -340,8 +350,8 @@ export function SubscriptionContent() {
         credentials: 'include', // Esto envía las cookies httpOnly automáticamente
         body: JSON.stringify({
           plan: planId,
-          success_url: `${window.location.origin}/dashboard/subscription?success=true`,
-          cancel_url: `${window.location.origin}/dashboard/subscription?canceled=true`,
+          success_url: `${getBaseUrl()}/dashboard/subscription?success=true`,
+          cancel_url: `${getBaseUrl()}/dashboard/subscription?canceled=true`,
         }),
       });
 
@@ -394,7 +404,7 @@ export function SubscriptionContent() {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          return_url: `${window.location.origin}/dashboard/subscription`,
+          return_url: `${getBaseUrl()}/dashboard/subscription`,
         }),
       });
 
@@ -468,8 +478,8 @@ export function SubscriptionContent() {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          success_url: `${window.location.origin}/dashboard/subscription?boost=success`,
-          cancel_url: `${window.location.origin}/dashboard/subscription?boost=cancelled`,
+          success_url: `${getBaseUrl()}/dashboard/subscription?boost=success`,
+          cancel_url: `${getBaseUrl()}/dashboard/subscription?boost=cancelled`,
         }),
       });
 
