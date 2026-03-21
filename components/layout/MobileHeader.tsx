@@ -3,16 +3,21 @@
 import { Menu, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useSafeAreaInsets } from "@/lib/hooks/use-safe-area";
 
 interface MobileHeaderProps {
   onMenuClick: () => void;
 }
 
 export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
+  const { top } = useSafeAreaInsets();
+
   return (
     <header
       className="fixed top-0 left-0 right-0 z-30 flex flex-col border-b border-border bg-background lg:hidden"
-      style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+      style={{
+        paddingTop: top > 0 ? `${top}px` : 'env(safe-area-inset-top, 0px)'
+      }}
     >
       <div className="flex h-14 items-center justify-between px-4">
         {/* Logo */}
@@ -20,7 +25,7 @@ export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
           <Sparkles className="h-5 w-5 text-primary" />
           <span className="text-lg font-bold text-gradient">NEXO</span>
         </Link>
-        
+
         {/* Hamburger button */}
         <Button
           variant="ghost"
@@ -34,4 +39,3 @@ export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
     </header>
   );
 }
-

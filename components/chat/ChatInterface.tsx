@@ -5,6 +5,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useSafeAreaInsets } from "@/lib/hooks/use-safe-area";
 import { ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -71,6 +72,7 @@ interface ChatInterfaceProps {
 export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const avatar = AVATARS[avatarId];
+  const { top: safeAreaTop } = useSafeAreaInsets();
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [isAvatarLightboxOpen, setIsAvatarLightboxOpen] = useState(false);
 
@@ -254,7 +256,14 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         {/* ============================================ */}
         {/* HEADER */}
         {/* ============================================ */}
-        <header className="z-30 flex items-center gap-4 border-b border-white/10 bg-background/95 px-4 py-3 backdrop-blur-md shrink-0">
+        <header
+          className="z-30 flex items-center gap-4 border-b border-white/10 bg-background/95 px-4 py-3 backdrop-blur-md shrink-0"
+          style={{
+            paddingTop: safeAreaTop > 0
+              ? `${safeAreaTop + 12}px`
+              : 'calc(env(safe-area-inset-top, 0px) + 0.75rem)'
+          }}
+        >
           {/* Botón volver */}
           <Link href="/dashboard">
             <Button variant="ghost" size="icon" className="shrink-0">

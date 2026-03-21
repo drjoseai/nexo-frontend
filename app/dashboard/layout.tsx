@@ -7,6 +7,7 @@ import { MobileHeader } from "@/components/layout/MobileHeader";
 import { useAuthStore } from "@/lib/store/auth";
 import { PWAInstallPrompt } from "@/components/pwa/install-prompt";
 import { useRevenueCat } from "@/lib/hooks/use-revenuecat";
+import { useSafeAreaInsets } from "@/lib/hooks/use-safe-area";
 import { cn } from "@/lib/utils";
 
 export default function DashboardLayout({
@@ -21,6 +22,7 @@ export default function DashboardLayout({
   const { initialize: initializeRC } = useRevenueCat();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isInChat = pathname?.startsWith("/dashboard/chat");
+  const { top: safeAreaTop } = useSafeAreaInsets();
 
   // Load user data on mount
   useEffect(() => {
@@ -99,14 +101,18 @@ export default function DashboardLayout({
       </div>
 
       {/* Main content */}
-      <main className={cn(
-        // Desktop: always pad for sidebar
-        "lg:pl-64",
-        // Mobile: pad top for header (except in chat which has own header)
-        !isInChat && "pt-[calc(3.5rem+env(safe-area-inset-top,0px))] lg:pt-0",
-        // Mobile chat: no padding (full screen)
-        isInChat && "pl-0"
-      )}>
+      <main
+        className={cn(
+          "lg:pl-64",
+          !isInChat && "lg:pt-0",
+          isInChat && "pl-0"
+        )}
+        style={!isInChat ? {
+          paddingTop: safeAreaTop > 0
+            ? `${safeAreaTop + 56}px`
+            : 'calc(env(safe-area-inset-top, 0px) + 3.5rem)'
+        } : undefined}
+      >
         <div className={cn(
           isInChat ? "h-screen" : "container py-8"
         )}>
