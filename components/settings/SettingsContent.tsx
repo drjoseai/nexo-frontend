@@ -29,10 +29,12 @@ import { toast } from "sonner";
 import { clearAllData, exportUserData } from "@/lib/api/chat";
 import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
 import { useCookieConsent } from "@/lib/hooks/use-cookie-consent";
+import { useNativePlatform } from "@/lib/hooks/use-native-platform";
 
 export function SettingsContent() {
   const { user, logout } = useAuthStore();
   const { resetConsent } = useCookieConsent();
+  const { isNativeApp } = useNativePlatform();
   const t = useTranslations("settings");
   const tCommon = useTranslations("common");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -42,6 +44,13 @@ export function SettingsContent() {
   const [isManaging, setIsManaging] = useState(false);
   const [isCanceling, setIsCanceling] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+
+  const getBaseUrl = (): string => {
+    if (isNativeApp) {
+      return 'https://app.trynexo.ai';
+    }
+    return window.location.origin;
+  };
 
   const handleClearAll = async () => {
     setIsClearing(true);
@@ -118,7 +127,7 @@ export function SettingsContent() {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          return_url: `${window.location.origin}/dashboard/settings`,
+          return_url: `${getBaseUrl()}/dashboard/settings`,
         }),
       });
       if (!response.ok) {
