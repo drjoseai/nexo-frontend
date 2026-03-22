@@ -24,6 +24,7 @@ import type { AvatarId, RelationshipType } from "@/types/chat";
 import { AVATARS, getAvatarImageByMode } from "@/types/avatar";
 import { ImageLightbox } from "./ImageLightbox";
 import { BoostPopup } from "./BoostPopup";
+import { PremiumUpgradeModal } from "./PremiumUpgradeModal";
 import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
 import { trackMessageAndRequestReview } from "@/lib/capacitor/in-app-review";
 
@@ -75,6 +76,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const { top: safeAreaTop } = useSafeAreaInsets();
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [isAvatarLightboxOpen, setIsAvatarLightboxOpen] = useState(false);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   useEffect(() => {
     analytics.track(AnalyticsEvents.AVATAR_SELECTED, {
@@ -171,12 +173,9 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     toast.success(`${tRel("changedTo")}: ${tRel(newType === "assistant" ? "assistant" : newType === "friend" ? "friend" : "romantic")}`);
   };
 
-  // Handler cuando se requiere premium
+  // Handler cuando se requiere premium — abre modal de upgrade
   const handlePremiumRequired = () => {
-    toast.error("Esta función requiere el plan Premium", {
-      duration: 4000,
-    });
-    // TODO: Aquí se podría abrir un modal de upgrade o redirigir a /dashboard/subscription
+    setShowPremiumModal(true);
   };
 
   // Handler para selección de archivo
@@ -534,6 +533,10 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         isOpen={showBoostPopup}
         onClose={closeBoostPopup}
         dailyLimit={boostDailyLimit}
+      />
+      <PremiumUpgradeModal
+        isOpen={showPremiumModal}
+        onClose={() => setShowPremiumModal(false)}
       />
     </div>
   );

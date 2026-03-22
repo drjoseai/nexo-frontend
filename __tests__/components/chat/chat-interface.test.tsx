@@ -24,16 +24,32 @@ jest.mock("next/link", () => {
 
 // Mock RelationshipTypeSelector
 jest.mock("@/components/chat/RelationshipTypeSelector", () => ({
-  RelationshipTypeSelector: ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
-    <select
-      data-testid="relationship-selector"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-    >
-      <option value="assistant">Aliado</option>
-      <option value="friend">Confidente</option>
-      <option value="romantic">Mi Persona</option>
-    </select>
+  RelationshipTypeSelector: ({
+    value,
+    onChange,
+    onPremiumRequired,
+  }: {
+    value: string;
+    onChange: (v: string) => void;
+    onPremiumRequired?: () => void;
+  }) => (
+    <div>
+      <select
+        data-testid="relationship-selector"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        <option value="assistant">Aliado</option>
+        <option value="friend">Confidente</option>
+        <option value="romantic">Mi Persona</option>
+      </select>
+      <button
+        data-testid="trigger-premium-required"
+        onClick={() => onPremiumRequired?.()}
+      >
+        Trigger Premium
+      </button>
+    </div>
   ),
 }));
 
@@ -149,6 +165,18 @@ jest.mock("@/components/chat/FilePreview", () => ({
 // Mock file API
 jest.mock("@/lib/api/files", () => ({
   validateFile: jest.fn(() => ({ valid: true, fileType: "image" })),
+}));
+
+// Mock PremiumUpgradeModal
+jest.mock("@/components/chat/PremiumUpgradeModal", () => ({
+  PremiumUpgradeModal: ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) =>
+    isOpen ? (
+      <div data-testid="premium-upgrade-modal">
+        <button data-testid="close-premium-modal" onClick={onClose}>
+          Cerrar
+        </button>
+      </div>
+    ) : null,
 }));
 
 // ============================================
@@ -498,6 +526,30 @@ describe("ChatInterface", () => {
       const avatarNames = screen.getAllByText("Allan");
       const hasCorrectClass = avatarNames.some(el => el.className.includes("text-[var(--allan)]"));
       expect(hasCorrectClass).toBe(true);
+    });
+  });
+
+  // ==========================================
+  // PREMIUM UPGRADE MODAL
+  // ==========================================
+  describe("Premium Upgrade Modal", () => {
+    it("does not show premium modal initially", () => {
+      render(<ChatInterface avatarId="lia" />);
+      expect(screen.queryByTestId("premium-upgrade-modal")).not.toBeInTheDocument();
+    });
+
+    it("shows premium modal when onPremiumRequired is triggered", () => {
+      render(<ChatInterface avatarId="lia" />);
+      fireEvent.click(screen.getByTestId("trigger-premium-required"));
+      expect(screen.getByTestId("premium-upgrade-modal")).toBeInTheDocument();
+    });
+
+    it("closes premium modal when onClose is called", () => {
+      render(<ChatInterface avatarId="lia" />);
+      fireEvent.click(screen.getByTestId("trigger-premium-required"));
+      expect(screen.getByTestId("premium-upgrade-modal")).toBeInTheDocument();
+      fireEvent.click(screen.getByTestId("close-premium-modal"));
+      expect(screen.queryByTestId("premium-upgrade-modal")).not.toBeInTheDocument();
     });
   });
 });
