@@ -114,7 +114,7 @@ export default function DashboardLayout({
         } : undefined}
       >
         <div className={cn(
-          isInChat ? "h-screen" : "container py-8"
+          isInChat ? "h-dvh" : "container py-8"
         )}>
           {children}
         </div>

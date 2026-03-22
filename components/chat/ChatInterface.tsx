@@ -150,6 +150,21 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     }
   }, [relationshipType, STORAGE_KEY]);
 
+  // Scroll al último mensaje cuando el teclado virtual abre (Android)
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+
+    const handleViewportResize = () => {
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    };
+
+    viewport.addEventListener("resize", handleViewportResize);
+    return () => viewport.removeEventListener("resize", handleViewportResize);
+  }, []);
+
   // Handler para cambiar relationship type
   const handleRelationshipTypeChange = (newType: RelationshipType) => {
     setRelationshipType(newType);
@@ -257,7 +272,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         {/* HEADER */}
         {/* ============================================ */}
         <header
-          className="z-30 flex items-center gap-4 border-b border-white/10 bg-background/95 px-4 py-3 backdrop-blur-md shrink-0"
+          className="sticky top-0 z-30 flex items-center gap-4 border-b border-white/10 bg-background/95 px-4 py-3 backdrop-blur-md shrink-0"
           style={{
             paddingTop: safeAreaTop > 0
               ? `${safeAreaTop + 12}px`
