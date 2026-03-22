@@ -487,12 +487,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
             }
           },
 
-          onComplete: () => {
+          onComplete: (data) => {
             set((state) => ({
               messages: state.messages.map((msg) =>
                 msg.id === avatarMessageId
                   ? {
                       ...msg,
+                      id: data.message_id,
                       status: "sent" as const,
                       metadata: {
                         model_used: finalMetadata.model as string,
@@ -507,7 +508,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
               streamingMessageId: null,
               messagesRemaining:
                 state.messagesRemaining !== null
-                  ? state.messagesRemaining - 1
+                  ? Math.max(0, state.messagesRemaining - 1)
                   : null,
             }));
 
