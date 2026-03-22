@@ -48,6 +48,23 @@ const customJestConfig = {
     '!**/node_modules/**',
     '!**/.next/**',
     '!**/types/**', // Type definitions only
+    // ─── Capacitor native wrappers ───────────────────────────
+    // These files wrap iOS/Android native APIs unavailable in
+    // JSDOM (CI environment). They are tested on-device during
+    // manual QA and integration testing, not in unit tests.
+    '!lib/capacitor/att.ts',
+    '!lib/capacitor/apple-auth.ts',
+    '!lib/capacitor/deep-links.ts',
+    '!lib/capacitor/push-notifications.ts',
+    '!lib/capacitor/status-bar.ts',
+    '!lib/capacitor/android-back.ts',
+    '!lib/hooks/use-revenuecat.ts',
+    '!lib/hooks/use-push-notifications.ts',
+    '!lib/hooks/use-deep-links.ts',
+    '!lib/hooks/use-android-back.ts',
+    '!lib/hooks/use-native-platform.ts',
+    '!lib/hooks/use-app-init.ts',
+    '!lib/hooks/use-cookie-consent.ts',
   ],
   
   // Coverage thresholds: 20% ✓ → 50% ✓ → Target: 70%
