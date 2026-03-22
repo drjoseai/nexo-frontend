@@ -224,35 +224,33 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     <div className="flex h-[100dvh] lg:h-full overflow-hidden safe-area-top">
       {/* ============================================ */}
       {/* AVATAR SIDEBAR - Solo visible en pantallas grandes */}
+      {/* Portrait full-height, Replika-style */}
       {/* ============================================ */}
-      <div className="hidden lg:flex flex-col items-center justify-center w-48 border-r border-white/10 bg-black/20 p-4">
+      <div className="hidden lg:flex flex-col w-52 border-r border-white/10 bg-black/20 overflow-hidden">
         <button
           onClick={() => setIsAvatarLightboxOpen(true)}
-          className="group/avatar cursor-pointer focus:outline-none"
+          className="group/avatar relative flex-1 w-full overflow-hidden focus:outline-none"
           aria-label={`Ver foto de ${avatar?.name}`}
         >
-          <div
-            className={cn(
-              "relative w-36 h-36 rounded-full overflow-hidden transition-transform duration-200 group-hover/avatar:scale-105",
-              "avatar-animated",
-              `avatar-glow-${avatarId}`
-            )}
-          >
-            <Image
-              src={getAvatarImageByMode(avatarId, relationshipType as RelationshipType)}
-              alt={avatar?.name || "Avatar"}
-              fill
-              className="object-cover object-top"
-              priority
-            />
+          <Image
+            src={getAvatarImageByMode(avatarId, relationshipType as RelationshipType)}
+            alt={avatar?.name || "Avatar"}
+            fill
+            className="object-cover object-top transition-transform duration-300 group-hover/avatar:scale-105"
+            priority
+          />
+          {/* Gradient bottom overlay */}
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
+          {/* Name + status */}
+          <div className="absolute bottom-4 inset-x-0 flex flex-col items-center gap-1">
+            <p className={cn("font-semibold text-lg drop-shadow-md", avatarColorClass)}>
+              {avatar?.name}
+            </p>
+            <p className="text-xs text-white/60">
+              {isSending ? "Escribiendo..." : "En línea"}
+            </p>
           </div>
         </button>
-        <p className={cn("mt-4 font-semibold text-lg", avatarColorClass)}>
-          {avatar?.name}
-        </p>
-        <p className="text-xs text-white/50 mt-1">
-          {isSending ? "Escribiendo..." : "En línea"}
-        </p>
       </div>
 
       {/* Avatar photo lightbox */}
@@ -266,7 +264,25 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
       {/* ============================================ */}
       {/* MAIN CHAT AREA */}
       {/* ============================================ */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-0">
+      <div className="relative flex-1 flex flex-col min-w-0 min-h-0">
+        {/* ============================================ */}
+        {/* AVATAR MOBILE — Persistent background layer (Replika-style) */}
+        {/* Solo visible en mobile, siempre presente */}
+        {/* ============================================ */}
+        <div className="absolute inset-y-0 left-0 w-[42%] z-0 lg:hidden overflow-hidden pointer-events-none">
+          <Image
+            src={getAvatarImageByMode(avatarId, relationshipType as RelationshipType)}
+            alt={avatar?.name || "Avatar"}
+            fill
+            className="object-cover object-top"
+            priority
+          />
+          {/* Fade right edge into background */}
+          <div className="absolute inset-y-0 right-0 w-14 bg-gradient-to-r from-transparent to-background pointer-events-none" />
+          {/* Fade bottom edge */}
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background/70 to-transparent pointer-events-none" />
+        </div>
+
         {/* ============================================ */}
         {/* HEADER */}
         {/* ============================================ */}
@@ -367,38 +383,9 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         </header>
 
         {/* ============================================ */}
-        {/* AVATAR SECTION - Solo visible en móvil cuando chat está vacío */}
-        {/* ============================================ */}
-        {!isLoading && messages.length === 0 && (
-          <div className="flex lg:hidden flex-col items-center py-4 border-b border-white/10 bg-gradient-to-b from-black/20 to-transparent">
-            <div
-              className={cn(
-                "relative w-24 h-24 rounded-full overflow-hidden",
-                "avatar-animated",
-                `avatar-glow-${avatarId}`
-              )}
-            >
-              <Image
-                src={`/avatars/${avatarId}.webp`}
-                alt={avatar?.name || "Avatar"}
-                fill
-                className="object-cover object-top"
-                priority
-              />
-            </div>
-            <p className={cn("mt-3 font-semibold text-lg", avatarColorClass)}>
-              {avatar?.name}
-            </p>
-            <p className="text-xs text-white/50 mt-1">
-              {isSending ? "Escribiendo..." : "En línea"}
-            </p>
-          </div>
-        )}
-
-        {/* ============================================ */}
         {/* MESSAGES AREA */}
         {/* ============================================ */}
-        <div className="flex-1 overflow-y-auto px-3 py-4 sm:px-4 min-h-0">
+        <div className="relative z-10 flex-1 overflow-y-auto px-3 py-4 sm:px-4 min-h-0">
           {/* Loading state */}
           {isLoading && (
             <div className="flex h-full items-center justify-center">
