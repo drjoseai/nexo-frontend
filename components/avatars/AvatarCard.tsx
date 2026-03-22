@@ -4,8 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { Lock, MessageCircle, Sparkles } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Lock, MessageCircle } from "lucide-react";
 import type { AvatarId, RelationshipType, PlanType } from "@/types/avatar";
 import { AVATARS, isAvatarAvailableForPlan } from "@/types/avatar";
 import { hapticMedium } from "@/lib/capacitor/haptics";
@@ -118,14 +117,7 @@ export function AvatarCard({
           </div>
         )}
 
-        {avatar.supportsRomantic && !isLocked && (
-          <div className="absolute right-2 top-2 z-20">
-            <Badge variant="secondary" className="gap-1 bg-accent/90 text-accent-foreground">
-              <Sparkles className="h-3 w-3" />
-              18+
-            </Badge>
-          </div>
-        )}
+
       </div>
 
       <div className="flex flex-1 flex-col p-4">
