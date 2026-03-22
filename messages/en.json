@@ -241,7 +241,11 @@
     "cookiePreferences": "Cookie Preferences",
     "cookiePreferencesDescription": "Manage which cookies NEXO can use",
     "resetCookiePreferences": "Reset Cookie Preferences",
-    "cookiePreferencesReset": "Cookie preferences have been reset"
+    "cookiePreferencesReset": "Cookie preferences have been reset",
+    "subscriptionManagement": "Subscription",
+    "subscriptionManagementDescription": "Manage your subscription and payments",
+    "managePayments": "Manage payments",
+    "cancelSubscription": "Cancel subscription"
   },
   "errors": {
     "generic": "Something went wrong",
