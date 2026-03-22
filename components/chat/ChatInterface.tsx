@@ -269,12 +269,20 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         {/* AVATAR MOBILE — Persistent background layer (Replika-style) */}
         {/* Solo visible en mobile, siempre presente */}
         {/* ============================================ */}
-        <div className="absolute inset-y-0 left-0 w-[42%] z-0 lg:hidden overflow-hidden pointer-events-none">
+        <div
+          className="absolute left-0 w-[42%] z-0 lg:hidden overflow-hidden pointer-events-none"
+          style={{
+            top: safeAreaTop > 0
+              ? `${safeAreaTop + 48}px`
+              : "calc(env(safe-area-inset-top, 0px) + 3rem)",
+            bottom: 0,
+          }}
+        >
           <Image
             src={getAvatarImageByMode(avatarId, relationshipType as RelationshipType)}
             alt={avatar?.name || "Avatar"}
             fill
-            className="object-cover object-top"
+            className="object-cover object-[50%_15%]"
             priority
           />
           {/* Fade right edge into background */}
