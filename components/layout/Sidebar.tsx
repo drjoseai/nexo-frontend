@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
@@ -11,7 +12,6 @@ import {
   CreditCard,
   Settings,
   LogOut,
-  Sparkles,
   X,
   HelpCircle,
   Download,
@@ -126,8 +126,14 @@ export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarPro
             {/* Header with close button */}
             <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-6">
               <Link href="/dashboard" className="flex items-center gap-2" onClick={handleNavClick}>
-                <Sparkles className="h-6 w-6 text-primary" />
-                <span className="text-xl font-bold text-gradient">NEXO</span>
+                <Image
+                  src="/nexo-logo-source.png"
+                  alt="NEXO"
+                  width={96}
+                  height={32}
+                  className="object-contain"
+                  priority
+                />
               </Link>
               <Button
                 variant="ghost"
@@ -259,8 +265,14 @@ export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarPro
           {/* Logo */}
           <div className="flex h-16 items-center border-b border-sidebar-border px-6">
             <Link href="/dashboard" className="flex items-center gap-2">
-              <Sparkles className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold text-gradient">NEXO</span>
+              <Image
+                src="/nexo-logo-source.png"
+                alt="NEXO"
+                width={96}
+                height={32}
+                className="object-contain"
+                priority
+              />
             </Link>
           </div>
 

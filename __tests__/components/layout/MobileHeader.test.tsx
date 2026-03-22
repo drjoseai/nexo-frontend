@@ -5,9 +5,6 @@ jest.mock("lucide-react", () => ({
   Menu: (props: React.SVGProps<SVGSVGElement>) => (
     <svg data-testid="icon-menu" {...props} />
   ),
-  Sparkles: (props: React.SVGProps<SVGSVGElement>) => (
-    <svg data-testid="icon-sparkles" {...props} />
-  ),
 }));
 
 jest.mock("next/link", () => {
@@ -29,7 +26,7 @@ describe("MobileHeader", () => {
     render(<MobileHeader onMenuClick={jest.fn()} />);
     const link = screen.getByRole("link");
     expect(link).toHaveAttribute("href", "/dashboard");
-    expect(screen.getByText("NEXO")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "NEXO" })).toBeInTheDocument();
   });
 
   it("renders hamburger button with correct aria-label", () => {
@@ -44,9 +41,9 @@ describe("MobileHeader", () => {
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  it("renders sparkles and menu icons", () => {
+  it("renders logo image and menu icon", () => {
     render(<MobileHeader onMenuClick={jest.fn()} />);
-    expect(screen.getByTestId("icon-sparkles")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "NEXO" })).toBeInTheDocument();
     expect(screen.getByTestId("icon-menu")).toBeInTheDocument();
   });
 });

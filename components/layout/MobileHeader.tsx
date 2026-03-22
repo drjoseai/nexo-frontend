@@ -1,8 +1,9 @@
 "use client";
 
-import { Menu, Sparkles } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 import { useSafeAreaInsets } from "@/lib/hooks/use-safe-area";
 
 interface MobileHeaderProps {
@@ -22,8 +23,14 @@ export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
       <div className="flex h-14 items-center justify-between px-4">
         {/* Logo */}
         <Link href="/dashboard" className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
-          <span className="text-lg font-bold text-gradient">NEXO</span>
+          <Image
+            src="/nexo-logo-source.png"
+            alt="NEXO"
+            width={80}
+            height={28}
+            className="object-contain"
+            priority
+          />
         </Link>
 
         {/* Hamburger button */}

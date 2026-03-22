@@ -110,7 +110,7 @@ describe('Sidebar', () => {
     it('should render NEXO logo', () => {
       render(<Sidebar />);
       
-      expect(screen.getByText('NEXO')).toBeInTheDocument();
+      expect(screen.getByRole('img', { name: /nexo/i })).toBeInTheDocument();
     });
 
     it('should have logo link to dashboard', () => {
