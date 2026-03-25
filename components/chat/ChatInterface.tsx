@@ -153,13 +153,33 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     }
   }, [relationshipType, STORAGE_KEY]);
 
-  // Keyboard handling — position:relative + 100dvh resizes automatically
-  // @capacitor/keyboard provides scroll-to-input for native apps
+  // Keyboard handling — visualViewport resize ajusta height en iOS Safari PWA
   useEffect(() => {
+    const vv = window.visualViewport;
+
+    const handleViewportChange = () => {
+      if (!containerRef.current || window.innerWidth >= 1024) return;
+      if (!vv) return;
+      // Ajustar height al viewport visible — fix para iOS Safari PWA y Android WebView
+      containerRef.current.style.height = `${vv.height}px`;
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    };
+
+    const resetHeight = () => {
+      if (!containerRef.current || window.innerWidth >= 1024) return;
+      containerRef.current.style.height = "";
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 50);
+    };
+
+    // Capacitor keyboard listeners para native apps
     let keyboardShowListener: { remove: () => void } | null = null;
     let keyboardHideListener: { remove: () => void } | null = null;
 
-    const setupKeyboard = async () => {
+    const setupCapacitorKeyboard = async () => {
       try {
         const { Keyboard } = await import("@capacitor/keyboard");
         keyboardShowListener = await Keyboard.addListener("keyboardDidShow", () => {
@@ -173,15 +193,27 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
           }, 50);
         });
       } catch {
-        // Not running in Capacitor native — no-op, CSS handles it
+        // Not running in Capacitor native — no-op
       }
     };
 
-    setupKeyboard();
+    if (vv) {
+      vv.addEventListener("resize", handleViewportChange);
+      vv.addEventListener("scroll", handleViewportChange);
+    }
+
+    setupCapacitorKeyboard();
 
     return () => {
+      if (vv) {
+        vv.removeEventListener("resize", handleViewportChange);
+        vv.removeEventListener("scroll", handleViewportChange);
+      }
       keyboardShowListener?.remove();
       keyboardHideListener?.remove();
+      if (containerRef.current) {
+        containerRef.current.style.height = "";
+      }
     };
   }, []);
 
