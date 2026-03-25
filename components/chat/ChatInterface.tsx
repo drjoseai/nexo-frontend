@@ -153,66 +153,68 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     }
   }, [relationshipType, STORAGE_KEY]);
 
-  // Keyboard handling — visualViewport resize ajusta height en iOS Safari PWA
+  // Keyboard handling — fixed inset-0 + visualViewport height+top adjustment
+  // Trigger: focusin (vv.resize no dispara confiablemente en iOS Safari PWA)
   useEffect(() => {
     const vv = window.visualViewport;
 
-    const handleViewportChange = () => {
+    const applyKeyboardFix = () => {
       if (!containerRef.current || window.innerWidth >= 1024) return;
       if (!vv) return;
-      // Ajustar height al viewport visible — fix para iOS Safari PWA y Android WebView
       containerRef.current.style.height = `${vv.height}px`;
+      containerRef.current.style.top = `${vv.offsetTop}px`;
+      containerRef.current.style.bottom = "auto";
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 100);
     };
 
-    const resetHeight = () => {
+    const clearKeyboardFix = () => {
       if (!containerRef.current || window.innerWidth >= 1024) return;
       containerRef.current.style.height = "";
+      containerRef.current.style.top = "";
+      containerRef.current.style.bottom = "";
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 50);
     };
 
-    // Capacitor keyboard listeners para native apps
-    let keyboardShowListener: { remove: () => void } | null = null;
-    let keyboardHideListener: { remove: () => void } | null = null;
-
-    const setupCapacitorKeyboard = async () => {
-      try {
-        const { Keyboard } = await import("@capacitor/keyboard");
-        keyboardShowListener = await Keyboard.addListener("keyboardDidShow", () => {
-          setTimeout(() => {
-            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-          }, 100);
-        });
-        keyboardHideListener = await Keyboard.addListener("keyboardDidHide", () => {
-          setTimeout(() => {
-            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-          }, 50);
-        });
-      } catch {
-        // Not running in Capacitor native — no-op
+    const handleFocusIn = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
+        setTimeout(applyKeyboardFix, 350);
       }
     };
 
+    const handleFocusOut = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
+        setTimeout(clearKeyboardFix, 100);
+      }
+    };
+
+    const handleViewportChange = () => {
+      applyKeyboardFix();
+    };
+
+    document.addEventListener("focusin", handleFocusIn);
+    document.addEventListener("focusout", handleFocusOut);
     if (vv) {
       vv.addEventListener("resize", handleViewportChange);
       vv.addEventListener("scroll", handleViewportChange);
     }
 
-    setupCapacitorKeyboard();
-
     return () => {
+      document.removeEventListener("focusin", handleFocusIn);
+      document.removeEventListener("focusout", handleFocusOut);
       if (vv) {
         vv.removeEventListener("resize", handleViewportChange);
         vv.removeEventListener("scroll", handleViewportChange);
       }
-      keyboardShowListener?.remove();
-      keyboardHideListener?.remove();
       if (containerRef.current) {
         containerRef.current.style.height = "";
+        containerRef.current.style.top = "";
+        containerRef.current.style.bottom = "";
       }
     };
   }, []);
@@ -273,15 +275,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   return (
     <div
       ref={containerRef}
-      className="flex overflow-hidden lg:relative lg:h-full"
-      style={{
-        position: "relative" as const,
-        height: "100dvh",
-        maxHeight: "100dvh",
-        paddingTop: safeAreaTop > 0
-          ? `${safeAreaTop}px`
-          : "env(safe-area-inset-top, 0px)",
-      }}
+      className="fixed inset-0 flex overflow-hidden lg:relative lg:inset-auto lg:h-full"
     >
       {/* ============================================ */}
       {/* AVATAR SIDEBAR - Solo visible en pantallas grandes */}
