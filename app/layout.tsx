@@ -11,6 +11,7 @@ import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 import { CookieBanner } from "@/components/cookie-consent";
 import { OfflineScreen } from "@/components/native/OfflineScreen";
 import PWAInstallSuppressor from "@/components/PWAInstallSuppressor";
+import { KeyboardTrackerInit } from "@/components/ui/KeyboardTrackerInit";
 
 const dmSans = DM_Sans({
   variable: "--font-sans",
@@ -149,6 +150,7 @@ export default async function RootLayout({
       <body
         className={`${dmSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} font-sans antialiased min-h-screen`}
       >
+        <KeyboardTrackerInit />
         <PWAInstallSuppressor />
         <ThemeProvider
           attribute="class"

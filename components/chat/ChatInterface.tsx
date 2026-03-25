@@ -153,72 +153,6 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     }
   }, [relationshipType, STORAGE_KEY]);
 
-  // Keyboard handling — fixed inset-0 + visualViewport height+top adjustment
-  // Trigger: focusin (vv.resize no dispara confiablemente en iOS Safari PWA)
-  useEffect(() => {
-    const vv = window.visualViewport;
-
-    const applyKeyboardFix = () => {
-      if (!containerRef.current || window.innerWidth >= 1024) return;
-      if (!vv) return;
-      containerRef.current.style.height = `${vv.height}px`;
-      containerRef.current.style.top = `${vv.offsetTop}px`;
-      containerRef.current.style.bottom = "auto";
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    };
-
-    const clearKeyboardFix = () => {
-      if (!containerRef.current || window.innerWidth >= 1024) return;
-      containerRef.current.style.height = "";
-      containerRef.current.style.top = "";
-      containerRef.current.style.bottom = "";
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 50);
-    };
-
-    const handleFocusIn = (e: FocusEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
-        setTimeout(applyKeyboardFix, 350);
-      }
-    };
-
-    const handleFocusOut = (e: FocusEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
-        setTimeout(clearKeyboardFix, 100);
-      }
-    };
-
-    const handleViewportChange = () => {
-      applyKeyboardFix();
-    };
-
-    document.addEventListener("focusin", handleFocusIn);
-    document.addEventListener("focusout", handleFocusOut);
-    if (vv) {
-      vv.addEventListener("resize", handleViewportChange);
-      vv.addEventListener("scroll", handleViewportChange);
-    }
-
-    return () => {
-      document.removeEventListener("focusin", handleFocusIn);
-      document.removeEventListener("focusout", handleFocusOut);
-      if (vv) {
-        vv.removeEventListener("resize", handleViewportChange);
-        vv.removeEventListener("scroll", handleViewportChange);
-      }
-      if (containerRef.current) {
-        containerRef.current.style.height = "";
-        containerRef.current.style.top = "";
-        containerRef.current.style.bottom = "";
-      }
-    };
-  }, []);
-
   // Handler para cambiar relationship type
   const handleRelationshipTypeChange = (newType: RelationshipType) => {
     setRelationshipType(newType);
@@ -279,8 +213,8 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
       style={{
         top: 0,
         right: 0,
-        bottom: 0,
         left: 0,
+        bottom: "var(--keyboard-height, 0px)",
       }}
     >
       {/* ============================================ */}
