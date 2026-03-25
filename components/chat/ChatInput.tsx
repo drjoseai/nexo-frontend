@@ -69,9 +69,10 @@ export function ChatInput({
       hapticLight().catch(() => {});
       onSend(trimmedMessage);
       setMessage("");
-      // Reset textarea height
+      // Reset textarea height y mantener foco para que el teclado no se cierre
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
+        textareaRef.current.focus();
       }
     }
   };

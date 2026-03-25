@@ -129,8 +129,8 @@ export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarPro
                 <Image
                   src="/nexo-logo-source.png"
                   alt="NEXO"
-                  width={96}
-                  height={32}
+                  width={130}
+                  height={44}
                   className="object-contain"
                   priority
                 />
@@ -268,8 +268,8 @@ export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarPro
               <Image
                 src="/nexo-logo-source.png"
                 alt="NEXO"
-                width={96}
-                height={32}
+                width={130}
+                height={44}
                 className="object-contain"
                 priority
               />

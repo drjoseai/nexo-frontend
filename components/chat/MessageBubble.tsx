@@ -20,22 +20,24 @@ const AVATAR_COLORS: Record<AvatarId, {
   glowDark: string;
 }> = {
   lia: {
+    // Light mode: tinte sutil del color de Lía
     bgLight: "bg-primary/10 border-primary/20",
-    bgDark: "bg-gradient-to-br from-primary/85 to-primary/65 border-white/15",
-    glowLight: "shadow-primary/20",
-    glowDark: "shadow-primary/30",
+    // Dark mode: fondo oscuro neutro — claramente diferente al cobre del usuario
+    bgDark: "dark:bg-[oklch(0.19_0.025_50)] dark:border-white/8",
+    glowLight: "shadow-primary/15",
+    glowDark: "dark:shadow-none",
   },
   mia: {
-    bgLight: "bg-amber-100 border-amber-200",
-    bgDark: "bg-gradient-to-br from-[var(--mia)]/85 to-[var(--mia)]/65 border-white/15",
-    glowLight: "shadow-amber-200/50",
-    glowDark: "shadow-[var(--mia)]/30",
+    bgLight: "bg-amber-50 border-amber-200",
+    bgDark: "dark:bg-[oklch(0.19_0.025_50)] dark:border-white/8",
+    glowLight: "shadow-amber-100/50",
+    glowDark: "dark:shadow-none",
   },
   allan: {
-    bgLight: "bg-amber-100 border-amber-200",
-    bgDark: "bg-gradient-to-br from-[var(--allan)]/90 to-[var(--allan)]/70 border-white/15",
-    glowLight: "shadow-amber-200/50",
-    glowDark: "shadow-[var(--allan)]/30",
+    bgLight: "bg-slate-50 border-slate-200",
+    bgDark: "dark:bg-[oklch(0.19_0.025_50)] dark:border-white/8",
+    glowLight: "shadow-slate-100/50",
+    glowDark: "dark:shadow-none",
   },
 };
 

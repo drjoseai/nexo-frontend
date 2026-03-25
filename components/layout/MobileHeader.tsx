@@ -26,8 +26,8 @@ export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
           <Image
             src="/nexo-logo-source.png"
             alt="NEXO"
-            width={80}
-            height={28}
+            width={130}
+            height={44}
             className="object-contain"
             priority
           />

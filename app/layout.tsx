@@ -40,6 +40,9 @@ export const viewport: Viewport = {
   themeColor: "#110e0c",
   colorScheme: "dark light",
   viewportFit: "cover",
+  // Hace que el viewport se reduzca cuando abre el teclado en Android Chrome/PWA
+  // En lugar del comportamiento "overlay" (teclado encima del contenido)
+  interactiveWidget: "resizes-content" as never,
 };
 
 // PWA Metadata Configuration

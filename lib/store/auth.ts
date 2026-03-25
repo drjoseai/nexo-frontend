@@ -22,7 +22,7 @@ const initialState = {
   user: null,
   token: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: true,  // Inicia en true para evitar race condition con redirect en DashboardLayout
   error: null,
 };
 

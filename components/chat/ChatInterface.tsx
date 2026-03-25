@@ -221,7 +221,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   }[avatarId];
 
   return (
-    <div className="flex h-[100dvh] lg:h-full overflow-hidden safe-area-top">
+    <div className="fixed inset-0 flex overflow-hidden lg:relative lg:inset-auto lg:h-full">
       {/* ============================================ */}
       {/* AVATAR SIDEBAR - Solo visible en pantallas grandes */}
       {/* Portrait full-height, Replika-style */}
