@@ -153,86 +153,35 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     }
   }, [relationshipType, STORAGE_KEY]);
 
-  // Manejo de teclado virtual en mobile (iOS PWA + Android)
-  //
-  // PROBLEMA: En iOS Safari PWA, window.visualViewport 'resize' no dispara
-  // confiablemente cuando el teclado abre. Solución: usar focusin/focusout
-  // en inputs como trigger principal, con visualViewport como respaldo.
-  //
-  // ESTRATEGIA paddingBottom:
-  // - Container mantiene `fixed inset-0` (no se desancla)
-  // - paddingBottom = keyboard height → flex children se comprimen hacia arriba
-  // - iOS PWA: window.innerHeight estático, vv.height shrinkea → diff = teclado
-  // - Android: window.innerHeight ya shrinkea → diff ≈ 0 → sin doble ajuste
+  // Keyboard handling — position:relative + 100dvh resizes automatically
+  // @capacitor/keyboard provides scroll-to-input for native apps
   useEffect(() => {
-    const vv = window.visualViewport;
+    let keyboardShowListener: { remove: () => void } | null = null;
+    let keyboardHideListener: { remove: () => void } | null = null;
 
-    const applyKeyboardOffset = () => {
-      if (!containerRef.current || window.innerWidth >= 1024) return;
-
-      if (vv) {
-        const keyboardHeight = Math.max(
-          0,
-          window.innerHeight - vv.height - vv.offsetTop
-        );
-        containerRef.current.style.paddingBottom =
-          keyboardHeight > 0 ? `${keyboardHeight}px` : "";
-      }
-
-      // Scroll al último mensaje
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    };
-
-    const clearKeyboardOffset = () => {
-      if (!containerRef.current || window.innerWidth >= 1024) return;
-      containerRef.current.style.paddingBottom = "";
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    };
-
-    // Trigger en focusin de cualquier input/textarea (teclado va a abrir)
-    const handleFocusIn = (e: FocusEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
-        // Delay para esperar animación de apertura del teclado (~300ms en iOS)
-        setTimeout(applyKeyboardOffset, 350);
+    const setupKeyboard = async () => {
+      try {
+        const { Keyboard } = await import("@capacitor/keyboard");
+        keyboardShowListener = await Keyboard.addListener("keyboardDidShow", () => {
+          setTimeout(() => {
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+          }, 100);
+        });
+        keyboardHideListener = await Keyboard.addListener("keyboardDidHide", () => {
+          setTimeout(() => {
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+          }, 50);
+        });
+      } catch {
+        // Not running in Capacitor native — no-op, CSS handles it
       }
     };
 
-    // Trigger en focusout (teclado va a cerrar)
-    const handleFocusOut = (e: FocusEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
-        setTimeout(clearKeyboardOffset, 100);
-      }
-    };
-
-    // visualViewport como respaldo (funciona en Android y algunos iOS)
-    const handleViewportChange = () => {
-      applyKeyboardOffset();
-    };
-
-    document.addEventListener("focusin", handleFocusIn);
-    document.addEventListener("focusout", handleFocusOut);
-
-    if (vv) {
-      vv.addEventListener("resize", handleViewportChange);
-      vv.addEventListener("scroll", handleViewportChange);
-    }
+    setupKeyboard();
 
     return () => {
-      document.removeEventListener("focusin", handleFocusIn);
-      document.removeEventListener("focusout", handleFocusOut);
-      if (vv) {
-        vv.removeEventListener("resize", handleViewportChange);
-        vv.removeEventListener("scroll", handleViewportChange);
-      }
-      if (containerRef.current) {
-        containerRef.current.style.paddingBottom = "";
-      }
+      keyboardShowListener?.remove();
+      keyboardHideListener?.remove();
     };
   }, []);
 
@@ -292,7 +241,15 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 flex overflow-hidden lg:relative lg:inset-auto lg:h-full"
+      className="flex overflow-hidden lg:relative lg:h-full"
+      style={{
+        position: "relative" as const,
+        height: "100dvh",
+        maxHeight: "100dvh",
+        paddingTop: safeAreaTop > 0
+          ? `${safeAreaTop}px`
+          : "env(safe-area-inset-top, 0px)",
+      }}
     >
       {/* ============================================ */}
       {/* AVATAR SIDEBAR - Solo visible en pantallas grandes */}
