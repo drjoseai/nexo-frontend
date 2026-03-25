@@ -14,12 +14,9 @@ import {
   LogOut,
   X,
   HelpCircle,
-  Download,
   MessageSquareHeart,
 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/auth";
-import { usePWA } from "@/lib/hooks/use-pwa";
-import { useNativePlatform } from "@/lib/hooks/use-native-platform";
 import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "@/components/ui/language-selector";
 import { Locale } from "@/i18n/config";
@@ -73,9 +70,6 @@ export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarPro
   const t = useTranslations("navigation");
   const tSidebar = useTranslations("sidebar");
   const tAuth = useTranslations("auth");
-  const tPwa = useTranslations("pwa.install");
-  const { canInstall, isInstalled, promptInstall } = usePWA();
-  const { isNativeApp } = useNativePlatform();
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -185,24 +179,6 @@ export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarPro
               </button>
             </div>
 
-            {/* Install App button */}
-            {!isNativeApp && canInstall && !isInstalled && (
-              <div className="px-3 pb-3">
-                <button
-                  onClick={() => promptInstall()}
-                  className="w-full flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2.5 text-sm font-medium text-primary transition-all hover:bg-primary/20 hover:border-primary/50"
-                >
-                  <Download className="h-5 w-5" />
-                  <div className="flex flex-col items-start">
-                    <span>{tPwa("sidebarButton")}</span>
-                    <span className="text-[10px] font-normal text-primary/60">
-                      {tPwa("description")}
-                    </span>
-                  </div>
-                </button>
-              </div>
-            )}
-
             {/* User section */}
             <div className="border-t border-sidebar-border p-4">
               {/* Plan badge */}
@@ -311,24 +287,6 @@ export function Sidebar({ isOpen = true, onClose, isMobile = false }: SidebarPro
               {tSidebar("feedback")}
             </button>
           </div>
-
-          {/* Install App button */}
-          {!isNativeApp && canInstall && !isInstalled && (
-            <div className="px-3 pb-3">
-              <button
-                onClick={() => promptInstall()}
-                className="w-full flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2.5 text-sm font-medium text-primary transition-all hover:bg-primary/20 hover:border-primary/50"
-              >
-                <Download className="h-5 w-5" />
-                <div className="flex flex-col items-start">
-                  <span>{tPwa("sidebarButton")}</span>
-                  <span className="text-[10px] font-normal text-primary/60">
-                    {tPwa("description")}
-                  </span>
-                </div>
-              </button>
-            </div>
-          )}
 
           {/* User section */}
           <div className="border-t border-sidebar-border p-4">

@@ -20,11 +20,9 @@ const AVATAR_COLORS: Record<AvatarId, {
   glowDark: string;
 }> = {
   lia: {
-    // Light mode: tinte sutil del color de Lía
-    bgLight: "bg-primary/10 border-primary/20",
-    // Dark mode: fondo oscuro neutro — claramente diferente al cobre del usuario
+    bgLight: "bg-slate-50 border-slate-200",
     bgDark: "dark:bg-[oklch(0.19_0.025_50)] dark:border-white/8",
-    glowLight: "shadow-primary/15",
+    glowLight: "shadow-slate-100/50",
     glowDark: "dark:shadow-none",
   },
   mia: {

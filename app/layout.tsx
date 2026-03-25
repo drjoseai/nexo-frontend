@@ -6,7 +6,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { PWAInstallPrompt, PWAUpdateNotification } from "@/components/pwa";
+import { PWAUpdateNotification } from "@/components/pwa";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 import { CookieBanner } from "@/components/cookie-consent";
 import { OfflineScreen } from "@/components/native/OfflineScreen";
@@ -163,7 +163,6 @@ export default async function RootLayout({
                   {children}
                 </AuthProvider>
                 <Toaster position="top-right" richColors />
-                <PWAInstallPrompt />
                 <PWAUpdateNotification />
                 <CookieBanner />
               </OfflineScreen>

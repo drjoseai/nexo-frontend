@@ -5,7 +5,6 @@ import { useRouter, usePathname } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileHeader } from "@/components/layout/MobileHeader";
 import { useAuthStore } from "@/lib/store/auth";
-import { PWAInstallPrompt } from "@/components/pwa/install-prompt";
 import { useRevenueCat } from "@/lib/hooks/use-revenuecat";
 import { useSafeAreaInsets } from "@/lib/hooks/use-safe-area";
 import { cn } from "@/lib/utils";
@@ -120,7 +119,6 @@ export default function DashboardLayout({
         </div>
       </main>
       
-      <PWAInstallPrompt />
     </div>
   );
 }
