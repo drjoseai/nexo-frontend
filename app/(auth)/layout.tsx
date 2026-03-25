@@ -23,14 +23,18 @@ export default function AuthLayout({
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Main content area */}
-      <main className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
+      {/* En mobile: h-dvh + overflow-hidden evita que iOS haga scroll de la pagina */}
+      {/* cuando el teclado abre, eliminando el gap negro arriba/abajo */}
+      <main className="flex-1 flex items-center justify-center p-4 overflow-y-auto">
+        <div className="w-full max-w-md py-8">
           {children}
         </div>
       </main>
       
-      {/* Footer */}
-      <Footer />
+      {/* Footer - oculto en mobile para evitar pagina scrollable */}
+      <div className="hidden sm:block">
+        <Footer />
+      </div>
     </div>
   );
 }

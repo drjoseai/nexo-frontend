@@ -71,6 +71,7 @@ interface ChatInterfaceProps {
 // ============================================
 
 export function ChatInterface({ avatarId }: ChatInterfaceProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const avatar = AVATARS[avatarId];
   const { top: safeAreaTop } = useSafeAreaInsets();
@@ -152,19 +153,39 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     }
   }, [relationshipType, STORAGE_KEY]);
 
-  // Scroll al último mensaje cuando el teclado virtual abre (Android)
+  // Scroll al último mensaje y sync de viewport visual en mobile (iOS/Android)
   useEffect(() => {
-    const viewport = window.visualViewport;
-    if (!viewport) return;
+    const vv = window.visualViewport;
+    if (!vv) return;
 
-    const handleViewportResize = () => {
+    const handleViewportChange = () => {
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 100);
+
+      // Solo en mobile (< 1024px, breakpoint lg:)
+      if (containerRef.current && window.innerWidth < 1024) {
+        // bottom: auto es critico en iOS - sin esto, `bottom: 0` de `inset-0`
+        // compite con el height que aplicamos y el container no se encoge
+        containerRef.current.style.height = `${vv.height}px`;
+        containerRef.current.style.top = `${vv.offsetTop}px`;
+        containerRef.current.style.bottom = "auto";
+      }
     };
 
-    viewport.addEventListener("resize", handleViewportResize);
-    return () => viewport.removeEventListener("resize", handleViewportResize);
+    vv.addEventListener("resize", handleViewportChange);
+    vv.addEventListener("scroll", handleViewportChange);
+    handleViewportChange();
+
+    return () => {
+      vv.removeEventListener("resize", handleViewportChange);
+      vv.removeEventListener("scroll", handleViewportChange);
+      if (containerRef.current) {
+        containerRef.current.style.height = "";
+        containerRef.current.style.top = "";
+        containerRef.current.style.bottom = "";
+      }
+    };
   }, []);
 
   // Handler para cambiar relationship type
@@ -221,7 +242,10 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   }[avatarId];
 
   return (
-    <div className="fixed inset-0 flex overflow-hidden lg:relative lg:inset-auto lg:h-full">
+    <div
+      ref={containerRef}
+      className="fixed inset-0 flex overflow-hidden lg:relative lg:inset-auto lg:h-full"
+    >
       {/* ============================================ */}
       {/* AVATAR SIDEBAR - Solo visible en pantallas grandes */}
       {/* Portrait full-height, Replika-style */}
