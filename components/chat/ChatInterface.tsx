@@ -153,23 +153,41 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     }
   }, [relationshipType, STORAGE_KEY]);
 
-  // Scroll al último mensaje y sync de viewport visual en mobile (iOS/Android)
+  // Scroll al último mensaje y manejo de teclado virtual en mobile (iOS/Android)
+  //
+  // ESTRATEGIA: En lugar de manipular top/height/bottom del container (lo cual
+  // desancla el `fixed inset-0` y causa que todo se deslice en iOS PWA), usamos
+  // paddingBottom. El container mantiene sus anchors de `inset-0`. El padding
+  // reduce el área disponible para los hijos flex, haciendo que el input suba
+  // exactamente la altura del teclado sin mover el header.
+  //
+  // iOS PWA: window.innerHeight no cambia cuando abre el teclado. vv.height sí.
+  //   → keyboardHeight = window.innerHeight - vv.height - vv.offsetTop > 0
+  //   → paddingBottom = keyboardHeight → input sube sobre el teclado ✅
+  //
+  // Android (interactiveWidget: "resizes-content"): window.innerHeight ya shrinkea
+  //   con el teclado → vv.height ≈ window.innerHeight → keyboardHeight ≈ 0
+  //   → paddingBottom = '' → sin doble ajuste ✅
   useEffect(() => {
     const vv = window.visualViewport;
     if (!vv) return;
 
     const handleViewportChange = () => {
+      // Scroll suave al último mensaje
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 100);
 
-      // Solo en mobile (< 1024px, breakpoint lg:)
+      // Solo en mobile (breakpoint < lg: 1024px)
       if (containerRef.current && window.innerWidth < 1024) {
-        // bottom: auto es critico en iOS - sin esto, `bottom: 0` de `inset-0`
-        // compite con el height que aplicamos y el container no se encoge
-        containerRef.current.style.height = `${vv.height}px`;
-        containerRef.current.style.top = `${vv.offsetTop}px`;
-        containerRef.current.style.bottom = "auto";
+        // Altura del teclado = espacio entre el fondo del visual viewport y el fondo del layout viewport
+        const keyboardHeight = Math.max(
+          0,
+          window.innerHeight - vv.height - vv.offsetTop
+        );
+        // paddingBottom empuja el contenido hacia arriba sin desanclar el container
+        containerRef.current.style.paddingBottom =
+          keyboardHeight > 0 ? `${keyboardHeight}px` : "";
       }
     };
 
@@ -181,9 +199,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
       vv.removeEventListener("resize", handleViewportChange);
       vv.removeEventListener("scroll", handleViewportChange);
       if (containerRef.current) {
-        containerRef.current.style.height = "";
-        containerRef.current.style.top = "";
-        containerRef.current.style.bottom = "";
+        containerRef.current.style.paddingBottom = "";
       }
     };
   }, []);
