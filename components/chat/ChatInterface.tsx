@@ -275,7 +275,13 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 flex overflow-hidden lg:relative lg:inset-auto lg:h-full"
+      className="fixed flex overflow-hidden lg:relative lg:h-full"
+      style={{
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+      }}
     >
       {/* ============================================ */}
       {/* AVATAR SIDEBAR - Solo visible en pantallas grandes */}
