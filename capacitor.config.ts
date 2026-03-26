@@ -38,6 +38,7 @@ const config: CapacitorConfig = {
       resize: KeyboardResize.Native,
       resizeOnFullScreen: true,
       hideFormAccessoryBar: true,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any,
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],

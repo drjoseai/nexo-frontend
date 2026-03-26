@@ -33,6 +33,7 @@ export default function DashboardLayout({
     if (user?.id) {
       initializeRC(user.id).catch(console.error);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   // Redirect to login if not authenticated (backup for middleware)
