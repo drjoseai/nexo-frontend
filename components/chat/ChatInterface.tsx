@@ -78,9 +78,13 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const { top: safeAreaTop } = useSafeAreaInsets();
   const { isNativeApp } = useNativePlatform();
 
-  // Fix keyboard iOS PWA: visualViewport es el único mecanismo que
-  // refleja el área visible real cuando el teclado aparece en iOS PWA
-  // instalado desde home screen. 100dvh y window.innerHeight NO cambian.
+  // Fix keyboard iOS PWA:
+  // Cuando el teclado aparece, iOS PWA hace scroll de la página (~54px)
+  // desplazando el layout viewport. Esto crea un gap entre el contenedor
+  // position:fixed y el visual viewport. La solución es:
+  // 1. Resetear window.scroll a 0 en cada update para cancelar el scroll del body
+  // 2. Ajustar height del contenedor a vv.height (área visible real)
+  // 3. NO manipular top — se queda en 0, que es correcto cuando scrollY=0
   useEffect(() => {
     if (isNativeApp) return;
     if (typeof window === "undefined") return;
@@ -89,19 +93,24 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
 
     const updateLayout = () => {
       if (!containerRef.current) return;
-      const height = vv.height;
-      const offsetTop = vv.offsetTop < 0 ? 0 : vv.offsetTop;
-      containerRef.current.style.height = `${height}px`;
-      containerRef.current.style.top = `${offsetTop}px`;
+      // Cancelar el scroll del body que iOS PWA aplica cuando aparece el teclado
+      if (window.scrollY !== 0) {
+        window.scrollTo(0, 0);
+      }
+      containerRef.current.style.height = `${vv.height}px`;
     };
 
-    updateLayout();
+    requestAnimationFrame(updateLayout);
     vv.addEventListener("resize", updateLayout);
     vv.addEventListener("scroll", updateLayout);
+    window.addEventListener("scroll", updateLayout);
+    window.addEventListener("resize", updateLayout);
 
     return () => {
       vv.removeEventListener("resize", updateLayout);
       vv.removeEventListener("scroll", updateLayout);
+      window.removeEventListener("scroll", updateLayout);
+      window.removeEventListener("resize", updateLayout);
     };
   }, [isNativeApp]);
 
