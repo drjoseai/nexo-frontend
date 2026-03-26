@@ -41,9 +41,8 @@ export const viewport: Viewport = {
   themeColor: "#110e0c",
   colorScheme: "dark light",
   viewportFit: "cover",
-  // Hace que el viewport se reduzca cuando abre el teclado en Android Chrome/PWA
-  // En lugar del comportamiento "overlay" (teclado encima del contenido)
-  interactiveWidget: "resizes-content" as never,
+  // interactiveWidget removido: Safari iOS no lo soporta y rompe 100dvh
+  // Android Chrome ya maneja el teclado correctamente con 100dvh sin esta directiva
 };
 
 // PWA Metadata Configuration
