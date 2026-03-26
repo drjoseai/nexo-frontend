@@ -78,13 +78,20 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const { top: safeAreaTop } = useSafeAreaInsets();
   const { isNativeApp } = useNativePlatform();
 
-  // Fix keyboard iOS PWA:
-  // Cuando el teclado aparece, iOS PWA hace scroll de la página (~54px)
-  // desplazando el layout viewport. Esto crea un gap entre el contenedor
-  // position:fixed y el visual viewport. La solución es:
-  // 1. Resetear window.scroll a 0 en cada update para cancelar el scroll del body
-  // 2. Ajustar height del contenedor a vv.height (área visible real)
-  // 3. NO manipular top — se queda en 0, que es correcto cuando scrollY=0
+  // Fix keyboard iOS PWA — visualViewport con matemática correcta.
+  //
+  // DIAGNÓSTICO CONFIRMADO en dispositivo real (iPhone PWA home screen):
+  //   vv.height = 543px (área visible con teclado)
+  //   vv.offsetTop = -54px (iOS desplaza el layout viewport -54px)
+  //   window.innerHeight = 956px (no cambia)
+  //
+  // MATEMÁTICA:
+  //   topOffset = -vv.offsetTop = -(-54) = 54px
+  //   Container: top=54px, height=543px → cubre y:54→y:597
+  //   Keyboard empieza en y:597 → sin gap ✅
+  //
+  // ERROR EN fa7fae8: (vv.offsetTop < 0 ? 0 : vv.offsetTop) → siempre 0 ❌
+  // FIX CORRECTO:    (vv.offsetTop < 0 ? -vv.offsetTop : 0) → 54 ✅
   useEffect(() => {
     if (isNativeApp) return;
     if (typeof window === "undefined") return;
@@ -93,24 +100,18 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
 
     const updateLayout = () => {
       if (!containerRef.current) return;
-      // Cancelar el scroll del body que iOS PWA aplica cuando aparece el teclado
-      if (window.scrollY !== 0) {
-        window.scrollTo(0, 0);
-      }
+      const topOffset = vv.offsetTop < 0 ? -vv.offsetTop : 0;
       containerRef.current.style.height = `${vv.height}px`;
+      containerRef.current.style.top = `${topOffset}px`;
     };
 
-    requestAnimationFrame(updateLayout);
+    updateLayout();
     vv.addEventListener("resize", updateLayout);
     vv.addEventListener("scroll", updateLayout);
-    window.addEventListener("scroll", updateLayout);
-    window.addEventListener("resize", updateLayout);
 
     return () => {
       vv.removeEventListener("resize", updateLayout);
       vv.removeEventListener("scroll", updateLayout);
-      window.removeEventListener("scroll", updateLayout);
-      window.removeEventListener("resize", updateLayout);
     };
   }, [isNativeApp]);
 
