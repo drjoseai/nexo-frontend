@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useSafeAreaInsets } from "@/lib/hooks/use-safe-area";
+import { useNativePlatform } from "@/lib/hooks/use-native-platform";
 import { ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -75,6 +76,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const avatar = AVATARS[avatarId];
   const { top: safeAreaTop } = useSafeAreaInsets();
+  const { isNativeApp } = useNativePlatform();
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [isAvatarLightboxOpen, setIsAvatarLightboxOpen] = useState(false);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
@@ -214,7 +216,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         top: 0,
         right: 0,
         left: 0,
-        bottom: "var(--keyboard-height, 0px)",
+        bottom: isNativeApp ? "var(--keyboard-height, 0px)" : 0,
       }}
     >
       {/* ============================================ */}
