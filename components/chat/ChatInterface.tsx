@@ -3,7 +3,7 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useSafeAreaInsets } from "@/lib/hooks/use-safe-area";
 import { useNativePlatform } from "@/lib/hooks/use-native-platform";
@@ -208,8 +208,38 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     allan: "text-[var(--allan)]",
   }[avatarId];
 
+  function DebugInfo() {
+    const [info, setInfo] = React.useState("");
+
+    React.useEffect(() => {
+      const update = () => {
+        const vv = window.visualViewport;
+        setInfo(
+          `win.h=${window.innerHeight} ` +
+            `vv.h=${vv?.height?.toFixed(0)} ` +
+            `vv.top=${vv?.offsetTop?.toFixed(0)} ` +
+            `dvh=${document.documentElement.clientHeight} ` +
+            `cont.h=${document
+              .getElementById("chat-container")
+              ?.getBoundingClientRect()
+              .height?.toFixed(0)}`
+        );
+      };
+      update();
+      window.visualViewport?.addEventListener("resize", update);
+      window.visualViewport?.addEventListener("scroll", update);
+      return () => {
+        window.visualViewport?.removeEventListener("resize", update);
+        window.visualViewport?.removeEventListener("scroll", update);
+      };
+    }, []);
+
+    return <>{info}</>;
+  }
+
   return (
     <div
+      id="chat-container"
       ref={containerRef}
       className="fixed flex overflow-hidden lg:relative lg:h-full"
       style={isNativeApp ? {
@@ -224,6 +254,27 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         height: "100dvh",
       }}
     >
+      {process.env.NODE_ENV === "production" && (
+        <div
+          id="debug-overlay"
+          style={{
+            position: "fixed",
+            top: 8,
+            left: 8,
+            right: 8,
+            background: "rgba(0,0,0,0.85)",
+            color: "#0f0",
+            fontSize: 11,
+            padding: 8,
+            zIndex: 9999,
+            borderRadius: 8,
+            fontFamily: "monospace",
+            pointerEvents: "none",
+          }}
+        >
+          <DebugInfo />
+        </div>
+      )}
       {/* ============================================ */}
       {/* AVATAR SIDEBAR - Solo visible en pantallas grandes */}
       {/* Portrait full-height, Replika-style */}
