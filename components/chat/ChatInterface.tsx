@@ -77,6 +77,34 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const avatar = AVATARS[avatarId];
   const { top: safeAreaTop } = useSafeAreaInsets();
   const { isNativeApp } = useNativePlatform();
+
+  // Fix keyboard iOS PWA: visualViewport es el único mecanismo que
+  // refleja el área visible real cuando el teclado aparece en iOS PWA
+  // instalado desde home screen. 100dvh y window.innerHeight NO cambian.
+  useEffect(() => {
+    if (isNativeApp) return;
+    if (typeof window === "undefined") return;
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const updateLayout = () => {
+      if (!containerRef.current) return;
+      const height = vv.height;
+      const offsetTop = vv.offsetTop < 0 ? 0 : vv.offsetTop;
+      containerRef.current.style.height = `${height}px`;
+      containerRef.current.style.top = `${offsetTop}px`;
+    };
+
+    updateLayout();
+    vv.addEventListener("resize", updateLayout);
+    vv.addEventListener("scroll", updateLayout);
+
+    return () => {
+      vv.removeEventListener("resize", updateLayout);
+      vv.removeEventListener("scroll", updateLayout);
+    };
+  }, [isNativeApp]);
+
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [isAvatarLightboxOpen, setIsAvatarLightboxOpen] = useState(false);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
@@ -208,38 +236,8 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     allan: "text-[var(--allan)]",
   }[avatarId];
 
-  function DebugInfo() {
-    const [info, setInfo] = React.useState("");
-
-    React.useEffect(() => {
-      const update = () => {
-        const vv = window.visualViewport;
-        setInfo(
-          `win.h=${window.innerHeight} ` +
-            `vv.h=${vv?.height?.toFixed(0)} ` +
-            `vv.top=${vv?.offsetTop?.toFixed(0)} ` +
-            `dvh=${document.documentElement.clientHeight} ` +
-            `cont.h=${document
-              .getElementById("chat-container")
-              ?.getBoundingClientRect()
-              .height?.toFixed(0)}`
-        );
-      };
-      update();
-      window.visualViewport?.addEventListener("resize", update);
-      window.visualViewport?.addEventListener("scroll", update);
-      return () => {
-        window.visualViewport?.removeEventListener("resize", update);
-        window.visualViewport?.removeEventListener("scroll", update);
-      };
-    }, []);
-
-    return <>{info}</>;
-  }
-
   return (
     <div
-      id="chat-container"
       ref={containerRef}
       className="fixed flex overflow-hidden lg:relative lg:h-full"
       style={isNativeApp ? {
@@ -254,27 +252,6 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         height: "100dvh",
       }}
     >
-      {process.env.NODE_ENV === "production" && (
-        <div
-          id="debug-overlay"
-          style={{
-            position: "fixed",
-            top: 8,
-            left: 8,
-            right: 8,
-            background: "rgba(0,0,0,0.85)",
-            color: "#0f0",
-            fontSize: 11,
-            padding: 8,
-            zIndex: 9999,
-            borderRadius: 8,
-            fontFamily: "monospace",
-            pointerEvents: "none",
-          }}
-        >
-          <DebugInfo />
-        </div>
-      )}
       {/* ============================================ */}
       {/* AVATAR SIDEBAR - Solo visible en pantallas grandes */}
       {/* Portrait full-height, Replika-style */}
