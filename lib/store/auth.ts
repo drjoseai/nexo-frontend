@@ -71,6 +71,16 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
             plan: user.plan,
           });
 
+          // Initialize RevenueCat first, then identify user
+          try {
+            const { Capacitor } = await import('@capacitor/core');
+            if (Capacitor.isNativePlatform()) {
+              const { initRevenueCat } = await import('@/lib/capacitor/revenuecat');
+              await initRevenueCat(user.id);
+            }
+          } catch {
+            // Best-effort
+          }
           rcIdentify(user.id).catch(() => {});
 
           toast.dismiss(toastId);
@@ -225,6 +235,17 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
             isAuthenticated: true,
             error: null,
           });
+
+          // Initialize RevenueCat on native platforms after user is confirmed
+          try {
+            const { Capacitor } = await import('@capacitor/core');
+            if (Capacitor.isNativePlatform()) {
+              const { initRevenueCat } = await import('@/lib/capacitor/revenuecat');
+              await initRevenueCat(user.id);
+            }
+          } catch {
+            // RevenueCat init is best-effort - never block auth flow
+          }
 
           rcIdentify(user.id).catch(() => {});
 

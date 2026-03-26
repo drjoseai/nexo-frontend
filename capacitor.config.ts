@@ -35,9 +35,10 @@ const config: CapacitorConfig = {
       showSpinner: false,
     },
     Keyboard: {
-      resize: KeyboardResize.Body,
+      resize: KeyboardResize.Native,
       resizeOnFullScreen: true,
-    },
+      hideFormAccessoryBar: true,
+    } as any,
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],
     },
