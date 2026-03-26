@@ -212,11 +212,16 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     <div
       ref={containerRef}
       className="fixed flex overflow-hidden lg:relative lg:h-full"
-      style={{
+      style={isNativeApp ? {
         top: 0,
         right: 0,
         left: 0,
-        bottom: isNativeApp ? "var(--keyboard-height, 0px)" : 0,
+        bottom: "var(--keyboard-height, 0px)",
+      } : {
+        top: 0,
+        right: 0,
+        left: 0,
+        height: "100dvh",
       }}
     >
       {/* ============================================ */}
