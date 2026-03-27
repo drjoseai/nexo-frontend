@@ -50,8 +50,10 @@ export async function initKeyboardTracker(): Promise<void> {
   if (!vv) return;
 
   const update = () => {
-    // keyboardHeight = total window height minus visible viewport height minus scroll offset
-    const kbHeight = window.innerHeight - vv.height - vv.offsetTop;
+    // keyboardHeight = total window height minus visible viewport height
+    // NOTE: do NOT subtract vv.offsetTop — that value represents browser scroll
+    // compensation which causes formula to underestimate keyboard height
+    const kbHeight = window.innerHeight - vv.height;
     setKeyboardHeight(kbHeight);
   };
 

@@ -215,7 +215,11 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         "lg:relative lg:h-full"
       )}
       style={{
-        bottom: "var(--keyboard-height, 0px)",
+        top: 0,
+        right: 0,
+        left: 0,
+        bottom: 0,
+        paddingBottom: "var(--keyboard-height, 0px)",
       }}
     >
       {/* ============================================ */}
