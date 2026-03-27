@@ -6,7 +6,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useSafeAreaInsets } from "@/lib/hooks/use-safe-area";
-import { useNativePlatform } from "@/lib/hooks/use-native-platform";
 import { ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -76,7 +75,6 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const avatar = AVATARS[avatarId];
   const { top: safeAreaTop } = useSafeAreaInsets();
-  const { isNativeApp } = useNativePlatform();
 
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [isAvatarLightboxOpen, setIsAvatarLightboxOpen] = useState(false);
@@ -213,12 +211,12 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     <div
       ref={containerRef}
       className={cn(
-        "flex flex-col h-dvh bg-background overflow-hidden",
+        "fixed inset-x-0 top-0 flex flex-col bg-background overflow-hidden",
         "lg:relative lg:h-full"
       )}
-      style={isNativeApp ? {
-        paddingBottom: "var(--keyboard-height, 0px)",
-      } : undefined}
+      style={{
+        bottom: "var(--keyboard-height, 0px)",
+      }}
     >
       {/* ============================================ */}
       {/* AVATAR SIDEBAR - Solo visible en pantallas grandes */}
@@ -262,7 +260,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
       {/* ============================================ */}
       {/* MAIN CHAT AREA */}
       {/* ============================================ */}
-      <div className="relative flex-1 flex flex-col min-w-0 min-h-0">
+      <div className="relative flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden">
         {/* ============================================ */}
         {/* AVATAR MOBILE — Persistent background layer (Replika-style) */}
         {/* Solo visible en mobile, siempre presente */}

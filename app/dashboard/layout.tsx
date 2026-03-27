@@ -77,7 +77,10 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={cn(
+      "bg-background",
+      isInChat ? "h-dvh overflow-hidden" : "min-h-screen"
+    )}>
       {/* Mobile Header - Hidden in chat (chat has its own header) and on desktop */}
       {!isInChat && (
         <MobileHeader onMenuClick={() => setIsMobileMenuOpen(true)} />

@@ -147,7 +147,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning style={{ WebkitTextSizeAdjust: '100%' }}>
       <body
-        className={`${dmSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} font-sans antialiased min-h-screen`}
+        className={`${dmSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} font-sans antialiased`}
       >
         <KeyboardTrackerInit />
         <PWAInstallSuppressor />

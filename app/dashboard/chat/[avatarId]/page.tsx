@@ -82,7 +82,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
   }
 
   return (
-    <div className="h-[calc(100vh-2rem)] overflow-hidden rounded-lg border border-white/10 bg-black/20 backdrop-blur-sm">
+    <div className="h-full overflow-hidden">
       <ChatInterfaceLazy avatarId={avatarId} />
     </div>
   );
