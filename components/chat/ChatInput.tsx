@@ -56,13 +56,6 @@ export function ChatInput({
     }
   }, [message]);
 
-  // Focus on mount
-  useEffect(() => {
-    if (!disabled) {
-      textareaRef.current?.focus();
-    }
-  }, [disabled]);
-
   const handleSend = () => {
     const trimmedMessage = message.trim();
     if ((trimmedMessage || hasPendingFile) && !disabled && !sendDisabled) {

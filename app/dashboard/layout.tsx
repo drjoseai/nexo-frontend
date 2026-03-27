@@ -104,8 +104,8 @@ export default function DashboardLayout({
       <main
         className={cn(
           "lg:pl-64",
-          !isInChat && "lg:pt-0",
-          isInChat && "pl-0"
+          !isInChat && "h-dvh overflow-y-auto lg:pt-0",
+          isInChat && "h-dvh overflow-hidden pl-0"
         )}
         style={!isInChat ? {
           paddingTop: safeAreaTop > 0

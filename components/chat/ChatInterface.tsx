@@ -78,42 +78,6 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const { top: safeAreaTop } = useSafeAreaInsets();
   const { isNativeApp } = useNativePlatform();
 
-  // Fix keyboard iOS PWA:
-  // Cuando el teclado aparece, iOS PWA hace scroll de la página (~54px)
-  // desplazando el layout viewport. Esto crea un gap entre el contenedor
-  // position:fixed y el visual viewport. La solución es:
-  // 1. Resetear window.scroll a 0 en cada update para cancelar el scroll del body
-  // 2. Ajustar height del contenedor a vv.height (área visible real)
-  // 3. NO manipular top — se queda en 0, que es correcto cuando scrollY=0
-  useEffect(() => {
-    if (isNativeApp) return;
-    if (typeof window === "undefined") return;
-    const vv = window.visualViewport;
-    if (!vv) return;
-
-    const updateLayout = () => {
-      if (!containerRef.current) return;
-      // Cancelar el scroll del body que iOS PWA aplica cuando aparece el teclado
-      if (window.scrollY !== 0) {
-        window.scrollTo(0, 0);
-      }
-      containerRef.current.style.height = `${vv.height}px`;
-    };
-
-    requestAnimationFrame(updateLayout);
-    vv.addEventListener("resize", updateLayout);
-    vv.addEventListener("scroll", updateLayout);
-    window.addEventListener("scroll", updateLayout);
-    window.addEventListener("resize", updateLayout);
-
-    return () => {
-      vv.removeEventListener("resize", updateLayout);
-      vv.removeEventListener("scroll", updateLayout);
-      window.removeEventListener("scroll", updateLayout);
-      window.removeEventListener("resize", updateLayout);
-    };
-  }, [isNativeApp]);
-
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [isAvatarLightboxOpen, setIsAvatarLightboxOpen] = useState(false);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
@@ -248,18 +212,13 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   return (
     <div
       ref={containerRef}
-      className="fixed flex overflow-hidden lg:relative lg:h-full"
+      className={cn(
+        "flex flex-col h-dvh bg-background overflow-hidden",
+        "lg:relative lg:h-full"
+      )}
       style={isNativeApp ? {
-        top: 0,
-        right: 0,
-        left: 0,
-        bottom: "var(--keyboard-height, 0px)",
-      } : {
-        top: 0,
-        right: 0,
-        left: 0,
-        height: "100dvh",
-      }}
+        paddingBottom: "var(--keyboard-height, 0px)",
+      } : undefined}
     >
       {/* ============================================ */}
       {/* AVATAR SIDEBAR - Solo visible en pantallas grandes */}
