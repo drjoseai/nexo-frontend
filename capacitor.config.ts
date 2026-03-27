@@ -35,8 +35,8 @@ const config: CapacitorConfig = {
       showSpinner: false,
     },
     Keyboard: {
-      resize: KeyboardResize.Native,
-      resizeOnFullScreen: true,
+      resize: KeyboardResize.None,
+      resizeOnFullScreen: false,
       hideFormAccessoryBar: true,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any,
