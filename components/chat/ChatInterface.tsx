@@ -3,7 +3,7 @@
 
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useSafeAreaInsets } from "@/lib/hooks/use-safe-area";
 import { ArrowLeft, Loader2, Sparkles } from "lucide-react";
@@ -73,6 +73,7 @@ interface ChatInterfaceProps {
 export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const avatar = AVATARS[avatarId];
   const { top: safeAreaTop } = useSafeAreaInsets();
 
@@ -142,10 +143,39 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     fetchUploadLimits();
   }, [fetchUploadLimits]);
 
-  // Auto-scroll al último mensaje
+  // ─── scrollToBottom helper ────────────────────────────────────────────────
+  // Uses double-rAF to ensure the browser has completed layout recalculation
+  // before scrolling. Uses "instant" (not "smooth") to avoid the smooth-scroll
+  // animation being interrupted by concurrent layout changes (paddingBottom
+  // changes from keyboard opening), which would leave scroll at position 0.
+  const scrollToBottom = useCallback(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+      });
+    });
+  }, []);
+
+  // Trigger scroll when new messages arrive (send/receive)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
+
+  // Trigger scroll when the messages container resizes.
+  // This handles the case where the keyboard opens/closes and the container
+  // shrinks/grows — without this, the last message goes out of viewport.
+  // ResizeObserver is platform-agnostic (no Capacitor coupling in UI layer).
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    const observer = new ResizeObserver(() => {
+      scrollToBottom();
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [scrollToBottom]);
+  // ─── End scroll helpers ───────────────────────────────────────────────────
 
   // Guardar relationship type en localStorage cuando cambie
   useEffect(() => {
@@ -393,7 +423,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         {/* ============================================ */}
         {/* MESSAGES AREA */}
         {/* ============================================ */}
-        <div className="relative z-10 flex-1 overflow-y-auto px-3 py-4 sm:px-4 min-h-0">
+        <div ref={messagesContainerRef} className="relative z-10 flex-1 overflow-y-auto px-3 py-4 sm:px-4 min-h-0">
           {/* Loading state */}
           {isLoading && (
             <div className="flex h-full items-center justify-center">

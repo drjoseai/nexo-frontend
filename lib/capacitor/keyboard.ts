@@ -30,11 +30,18 @@ export async function initKeyboardTracker(): Promise<void> {
     if (Capacitor.isNativePlatform()) {
       const { Keyboard } = await import("@capacitor/keyboard");
 
-      await Keyboard.addListener("keyboardWillShow", (info) => {
+      // Android: use Did* events (keyboard fully visible, layout stable).
+      // iOS: use Will* events (coordinated with native spring animation for
+      // smoother visual response). Never swap these — the difference matters.
+      const isAndroid = Capacitor.getPlatform() === "android";
+      const showEvent = isAndroid ? "keyboardDidShow" : "keyboardWillShow";
+      const hideEvent = isAndroid ? "keyboardDidHide" : "keyboardWillHide";
+
+      await Keyboard.addListener(showEvent, (info) => {
         setKeyboardHeight(info.keyboardHeight);
       });
 
-      await Keyboard.addListener("keyboardWillHide", () => {
+      await Keyboard.addListener(hideEvent, () => {
         setKeyboardHeight(0);
       });
 
