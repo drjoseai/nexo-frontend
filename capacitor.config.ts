@@ -35,8 +35,11 @@ const config: CapacitorConfig = {
       showSpinner: false,
     },
     Keyboard: {
-      resize: KeyboardResize.None,
-      resizeOnFullScreen: false,
+      // KeyboardResize.Body: lets adjustResize shrink the WebView on Android.
+      // resizeOnFullScreen: true is required for Android 15+ edge-to-edge mode.
+      // iOS uses WKWebView overlay — resize mode doesn't affect iOS behavior.
+      resize: KeyboardResize.Body,
+      resizeOnFullScreen: true,
       hideFormAccessoryBar: true,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any,

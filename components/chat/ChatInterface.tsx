@@ -27,6 +27,7 @@ import { BoostPopup } from "./BoostPopup";
 import { PremiumUpgradeModal } from "./PremiumUpgradeModal";
 import { analytics, AnalyticsEvents } from "@/lib/services/analytics";
 import { trackMessageAndRequestReview } from "@/lib/capacitor/in-app-review";
+import { useNativePlatform } from "@/lib/hooks/use-native-platform";
 
 // ============================================
 // DATE SEPARATOR HELPER
@@ -76,6 +77,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const avatar = AVATARS[avatarId];
   const { top: safeAreaTop } = useSafeAreaInsets();
+  const { isNativeApp, isAndroidApp } = useNativePlatform();
 
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [isAvatarLightboxOpen, setIsAvatarLightboxOpen] = useState(false);
@@ -143,39 +145,34 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
     fetchUploadLimits();
   }, [fetchUploadLimits]);
 
-  // ─── scrollToBottom helper ────────────────────────────────────────────────
-  // Uses double-rAF to ensure the browser has completed layout recalculation
-  // before scrolling. Uses "instant" (not "smooth") to avoid the smooth-scroll
-  // animation being interrupted by concurrent layout changes (paddingBottom
-  // changes from keyboard opening), which would leave scroll at position 0.
+  // ─── Scroll helpers ─────────────────────────────────────────────────────
+  // scrollTop = scrollHeight is more reliable than scrollIntoView in Android
+  // WebViews. Uses messagesContainerRef (the scrollable overflow-y-auto div).
   const scrollToBottom = useCallback(() => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+        const container = messagesContainerRef.current;
+        if (container) {
+          container.scrollTop = container.scrollHeight;
+        }
       });
     });
   }, []);
 
-  // Trigger scroll when new messages arrive (send/receive)
+  // Scroll when messages change (new message sent/received or streaming)
   useEffect(() => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  // Trigger scroll when the messages container resizes.
-  // This handles the case where the keyboard opens/closes and the container
-  // shrinks/grows — without this, the last message goes out of viewport.
-  // ResizeObserver is platform-agnostic (no Capacitor coupling in UI layer).
+  // Scroll when Android keyboard opens (adjustResize fires keyboardDidShow
+  // which dispatches nexo:keyboard-shown after WebView has resized)
   useEffect(() => {
-    const container = messagesContainerRef.current;
-    if (!container) return;
-
-    const observer = new ResizeObserver(() => {
-      scrollToBottom();
-    });
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, [scrollToBottom]);
-  // ─── End scroll helpers ───────────────────────────────────────────────────
+    if (!isNativeApp || !isAndroidApp) return;
+    const handleKeyboardShown = () => scrollToBottom();
+    window.addEventListener("nexo:keyboard-shown", handleKeyboardShown);
+    return () => window.removeEventListener("nexo:keyboard-shown", handleKeyboardShown);
+  }, [isNativeApp, isAndroidApp, scrollToBottom]);
+  // ─── End scroll helpers ─────────────────────────────────────────────────
 
   // Guardar relationship type en localStorage cuando cambie
   useEffect(() => {
@@ -249,7 +246,9 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
         right: 0,
         left: 0,
         bottom: 0,
-        paddingBottom: "var(--keyboard-height, 0px)",
+        // Android: adjustResize shrinks the WebView — paddingBottom would
+        // double-displace. iOS + PWA: paddingBottom is the sole mechanism.
+        ...(!isAndroidApp && { paddingBottom: "var(--keyboard-height, 0px)" }),
       }}
     >
       {/* ============================================ */}

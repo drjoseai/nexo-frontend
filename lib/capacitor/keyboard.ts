@@ -1,13 +1,19 @@
 /**
  * Keyboard Height Tracker — NEXO
  *
- * Tracks keyboard height and exposes it via CSS custom property --keyboard-height.
- * Supports two environments:
- *   - Capacitor native (iOS/Android): uses @capacitor/keyboard plugin events
- *   - PWA / Web (Safari/Chrome): uses window.visualViewport resize events
+ * Platform-aware keyboard handling:
  *
- * Usage: call initKeyboardTracker() once at app startup (in root layout).
- * Then use var(--keyboard-height, 0px) anywhere in CSS or inline styles.
+ * - Android native: adjustResize in AndroidManifest shrinks the WebView when
+ *   the keyboard opens. Do NOT set --keyboard-height (would double-displace).
+ *   Dispatch custom events so ChatInterface can trigger scroll-to-bottom.
+ *   NOTE: visualViewport events do NOT fire on Android 15+ with adjustNothing
+ *   (Capacitor issue #8070). With adjustResize the WebView resizes correctly.
+ *
+ * - iOS native: WKWebView does NOT resize on keyboard open.
+ *   --keyboard-height + paddingBottom is the sole accommodation mechanism.
+ *
+ * - PWA / Web: visualViewport API detects keyboard height.
+ *   --keyboard-height + paddingBottom handles accommodation.
  */
 
 const CSS_VAR = "--keyboard-height";
@@ -23,25 +29,25 @@ export async function initKeyboardTracker(): Promise<void> {
   // Initialize to 0
   setKeyboardHeight(0);
 
-  // Try native Capacitor keyboard first
   try {
     const { Capacitor } = await import("@capacitor/core");
 
     if (Capacitor.isNativePlatform()) {
       const { Keyboard } = await import("@capacitor/keyboard");
 
-      // Android: use Did* events (keyboard fully visible, layout stable).
-      // iOS: use Will* events (coordinated with native spring animation).
-      // Must use explicit branches — Capacitor addListener uses strict overloads
-      // and does not accept dynamic string union types.
       if (Capacitor.getPlatform() === "android") {
-        await Keyboard.addListener("keyboardDidShow", (info) => {
-          setKeyboardHeight(info.keyboardHeight);
+        // Android: adjustResize handles keyboard accommodation natively.
+        // Do NOT set --keyboard-height — it would cause double displacement.
+        // Dispatch custom events so UI components can scroll to bottom.
+        await Keyboard.addListener("keyboardDidShow", () => {
+          window.dispatchEvent(new CustomEvent("nexo:keyboard-shown"));
         });
         await Keyboard.addListener("keyboardDidHide", () => {
-          setKeyboardHeight(0);
+          window.dispatchEvent(new CustomEvent("nexo:keyboard-hidden"));
         });
       } else {
+        // iOS: WKWebView does NOT resize on keyboard open.
+        // keyboardWillShow fires in sync with native spring animation.
         await Keyboard.addListener("keyboardWillShow", (info) => {
           setKeyboardHeight(info.keyboardHeight);
         });
@@ -50,22 +56,19 @@ export async function initKeyboardTracker(): Promise<void> {
         });
       }
 
-      // Native listener registered — done
+      // Native listeners registered — done
       return;
     }
   } catch {
-    // Not native or @capacitor/keyboard not available — fall through to PWA approach
+    // Not native — fall through to PWA approach
   }
 
-  // PWA / Web fallback: visualViewport
+  // PWA / Web: visualViewport (works in all browsers including iOS Safari)
   const vv = window.visualViewport;
   if (!vv) return;
 
   const update = () => {
-    // keyboardHeight = total window height minus visible viewport height
-    // NOTE: do NOT subtract vv.offsetTop — that value represents browser scroll
-    // compensation which causes formula to underestimate keyboard height
-    const kbHeight = window.innerHeight - vv.height;
+    const kbHeight = Math.max(0, Math.round(window.innerHeight - vv.height));
     setKeyboardHeight(kbHeight);
   };
 
