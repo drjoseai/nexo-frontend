@@ -84,7 +84,6 @@ export async function registerForPushNotifications(
       'registration',
       (token) => {
         const platform = isIOS() ? 'ios' : 'android';
-        console.log('[PushNotifications] Token received:', token.value);
         onToken({ value: token.value, platform });
       }
     );

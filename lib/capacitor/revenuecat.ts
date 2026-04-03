@@ -61,7 +61,6 @@ export async function initRevenueCat(userId?: string): Promise<void> {
     }
 
     isInitialized = true;
-    console.log('[RevenueCat] Initialized successfully', userId ? `for user ${userId}` : '(anonymous)');
   } catch (error) {
     console.error('[RevenueCat] Initialization failed:', error);
   }
@@ -79,7 +78,6 @@ export async function identifyUser(userId: string): Promise<void> {
   try {
     const { Purchases } = await import('@revenuecat/purchases-capacitor');
     await Purchases.logIn({ appUserID: userId });
-    console.log('[RevenueCat] User identified:', userId);
   } catch (error) {
     console.error('[RevenueCat] Failed to identify user:', error);
   }

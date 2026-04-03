@@ -167,9 +167,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
           set(initialState);
           
           toast.info('Sesión cerrada');
-        } catch (error) {
-          console.warn('Logout API call failed:', error);
-          
+        } catch {
           // Clear state anyway even if API call fails
           set(initialState);
           
@@ -189,14 +187,11 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
             return;
           }
 
-          console.log('[AuthStore] Loading user from backend...');
-
           // Initialize TokenManager (registers callbacks)
           tokenManager.initialize();
 
           // Register logout callback
           tokenManager.onLogout(() => {
-            console.log('[AuthStore] TokenManager triggered logout');
             set(initialState);
           });
 
@@ -209,11 +204,9 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
               const { Preferences } = await import('@capacitor/preferences');
               const { value: storedToken } = await Preferences.get({ key: 'nexo_access_token' });
               if (!storedToken) {
-                console.log('[AuthStore] Native: no stored token found, skipping API call');
                 set({ ...initialState, isLoading: false });
                 return;
               }
-              console.log('[AuthStore] Native: stored token found, verifying with backend...');
             }
           }
 
@@ -249,9 +242,8 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
 
           rcIdentify(user.id).catch(() => {});
 
-          console.log('[AuthStore] User loaded successfully:', user.email);
         } catch (error) {
-          console.log('[AuthStore] Failed to load user (not authenticated or timeout):', error);
+          void error;
 
           // On native timeout or error: clear token if it's invalid
           if (typeof window !== 'undefined') {
@@ -259,7 +251,6 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
             if (Capacitor.isNativePlatform()) {
               const { Preferences } = await import('@capacitor/preferences');
               await Preferences.remove({ key: 'nexo_access_token' }).catch(() => {});
-              console.log('[AuthStore] Native: cleared invalid/expired token');
             }
           }
 

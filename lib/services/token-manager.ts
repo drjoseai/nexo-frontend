@@ -99,7 +99,6 @@ class TokenManager {
    */
   triggerLogout(): void {
     console.log('[TokenManager] Triggering logout');
-    
     if (this.onLogoutCallback) {
       this.onLogoutCallback();
     }
@@ -119,7 +118,6 @@ class TokenManager {
    */
   triggerRefresh(): void {
     console.log('[TokenManager] Token refreshed by backend');
-    
     if (this.onRefreshCallback) {
       this.onRefreshCallback();
     }

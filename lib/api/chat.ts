@@ -168,7 +168,6 @@ export async function sendMessageStream(
     const { value: token } = await Preferences.get({ key: NATIVE_TOKEN_KEY });
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
-      console.log('[Chat] Native: injecting Bearer token in stream request');
     }
   }
 

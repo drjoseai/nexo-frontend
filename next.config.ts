@@ -112,7 +112,9 @@ const nextConfig: NextConfig = {
 
   // Optimizaciones de compilación
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
+    removeConsole: process.env.NODE_ENV === "production"
+      ? { exclude: ["error"] }
+      : false,
   },
 
   // Experimental features para mejor performance

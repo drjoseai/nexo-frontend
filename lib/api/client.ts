@@ -106,7 +106,6 @@ const createApiClient = (): AxiosInstance => {
         if (requestUrl.includes('/auth/refresh') || 
             requestUrl.includes('/auth/login') || 
             requestUrl.includes('/auth/me')) {
-          console.log('[API Client] Auth endpoint failed, not retrying:', requestUrl);
           return Promise.reject(error);
         }
 
@@ -125,7 +124,6 @@ const createApiClient = (): AxiosInstance => {
 
         // Prevent infinite refresh attempts
         if (refreshAttemptCount >= MAX_REFRESH_ATTEMPTS) {
-          console.log('[API Client] Max refresh attempts reached, redirecting to login');
           refreshAttemptCount = 0;
           if (typeof window !== 'undefined') {
             const currentPath = window.location.pathname;
@@ -142,8 +140,6 @@ const createApiClient = (): AxiosInstance => {
         isRefreshing = true;
 
         try {
-          console.log('[API Client] Access token expired, attempting refresh...');
-          
           const refreshResponse = await instance.post<{ access_token?: string }>(
             '/api/v1/auth/refresh',
             undefined,
@@ -157,8 +153,6 @@ const createApiClient = (): AxiosInstance => {
             });
           }
           
-          console.log('[API Client] Token refresh successful, retrying original request');
-          
           processQueue(null);
           refreshAttemptCount = 0; // Reset on success
           
@@ -170,8 +164,6 @@ const createApiClient = (): AxiosInstance => {
           processQueue(refreshError as AxiosError);
           
           if (typeof window !== 'undefined') {
-            console.log('[API Client] Redirecting to login...');
-            
             const currentPath = window.location.pathname;
             if (currentPath !== '/login' && currentPath !== '/register') {
               sessionStorage.setItem('redirectAfterLogin', currentPath);

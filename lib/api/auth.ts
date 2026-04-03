@@ -106,7 +106,6 @@ export const login = async (credentials: LoginRequest): Promise<User> => {
       key: NATIVE_TOKEN_KEY,
       value: response.data.access_token,
     });
-    console.log('[Auth] Native: token stored in Preferences');
   }
 
   return transformUser(response.data);
@@ -160,7 +159,6 @@ export const getCurrentUser = async (): Promise<User> => {
   // but we log here for debugging visibility.
   if (Capacitor.isNativePlatform()) {
     const { value: token } = await Preferences.get({ key: NATIVE_TOKEN_KEY });
-    console.log('[Auth] getCurrentUser native: token present =', !!token);
     if (!token) {
       throw new Error('No token available on native platform');
     }
@@ -181,7 +179,6 @@ export const logout = async (): Promise<void> => {
   } finally {
     if (Capacitor.isNativePlatform()) {
       await Preferences.remove({ key: NATIVE_TOKEN_KEY });
-      console.log('[Auth] Native: token cleared from Preferences');
     }
   }
 };
