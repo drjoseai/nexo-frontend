@@ -96,9 +96,9 @@ describe("PremiumUpgradeModal", () => {
   // CONTENT
   // ==========================================
   describe("Content", () => {
-    it("shows Mi Persona title", () => {
+    it("shows Pareja title", () => {
       render(<PremiumUpgradeModal isOpen={true} onClose={mockOnClose} />);
-      expect(screen.getByText(/Mi Persona — Premium/)).toBeInTheDocument();
+      expect(screen.getByText(/Pareja — Premium/)).toBeInTheDocument();
     });
 
     it("shows upgrade CTA button", () => {

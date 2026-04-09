@@ -104,9 +104,9 @@ function EnglishContent() {
         <h3>3. Choose a Relationship Type</h3>
         <p>Each conversation has a relationship mode that shapes how your avatar interacts with you:</p>
         <ul>
-          <li><strong>Aliado (Assistant)</strong> — Helpful, task-oriented, supportive</li>
-          <li><strong>Confidente (Friend)</strong> — Casual, warm, personal</li>
-          <li><strong>Mi Persona (Romantic)</strong> — Intimate, affectionate (Premium plan, 18+ only)</li>
+          <li><strong>Assistant</strong> — Helpful, task-oriented, supportive</li>
+          <li><strong>Friend</strong> — Casual, warm, personal</li>
+          <li><strong>Partner (Romantic)</strong> — Intimate, affectionate (Premium plan, 18+ only)</li>
         </ul>
 
         <h3>4. Start Chatting</h3>
@@ -131,7 +131,7 @@ function EnglishContent() {
             <tbody>
               <tr><td>Messages per day</td><td>5</td><td>100</td><td>Unlimited</td></tr>
               <tr><td>Avatars</td><td>Lía only</td><td>All 3</td><td>All 3</td></tr>
-              <tr><td>Relationship types</td><td>Aliado, Confidente</td><td>Aliado, Confidente</td><td>All (incl. Mi Persona)</td></tr>
+              <tr><td>Relationship types</td><td>Assistant, Friend</td><td>Assistant, Friend</td><td>All (incl. Partner)</td></tr>
               <tr><td>File attachments</td><td>—</td><td>✓</td><td>✓</td></tr>
             </tbody>
           </table>
@@ -169,7 +169,7 @@ function EnglishContent() {
         <h2>Tips for the Best Experience</h2>
         <ul>
           <li>Try all available avatars — each one has a completely different personality</li>
-          <li>Experiment with relationship types — the same avatar feels different as an Aliado vs. Confidente</li>
+          <li>Experiment with relationship types — the same avatar feels different as an Assistant vs. Friend</li>
           <li>Have real conversations — ask questions, share thoughts, be curious</li>
           <li>Try different topics — creative writing, life advice, casual chat, deep philosophy</li>
           <li>Use on mobile — NEXO works great on phone browsers. Add it to your home screen for an app-like experience</li>
@@ -260,9 +260,9 @@ function SpanishContent() {
         <h3>3. Elige un Tipo de Relación</h3>
         <p>Cada conversación tiene un modo de relación que define cómo interactúa tu avatar contigo:</p>
         <ul>
-          <li><strong>Aliado (Asistente)</strong> — Útil, orientado a tareas, solidario</li>
-          <li><strong>Confidente (Amigo)</strong> — Casual, cálido, personal</li>
-          <li><strong>Mi Persona (Romántico)</strong> — Íntimo, afectuoso (solo plan Premium, 18+)</li>
+          <li><strong>Asistente</strong> — Útil, orientado a tareas, solidario</li>
+          <li><strong>Amigo</strong> — Casual, cálido, personal</li>
+          <li><strong>Pareja (Romántico)</strong> — Íntimo, afectuoso (solo plan Premium, 18+)</li>
         </ul>
 
         <h3>4. Empieza a Chatear</h3>
@@ -287,7 +287,7 @@ function SpanishContent() {
             <tbody>
               <tr><td>Mensajes por día</td><td>5</td><td>100</td><td>Ilimitados</td></tr>
               <tr><td>Avatares</td><td>Solo Lía</td><td>Los 3</td><td>Los 3</td></tr>
-              <tr><td>Tipos de relación</td><td>Aliado, Confidente</td><td>Aliado, Confidente</td><td>Todos (incl. Mi Persona)</td></tr>
+              <tr><td>Tipos de relación</td><td>Asistente, Amigo</td><td>Asistente, Amigo</td><td>Todos (incl. Pareja)</td></tr>
               <tr><td>Archivos adjuntos</td><td>—</td><td>✓</td><td>✓</td></tr>
             </tbody>
           </table>
@@ -325,7 +325,7 @@ function SpanishContent() {
         <h2>Tips para la Mejor Experiencia</h2>
         <ul>
           <li>Prueba todos los avatares disponibles — cada uno tiene una personalidad completamente diferente</li>
-          <li>Experimenta con los tipos de relación — el mismo avatar se siente diferente como Aliado vs. Confidente</li>
+          <li>Experimenta con los tipos de relación — el mismo avatar se siente diferente como Asistente vs. Amigo</li>
           <li>Ten conversaciones reales — haz preguntas, comparte pensamientos, sé curioso</li>
           <li>Prueba diferentes temas — escritura creativa, consejos de vida, charla casual, filosofía profunda</li>
           <li>Usa en el celular — NEXO funciona excelente en navegadores móviles. Agrégalo a tu pantalla de inicio para una experiencia tipo app</li>

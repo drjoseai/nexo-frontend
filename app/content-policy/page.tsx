@@ -122,7 +122,7 @@ export default function ContentPolicyPage() {
             </p>
             <ul>
               <li><strong>General Modes</strong> (Assistant, Friend): Available to all users. Content is appropriate for general audiences.</li>
-              <li><strong>Confidant Mode:</strong> Available to Plus and Premium subscribers. May include deeper emotional and personal topics.</li>
+              <li><strong>Friend Mode:</strong> Available to Plus and Premium subscribers. May include deeper emotional and personal topics.</li>
               <li><strong>Romantic Mode:</strong> Available exclusively to Premium subscribers who have completed age verification (18+). Contains romantic and intimate content between consenting adults and AI companions.</li>
             </ul>
             <p>

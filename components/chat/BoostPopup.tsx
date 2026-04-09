@@ -63,10 +63,10 @@ export function BoostPopup({ isOpen, onClose, dailyLimit }: BoostPopupProps) {
         <AlertDialogHeader>
           <AlertDialogTitle className="text-white flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-amber-400" />
-            My Person Messages
+            Partner Messages
           </AlertDialogTitle>
           <AlertDialogDescription className="text-white/70">
-            You&apos;ve used your {dailyLimit} daily My Person messages.
+            You&apos;ve used your {dailyLimit} daily Partner messages.
             Get 50 more to keep the conversation going!
           </AlertDialogDescription>
         </AlertDialogHeader>

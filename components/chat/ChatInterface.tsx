@@ -395,7 +395,7 @@ export function ChatInterface({ avatarId }: ChatInterfaceProps) {
               ageVerified={user?.age_verified ?? false}
             />
 
-            {/* Mi Persona counter */}
+            {/* Partner counter */}
             {relationshipType === "romantic" && userPlan === "premium" && miPersonaRemaining !== null && (
               <div className={cn(
                 "flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium border",

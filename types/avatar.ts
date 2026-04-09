@@ -216,7 +216,7 @@ export const AVATARS: Record<AvatarId, Avatar> = {
 export const RELATIONSHIP_LEVELS: RelationshipLevel[] = [
   {
     type: "assistant",
-    name: "Aliado",
+    name: "Asistente",
     description: "Ayuda práctica y respuestas directas",
     requiredPlan: "free",
     minScore: 0,
@@ -224,7 +224,7 @@ export const RELATIONSHIP_LEVELS: RelationshipLevel[] = [
   },
   {
     type: "friend",
-    name: "Confidente",
+    name: "Amigo",
     description: "Conversaciones casuales y apoyo amistoso",
     requiredPlan: "free",
     minScore: 0,
@@ -232,7 +232,7 @@ export const RELATIONSHIP_LEVELS: RelationshipLevel[] = [
   },
   {
     type: "confidant",
-    name: "Confidente",
+    name: "Amigo",
     description: "Conexión profunda y apoyo emocional",
     requiredPlan: "plus",
     minScore: 25,
@@ -240,7 +240,7 @@ export const RELATIONSHIP_LEVELS: RelationshipLevel[] = [
   },
   {
     type: "romantic",
-    name: "Mi Persona",
+    name: "Pareja",
     description: "Intimidad emocional y conexión especial (18+)",
     requiredPlan: "premium",
     minScore: 50,

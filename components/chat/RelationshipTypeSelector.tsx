@@ -92,21 +92,21 @@ export function RelationshipTypeSelector({
       label: t("assistant"),
       description: t("assistantDescription"),
       premiumOnly: false,
-      icon: "🤝",
+      icon: "🧠",
     },
     {
       value: "friend",
       label: t("friend"),
       description: t("friendDescription"),
       premiumOnly: false,
-      icon: "💛",
+      icon: "💬",
     },
     {
       value: "romantic",
       label: t("romantic"),
       description: t("romanticDescription"),
       premiumOnly: true,
-      icon: "💕",
+      icon: "❤️",
     },
   ];
 

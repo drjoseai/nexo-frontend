@@ -1,5 +1,5 @@
 // components/chat/PremiumUpgradeModal.tsx
-// Modal de upgrade a Premium para acceder a Mi Persona - NEXO v2.0
+// Modal de upgrade a Premium para acceder a Pareja - NEXO v2.0
 
 "use client";
 
@@ -43,10 +43,10 @@ export function PremiumUpgradeModal({ isOpen, onClose }: PremiumUpgradeModalProp
         <AlertDialogHeader>
           <AlertDialogTitle className="text-white flex items-center gap-2">
             <Crown className="h-5 w-5 text-amber-400" />
-            Mi Persona — Premium
+            Pareja — Premium
           </AlertDialogTitle>
           <AlertDialogDescription className="text-white/70">
-            El modo Mi Persona crea una conexión emocional más profunda y
+            El modo Pareja crea una conexión emocional más profunda y
             personal con tu avatar. Disponible exclusivamente para miembros Premium.
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -60,7 +60,7 @@ export function PremiumUpgradeModal({ isOpen, onClose }: PremiumUpgradeModalProp
             <div className="flex flex-col gap-2.5">
               <div className="flex items-center gap-2.5">
                 <Heart className="h-4 w-4 text-amber-400 shrink-0" />
-                <span className="text-sm text-white/80">Modo Mi Persona con los 3 avatares</span>
+                <span className="text-sm text-white/80">Modo Pareja con los 3 avatares</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <MessageCircle className="h-4 w-4 text-amber-400 shrink-0" />

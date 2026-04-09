@@ -133,8 +133,8 @@ describe('Avatars API', () => {
       const mockResponse = {
         data: {
           types: [
-            { value: 'assistant', name: 'Aliado', description: 'Tu guía confiable y profesional', emoji: '🤝', tone: 'formal', requires_age_verification: false, available_plans: ['free', 'plus', 'premium'] },
-            { value: 'friend', name: 'Confidente', description: 'Alguien que te escucha de verdad', emoji: '💛', tone: 'casual', requires_age_verification: false, available_plans: ['free', 'plus', 'premium'] },
+            { value: 'assistant', name: 'Asistente', description: 'Organiza tu vida', emoji: '🧠', tone: 'formal', requires_age_verification: false, available_plans: ['free', 'plus', 'premium'] },
+            { value: 'friend', name: 'Amigo', description: 'Habla y siéntete comprendido', emoji: '💬', tone: 'casual', requires_age_verification: false, available_plans: ['free', 'plus', 'premium'] },
           ],
           default: 'assistant',
         },
@@ -154,8 +154,8 @@ describe('Avatars API', () => {
       const mockResponse = {
         data: {
           current_type: 'friend',
-          current_type_info: { name: 'Confidente', description: 'Alguien que te escucha de verdad', emoji: '💛', tone: 'casual' },
-          available_types: [{ value: 'friend', name: 'Confidente', available: true }],
+          current_type_info: { name: 'Amigo', description: 'Habla y siéntete comprendido', emoji: '💬', tone: 'casual' },
+          available_types: [{ value: 'friend', name: 'Amigo', available: true }],
           can_change_free: true,
           free_changes_remaining: 3,
           relationship_depth: 25,
