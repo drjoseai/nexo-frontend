@@ -61,10 +61,11 @@ export default function ForgotPasswordPage() {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.trynexo.ai";
       const response = await fetch(
-        `${apiUrl}/api/v1/auth/forgot-password?email=${encodeURIComponent(data.email)}`,
+        `${apiUrl}/api/v1/auth/forgot-password`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: data.email }),
         }
       );
 
